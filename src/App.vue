@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <the-header />
     <nav>
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
@@ -7,6 +8,16 @@
     <router-view />
   </div>
 </template>
+
+<script>
+import TheHeader from "@/components/layout/TheHeader.vue";
+
+export default {
+  components: {
+    TheHeader,
+  },
+};
+</script>
 
 <style>
 #app {
