@@ -3,17 +3,16 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-4">
-          <h5>About Us</h5>
-          <router-link to="/about" class="link-pink">Learn More</router-link>
-        </div>
-        <div class="col-sm-4">
-          <h5>Connect</h5>
-          <router-link to="/connect" class="link-pink"
-            >Get in Touch</router-link
+          <!-- <h5>About Us</h5> -->
+          <router-link to="/about" class="link-pink"
+            >Learn More About Us</router-link
           >
         </div>
         <div class="col-sm-4">
-          <h5>Follow Us</h5>
+          <router-link to="/contact" class="link-pink">Contact Us</router-link>
+        </div>
+        <div class="col-sm-4">
+          <!-- <h5>Follow Us</h5> -->
           <!-- Flex container for social links -->
           <div class="social-links">
             <a

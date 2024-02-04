@@ -26,9 +26,9 @@ const routes = [
   },
 
   {
-    path: "/connect",
-    name: "connect",
-    component: () => import("../views/ConnectWithUs.vue"), // Assuming you have a ConnectWithUs.vue
+    path: "/contact",
+    name: "contact",
+    component: () => import("../views/ContactUs.vue"), // Assuming you have a ConnectWithUs.vue
   },
   {
     path: "*",

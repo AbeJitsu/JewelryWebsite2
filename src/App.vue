@@ -33,7 +33,7 @@ body {
 }
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "'Arimo'", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
@@ -45,7 +45,7 @@ nav {
 }
 
 nav a {
-  font-weight: bold;
+  font-weight: 500;
   color: #2c3e50;
 }
 

@@ -1,5 +1,10 @@
 <template>
-  <b-navbar toggleable="lg" type="dark" variant="dark" class="custom-navbar">
+  <b-navbar
+    toggleable="lg"
+    type="darker"
+    variant="darker"
+    class="custom-navbar"
+  >
     <b-navbar-brand href="#" class="custom-brand-text">
       <img
         :src="require('@/assets/logo.png')"
@@ -11,10 +16,10 @@
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item :to="{ name: 'home' }">Home</b-nav-item>
-        <b-nav-item :to="{ name: 'about' }">About</b-nav-item>
+        <b-nav-item :to="{ name: 'home' }">Jewelry Showcase</b-nav-item>
+        <!-- <b-nav-item :to="{ name: 'about' }">About</b-nav-item> -->
         <b-nav-item :to="{ name: 'shop' }">Watch Live</b-nav-item>
-        <b-nav-item :to="{ name: 'contact' }">Contact</b-nav-item>
+        <!-- <b-nav-item :to="{ name: 'contact' }">Contact</b-nav-item> -->
       </b-navbar-nav>
       <!-- Right aligned items -->
       <b-navbar-nav class="ml-auto">
@@ -43,42 +48,39 @@ export default {
 
 <style scoped>
 .custom-navbar {
-  background-color: #333; /* Dark background color */
-  color: #fff; /* White text color */
+  background-color: #121212; /* Harmonize with .bg-darker from TheFooter.vue */
+  color: #fff; /* Keep text color white for contrast */
 }
 
-/* Adjusting the link colors and hover effects to match TheFooter.vue */
-.custom-navbar .navbar-nav .nav-link {
-  color: #ff6b81; /* Soft pink color for links */
-  transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effect */
+.custom-navbar .navbar-nav .nav-link,
+.custom-navbar .navbar-toggler-icon,
+.custom-navbar .navbar-brand {
+  color: #ff6b81; /* Soft pink color, similar to .link-pink */
+  transition: color 0.4s ease, transform 0.4s ease; /* Smooth transition for hover effect */
 }
 
 .custom-navbar .navbar-nav .nav-link:hover,
-.custom-navbar .navbar-nav .nav-link:focus {
-  color: #ff8c99; /* Lighter pink on hover/focus */
+.custom-navbar .navbar-nav .nav-link:focus,
+.custom-navbar .navbar-toggler-icon:focus,
+.custom-navbar .navbar-toggler-icon:hover,
+.custom-navbar .navbar-brand:hover,
+.custom-navbar .navbar-brand:focus {
+  color: #ff8c99; /* Lighter pink on hover/focus, similar to .link-pink:hover */
   text-decoration: none; /* Remove underline on hover/focus */
   transform: scale(
-    1.05
+    1.01
   ); /* Slightly increase size on hover/focus for emphasis */
 }
 
-.custom-navbar .navbar-toggler-icon {
-  background-color: #ff6b81; /* Soft pink accent color for the toggler icon */
-  border-color: #ff6b81; /* Soft pink accent color for the toggler icon border */
-}
-
-.custom-navbar .navbar-toggler-icon:focus,
-.custom-navbar .navbar-toggler-icon:hover {
-  background-color: #ff8c99; /* Lighter pink on hover/focus */
-  border-color: #ff8c99; /* Lighter pink on hover/focus */
-}
-
 .logo-custom-padding {
-  margin-right: 20px; /* Adjust the padding as needed */
+  margin-right: 3rem; /* Adjust the padding as needed */
 }
 
 .custom-brand-text {
-  font-family: "'Cormorant Garamond'", serif;
-  font-size: 1.5rem;
+  font-family: "Tangerine", cursive; /* Apply Tangerine font */
+  font-size: 2rem; /* Adjust the size as needed */
+  /* You may choose to apply the font-weight here directly if preferred */
+  font-weight: 900; /* Example to apply the bold weight */
+  margin-right: 4rem;
 }
 </style>
