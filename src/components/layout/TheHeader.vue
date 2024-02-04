@@ -4,17 +4,17 @@
       <img
         :src="require('@/assets/logo.png')"
         alt="Logo"
-        height="55"
+        height="70"
         class="d-inline-block logo-custom-padding"
       />Escape, Relax & Be Jeweled
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item :to="{ name: 'home' }">Home</b-nav-item>
+        <b-nav-item :to="{ name: 'jewelry-showcase' }"> Home </b-nav-item>
         <b-nav-item :to="{ name: 'about' }">About</b-nav-item>
-        <b-nav-item :to="{ name: 'shop' }">Watch Live</b-nav-item>
-        <b-nav-item :to="{ name: 'contact' }">Contact</b-nav-item>
+        <b-nav-item :to="{ name: 'live-shows' }">Watch Live</b-nav-item>
+        <b-nav-item :to="{ name: 'connect' }">Connect</b-nav-item>
       </b-navbar-nav>
       <!-- Right aligned items -->
       <b-navbar-nav class="ml-auto">

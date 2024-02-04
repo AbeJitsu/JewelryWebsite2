@@ -7,7 +7,11 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "home",
+    redirect: "/jewelry-showcase", // Redirect from root to /jewelry-showcase
+  },
+  {
+    path: "/jewelry-showcase",
+    name: "jewelry-showcase",
     component: JewelryShowcase,
   },
   {
@@ -18,13 +22,18 @@ const routes = [
   {
     path: "/live-shows",
     name: "live-shows",
-    component: () => import("../views/FacebookLive.vue"), // Lazy-loaded
+    component: () => import("../views/ShopLive.vue"), // Lazy-loaded
   },
 
   {
-    path: "/contact",
-    name: "contact",
-    component: () => import("../views/ConnectWithUs.vue"), // Assuming you have a ContactView.vue
+    path: "/connect",
+    name: "connect",
+    component: () => import("../views/ConnectWithUs.vue"), // Assuming you have a ConnectWithUs.vue
+  },
+  {
+    path: "*",
+    name: "not-found",
+    component: () => import("../views/NotFound.vue"), // Assuming NotFound.vue is in the views folder
   },
 ];
 

@@ -1,25 +1,37 @@
 <template>
   <div id="app">
-    <the-header />
-    <!-- <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav> -->
-    <router-view />
+    <TheHeader />
+    <div style="flex: 1">
+      <router-view />
+    </div>
+    <TheFooter />
   </div>
 </template>
 
 <script>
 import TheHeader from "@/components/layout/TheHeader.vue";
+import TheFooter from "@/components/layout/TheFooter.vue";
 
 export default {
   components: {
     TheHeader,
+    TheFooter,
   },
 };
 </script>
 
 <style>
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
