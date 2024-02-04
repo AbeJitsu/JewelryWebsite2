@@ -4,17 +4,17 @@
       <img
         :src="require('@/assets/logo.png')"
         alt="Logo"
-        height="70"
+        height="55"
         class="d-inline-block logo-custom-padding"
       />Escape, Relax & Be Jeweled
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item :to="{ name: 'jewelry-showcase' }"> Home </b-nav-item>
+        <b-nav-item :to="{ name: 'home' }">Home</b-nav-item>
         <b-nav-item :to="{ name: 'about' }">About</b-nav-item>
-        <b-nav-item :to="{ name: 'live-shows' }">Watch Live</b-nav-item>
-        <b-nav-item :to="{ name: 'connect' }">Connect</b-nav-item>
+        <b-nav-item :to="{ name: 'shop' }">Watch Live</b-nav-item>
+        <b-nav-item :to="{ name: 'contact' }">Contact</b-nav-item>
       </b-navbar-nav>
       <!-- Right aligned items -->
       <b-navbar-nav class="ml-auto">
@@ -47,10 +47,19 @@ export default {
   color: #fff; /* White text color */
 }
 
-.custom-navbar .navbar-nav .nav-item .nav-link,
-.escape-relax-bejeweled {
-  /* Targeting the specific class */
-  color: #ff6b81; /* Soft pink accent color for links and specified text */
+/* Adjusting the link colors and hover effects to match TheFooter.vue */
+.custom-navbar .navbar-nav .nav-link {
+  color: #ff6b81; /* Soft pink color for links */
+  transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.custom-navbar .navbar-nav .nav-link:hover,
+.custom-navbar .navbar-nav .nav-link:focus {
+  color: #ff8c99; /* Lighter pink on hover/focus */
+  text-decoration: none; /* Remove underline on hover/focus */
+  transform: scale(
+    1.05
+  ); /* Slightly increase size on hover/focus for emphasis */
 }
 
 .custom-navbar .navbar-toggler-icon {
@@ -59,16 +68,15 @@ export default {
 }
 
 .custom-navbar .navbar-toggler-icon:focus,
-.custom-navbar .navbar-toggler-icon:hover,
-.escape-relax-bejeweled:hover {
-  /* Adding hover effect for the text as well */
+.custom-navbar .navbar-toggler-icon:hover {
   background-color: #ff8c99; /* Lighter pink on hover/focus */
   border-color: #ff8c99; /* Lighter pink on hover/focus */
-  color: #ff8c99; /* Lighter pink for the text on hover, if desired */
 }
+
 .logo-custom-padding {
   margin-right: 20px; /* Adjust the padding as needed */
 }
+
 .custom-brand-text {
   font-family: "'Cormorant Garamond'", serif;
   font-size: 1.5rem;
