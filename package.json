@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start-server": "node src/server/server.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -14,6 +15,7 @@
     "bootstrap": "^4.6.1",
     "bootstrap-vue": "^2.23.0",
     "core-js": "^3.8.3",
+    "express": "^4.18.2",
     "papaparse": "^5.4.1",
     "popper.js": "^1.16.1",
     "portal-vue": "^2.1.7",

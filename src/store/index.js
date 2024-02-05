@@ -4,9 +4,14 @@ import Vuex from "vuex";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  getters: {},
-  mutations: {},
+  state: {
+    jewelryData: [],
+  },
+  mutations: {
+    setJewelryData(state, data) {
+      state.jewelryData = data;
+    },
+  },
   actions: {},
   modules: {},
 });

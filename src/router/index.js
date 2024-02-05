@@ -35,6 +35,12 @@ const routes = [
     name: "not-found",
     component: () => import("../views/NotFound.vue"), // Assuming NotFound.vue is in the views folder
   },
+  {
+    path: "/admin",
+    name: "admin",
+    component: () => import("../views/AdminPage.vue"), // You need to create this view
+    meta: { requiresAuth: true, role: "admin" },
+  },
 ];
 
 const router = new VueRouter({
