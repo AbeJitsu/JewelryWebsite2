@@ -20,8 +20,8 @@ const routes = [
     component: () => import("../views/AboutView.vue"), // Lazy-loaded
   },
   {
-    path: "/live-shows",
-    name: "live-shows",
+    path: "/watch-live",
+    name: "watch-live",
     component: () => import("../views/ShopLive.vue"), // Lazy-loaded
   },
 
