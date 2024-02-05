@@ -56,7 +56,7 @@ export default {
 .custom-navbar .navbar-toggler-icon,
 .custom-navbar .navbar-brand {
   color: #ff6b81; /* Soft pink color, similar to .link-pink */
-  transition: color 0.4s ease, transform 0.4s ease; /* Smooth transition for hover effect */
+  transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effect */
 }
 
 .custom-navbar .navbar-nav .nav-link:hover,
@@ -73,14 +73,19 @@ export default {
 }
 
 .logo-custom-padding {
-  margin-right: 3rem; /* Adjust the padding as needed */
+  margin: 0.25rem 3rem 0.25rem 0; /* top, right, bottom, left */
+  border-radius: 50%; /* Circular logo */
 }
 
 .custom-brand-text {
   font-family: "Tangerine", cursive; /* Apply Tangerine font */
   font-size: 2rem; /* Adjust the size as needed */
-  /* You may choose to apply the font-weight here directly if preferred */
   font-weight: 900; /* Example to apply the bold weight */
   margin-right: 4rem;
+}
+
+/* Additional styles for rounded search button */
+.b-button {
+  border-radius: 20px; /* Rounded edges for the search button */
 }
 </style>
