@@ -1,32 +1,52 @@
 <template>
   <div>
-    <h1>This is the Admin page!</h1>
-    <textarea v-model="csvData" placeholder="Paste CSV data here"></textarea>
-    <button @click="parseCsvData">Parse CSV</button>
+    <h1>Upload CSV File</h1>
+    <b-form-file
+      v-model="selectedFile"
+      :state="Boolean(selectedFile)"
+      placeholder="Choose a file..."
+      drop-placeholder="Drop file here..."
+    ></b-form-file>
+    <b-button @click="uploadCsvData" variant="primary" class="mt-3"
+      >Upload</b-button
+    >
   </div>
 </template>
 
 <script>
-import Papa from "papaparse";
-import { mapMutations } from "vuex";
+import axios from "axios";
 
 export default {
   data() {
     return {
-      csvData: "", // To hold the text area input
+      selectedFile: null, // To hold the selected file
     };
   },
   methods: {
-    ...mapMutations(["setJewelryData"]),
-    parseCsvData() {
-      Papa.parse(this.csvData, {
-        complete: (result) => {
-          console.log(result.data); // You can replace this with your logic
-          // For example, store the parsed data in Vuex or emit an event with this data
-          this.$store.commit("setJewelryData", result.data); // Assuming you have a Vuex store
-        },
-        header: true, // Assuming your CSV has headers; adjust as needed
-      });
+    uploadCsvData() {
+      if (!this.selectedFile) {
+        alert("Please select a file first.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", this.selectedFile);
+
+      axios
+        .post("/api/upload-csv", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          // Handle success
+          console.log("File uploaded successfully", response.data);
+          // Optionally, update Vuex store or local component state with response data
+        })
+        .catch((error) => {
+          // Handle error
+          console.error("Error uploading file", error);
+        });
     },
   },
 };
