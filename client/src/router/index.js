@@ -7,7 +7,7 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    redirect: "/jewelry-showcase", // Redirect from root to /jewelry-showcase
+    redirect: "/jewelry-showcase",
   },
   {
     path: "/jewelry-showcase",
