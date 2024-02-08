@@ -1,53 +1,129 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/AdminPage.vue
 <template>
   <div>
-    <h1>Upload CSV File</h1>
-    <b-form-file
-      v-model="selectedFile"
-      :state="Boolean(selectedFile)"
-      placeholder="Choose a file..."
-      drop-placeholder="Drop file here..."
-    ></b-form-file>
-    <b-button @click="uploadCsvData" variant="primary" class="mt-3"
-      >Upload</b-button
+    <h1>Upload CSV File and Quantities</h1>
+    <div class="uploader-container">
+      <CSVUploader @file-selected="handleFileSelected" />
+    </div>
+    <div class="uploader-container">
+      <ProductQtyUpdater @update-quantities="handleQuantityUpdate" />
+    </div>
+    <b-button
+      @click="processUpload"
+      variant="primary"
+      class="mt-3"
+      :disabled="!canUpload"
     >
+      Upload
+    </b-button>
   </div>
 </template>
 
 <script>
+import CSVUploader from "@/components/products/CSVUploader.vue";
+import ProductQtyUpdater from "@/components/products/ProductQtyUpdater.vue";
 import axios from "axios";
 
 export default {
+  components: {
+    CSVUploader,
+    ProductQtyUpdater,
+  },
   data() {
     return {
-      selectedFile: null, // To hold the selected file
+      selectedFile: null,
+      productQuantities: {},
+      canUpload: false,
     };
   },
   methods: {
-    uploadCsvData() {
-      if (!this.selectedFile) {
-        alert("Please select a file first.");
+    handleFileSelected(file) {
+      this.selectedFile = file;
+      // Additional logic to read and validate the CSV file can be implemented here
+      this.checkCanUpload();
+    },
+    handleQuantityUpdate(quantities) {
+      this.productQuantities = quantities;
+      this.checkCanUpload();
+    },
+    checkCanUpload() {
+      this.canUpload =
+        this.selectedFile && Object.keys(this.productQuantities).length > 0;
+    },
+    processUpload() {
+      // Check prerequisites
+      if (
+        !this.selectedFile ||
+        Object.keys(this.productQuantities).length === 0
+      ) {
+        alert("Please provide both a CSV file and quantities.");
         return;
       }
 
-      const formData = new FormData();
+      // Prepare FormData for upload
+      let formData = new FormData();
       formData.append("file", this.selectedFile);
+      // Since productQuantities is an object, it needs to be converted to a JSON string
+      formData.append("quantities", JSON.stringify(this.productQuantities));
 
+      // Use axios to send FormData to the backend
       axios
         .post("/api/upload-csv", formData, {
           headers: {
+            // Required header for multipart/form-data
             "Content-Type": "multipart/form-data",
           },
         })
         .then((response) => {
           // Handle success
-          console.log("File uploaded successfully", response.data);
-          // Optionally, update Vuex store or local component state with response data
+          console.log("Upload successful", response.data);
+          // TODO: Update UI based on response (e.g., show a summary or validation report)
         })
         .catch((error) => {
           // Handle error
-          console.error("Error uploading file", error);
+          console.error("Error uploading data", error);
+          // TODO: Display error message or details to the user
         });
     },
   },
 };
 </script>
+
+<style scoped>
+.uploader-container {
+  padding: 1rem; /* Keeps the padding around the uploader components */
+  background-color: #333; /* Lightened the super dark grey to a lighter shade */
+  border-radius: 8px; /* Keeps the rounded corners */
+  margin-bottom: 1rem; /* Keeps the space between uploaders and the next elements */
+  max-width: 55%; /* Limits the width to no more than 2/3 of the total width */
+  margin-left: auto; /* Centers the uploader container */
+  margin-right: auto; /* Centers the uploader container */
+}
+
+.uploader-container input,
+.uploader-container textarea {
+  width: 100%; /* Ensures input and textarea elements take the full width of their container */
+  background-color: #4d4d4d; /* Lightens the background color for input and textarea */
+  color: #fff; /* Keeps text color white for contrast */
+  border: 1px solid #ff6b81; /* Keeps the border color to match the theme */
+  border-radius: 4px; /* Keeps the rounded corners for input and textarea */
+}
+
+.uploader-container input::placeholder,
+.uploader-container textarea::placeholder {
+  color: #ff8c99; /* Keeps the lighter pink for placeholder text */
+}
+
+.uploader-container button {
+  background-color: #ff6b81; /* Keeps the button color to match the theme */
+  color: #fff; /* Keeps the button text color */
+  border: none; /* Keeps the button without a border */
+  border-radius: 20px; /* Keeps the rounded button edges */
+  padding: 0.5rem 1rem; /* Keeps padding inside the button */
+  transition: background-color 0.3s ease; /* Keeps the smooth background color transition */
+}
+
+.uploader-container button:hover {
+  background-color: #ff8c99; /* Keeps the lighter pink on hover */
+}
+</style>

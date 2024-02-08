@@ -1,54 +1,51 @@
-// productController.js
-
-// Mock database array for illustration
-let products = [
-  { id: 1, name: "Product 1", price: 100 },
-  { id: 2, name: "Product 2", price: 150 },
-];
+const Product = require("./models/ProductModel"); // Update the path to where your ProductModel is located
 
 // Get all products
 exports.getProducts = (req, res) => {
-  res.json(products);
+  Product.find()
+    .then((products) => res.json(products))
+    .catch((err) =>
+      res.status(500).json({ message: "Error fetching products", error: err })
+    );
 };
 
 // Add a new product
 exports.addProduct = (req, res) => {
-  const newProduct = { ...req.body, id: products.length + 1 };
-  products.push(newProduct);
-  console.log(newProduct);
-  res.status(201).send(newProduct);
+  const newProduct = new Product(req.body);
+  newProduct
+    .save()
+    .then((doc) => res.status(201).json(doc))
+    .catch((err) =>
+      res.status(500).json({ message: "Error adding product", error: err })
+    );
 };
 
 // Update a product by ID
 exports.updateProduct = (req, res) => {
   const { id } = req.params;
-  const { name, price } = req.body;
-
-  let productFound = false;
-  products = products.map((product) => {
-    if (product.id.toString() === id) {
-      productFound = true;
-      return { ...product, name, price };
-    }
-    return product;
-  });
-
-  if (productFound) {
-    res.send({ message: "Product updated successfully" });
-  } else {
-    res.status(404).send({ message: "Product not found" });
-  }
+  Product.findByIdAndUpdate(id, req.body, { new: true })
+    .then((product) => {
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    })
+    .catch((err) =>
+      res.status(500).json({ message: "Error updating product", error: err })
+    );
 };
 
 // Delete a product by ID
 exports.deleteProduct = (req, res) => {
   const { id } = req.params;
-  const initialLength = products.length;
-  products = products.filter((product) => product.id.toString() !== id);
-
-  if (products.length < initialLength) {
-    res.send({ message: "Product deleted successfully" });
-  } else {
-    res.status(404).send({ message: "Product not found" });
-  }
+  Product.findByIdAndRemove(id)
+    .then((product) => {
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json({ message: "Product deleted successfully" });
+    })
+    .catch((err) =>
+      res.status(500).json({ message: "Error deleting product", error: err })
+    );
 };
