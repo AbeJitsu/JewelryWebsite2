@@ -1,3 +1,4 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/productController.js
 const Product = require("./models/ProductModel"); // Update the path to where your ProductModel is located
 
 // Get all products

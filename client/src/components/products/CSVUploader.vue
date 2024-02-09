@@ -1,4 +1,3 @@
-// CSVUploader.vue component to upload CSV file
 <template>
   <div>
     <b-form-file

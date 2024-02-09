@@ -39,7 +39,6 @@ export default {
   methods: {
     handleFileSelected(file) {
       this.selectedFile = file;
-      // Additional logic to read and validate the CSV file can be implemented here
       this.checkCanUpload();
     },
     handleQuantityUpdate(quantities) {
@@ -51,7 +50,6 @@ export default {
         this.selectedFile && Object.keys(this.productQuantities).length > 0;
     },
     processUpload() {
-      // Check prerequisites
       if (
         !this.selectedFile ||
         Object.keys(this.productQuantities).length === 0
@@ -60,29 +58,21 @@ export default {
         return;
       }
 
-      // Prepare FormData for upload
       let formData = new FormData();
       formData.append("file", this.selectedFile);
-      // Since productQuantities is an object, it needs to be converted to a JSON string
       formData.append("quantities", JSON.stringify(this.productQuantities));
 
-      // Use axios to send FormData to the backend
       axios
         .post("/api/upload-csv", formData, {
           headers: {
-            // Required header for multipart/form-data
             "Content-Type": "multipart/form-data",
           },
         })
         .then((response) => {
-          // Handle success
           console.log("Upload successful", response.data);
-          // TODO: Update UI based on response (e.g., show a summary or validation report)
         })
         .catch((error) => {
-          // Handle error
           console.error("Error uploading data", error);
-          // TODO: Display error message or details to the user
         });
     },
   },

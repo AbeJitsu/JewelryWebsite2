@@ -1,4 +1,4 @@
-// src/models/ProductModel.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/models/ProductModel.js
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({

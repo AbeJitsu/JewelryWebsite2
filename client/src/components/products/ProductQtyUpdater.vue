@@ -1,5 +1,3 @@
-//
-Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductQtyUpdater.vue
 <template>
   <b-form-group
     label="Paste Product Quantities Here:"
