@@ -1,10 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+const productRoutes = require("./productRoutes");
 const app = express();
 const port = 3000;
-
-// Replace 'yourDatabaseName' with the name you want for your MongoDB database
 const mongoURI = "mongodb://localhost:27017/jewelryStoreDB";
+
+app.use(cors());
+app.use(express.json());
+app.use("/api", productRoutes); // Prefix all routes with '/api'
 
 mongoose
   .connect(mongoURI, {
@@ -18,16 +22,8 @@ mongoose
     console.error("Error connecting to MongoDB", err);
   });
 
-app.use(express.json());
-
-const productRoutes = require("./productRoutes");
-
-app.get("/", (req, res) => {
-  res.send("Hello, World!!");
-});
-
-app.use("/products", productRoutes);
-
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
 });
+
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js

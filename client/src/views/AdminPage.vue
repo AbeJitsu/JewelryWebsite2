@@ -1,21 +1,34 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/AdminPage.vue
 <template>
   <div>
     <h1>Upload CSV File and Quantities</h1>
     <div class="uploader-container">
       <CSVUploader @file-selected="handleFileSelected" />
+      <ProductQtyUpdater @quantities-updated="handleQuantityUpdate" />
+      <b-form-checkbox v-model="isFileSelected" disabled
+        >CSV File Selected</b-form-checkbox
+      >
+      <b-form-checkbox v-model="areQuantitiesEntered" disabled
+        >Quantities Entered</b-form-checkbox
+      >
+      <b-alert v-if="uploading" variant="info" show
+        >Uploading, please wait...</b-alert
+      >
+      <b-alert
+        v-if="uploadMessage"
+        :variant="uploadSuccess ? 'success' : 'danger'"
+        show
+      >
+        {{ uploadMessage }}
+      </b-alert>
+      <b-button
+        @click="processUpload"
+        variant="primary"
+        class="mt-3"
+        :disabled="!isFileSelected || !areQuantitiesEntered || uploading"
+      >
+        Upload All
+      </b-button>
     </div>
-    <div class="uploader-container">
-      <ProductQtyUpdater @update-quantities="handleQuantityUpdate" />
-    </div>
-    <b-button
-      @click="processUpload"
-      variant="primary"
-      class="mt-3"
-      :disabled="!canUpload"
-    >
-      Upload
-    </b-button>
   </div>
 </template>
 
@@ -34,50 +47,105 @@ export default {
       selectedFile: null,
       productQuantities: {},
       canUpload: false,
+      uploading: false,
+      uploadMessage: "",
+      uploadSuccess: false,
+      isFileSelected: false,
+      areQuantitiesEntered: false,
     };
   },
   methods: {
     handleFileSelected(file) {
-      this.selectedFile = file;
-      this.checkCanUpload();
+      console.log("File Selected:", file ? file.name : "No file");
+      if (file) {
+        this.selectedFile = file;
+        this.isFileSelected = true;
+        console.log(
+          "Before calling checkCanUpload - Selected file:",
+          this.selectedFile
+        );
+        console.log(
+          "Before calling checkCanUpload - Is file selected:",
+          this.isFileSelected
+        );
+        this.checkCanUpload();
+      } else {
+        // Handling for no file selected
+      }
     },
+
     handleQuantityUpdate(quantities) {
-      this.productQuantities = quantities;
-      this.checkCanUpload();
+      if (Object.keys(quantities).length > 0) {
+        this.areQuantitiesEntered = true;
+        this.productQuantities = quantities;
+        console.log(
+          "Before calling checkCanUpload - Quantities:",
+          this.productQuantities
+        );
+        console.log(
+          "Before calling checkCanUpload - Are quantities entered:",
+          this.areQuantitiesEntered
+        );
+        this.checkCanUpload();
+      }
     },
+
     checkCanUpload() {
-      this.canUpload =
-        this.selectedFile && Object.keys(this.productQuantities).length > 0;
+      // Log current state for debugging
+      console.log(
+        "Selected file:",
+        this.selectedFile ? this.selectedFile.name : "None"
+      );
+      console.log("Quantities:", this.productQuantities);
+
+      // Actual logic to determine if upload is possible
+      const conditionsMet =
+        this.selectedFile !== null &&
+        Object.keys(this.productQuantities).length > 0;
+
+      // Update canUpload based on actual conditions or manual override for testing
+      // Remove or comment out the manual override when done testing
+      this.canUpload = conditionsMet; // or true for manual override
+      console.log("Conditions met:", conditionsMet);
+      console.log("Updated canUpload to:", this.canUpload);
     },
+
     processUpload() {
       if (
         !this.selectedFile ||
         Object.keys(this.productQuantities).length === 0
       ) {
-        alert("Please provide both a CSV file and quantities.");
+        this.uploadMessage = "Please provide both a CSV file and quantities.";
+        this.uploadSuccess = false;
         return;
       }
-
+      this.uploading = true;
       let formData = new FormData();
       formData.append("file", this.selectedFile);
       formData.append("quantities", JSON.stringify(this.productQuantities));
 
       axios
-        .post("/api/upload-csv", formData, {
+        .post("http://localhost:3000/api/upload-csv", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         })
-        .then((response) => {
-          console.log("Upload successful", response.data);
+        .then(() => {
+          this.uploadMessage = "Upload successful!";
+          this.uploadSuccess = true;
         })
         .catch((error) => {
-          console.error("Error uploading data", error);
+          this.uploadMessage = `Error uploading data: ${error.message}`;
+          this.uploadSuccess = false;
+        })
+        .finally(() => {
+          this.uploading = false;
         });
     },
   },
 };
 </script>
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/AdminPage.vue -->
 
 <style scoped>
 .uploader-container {
@@ -115,5 +183,10 @@ export default {
 
 .uploader-container button:hover {
   background-color: #ff8c99; /* Keeps the lighter pink on hover */
+}
+
+button:hover {
+  background-color: #f0f0f0; /* Change as needed */
+  transition: background-color 0.3s ease;
 }
 </style>

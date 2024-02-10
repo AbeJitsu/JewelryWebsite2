@@ -10,9 +10,6 @@
       rows="10"
       class="mb-3"
     ></b-form-textarea>
-    <b-button @click="updateProductQuantities" variant="info"
-      >Update Quantities</b-button
-    >
   </b-form-group>
 </template>
 
@@ -23,21 +20,28 @@ export default {
       productText: "",
     };
   },
+  watch: {
+    productText: {
+      handler(newVal) {
+        const productQuantities = this.parseProductText(newVal);
+        this.$emit("quantities-updated", productQuantities);
+      },
+      immediate: true,
+    },
+  },
   methods: {
     updateProductQuantities() {
-      this.$emit("update-quantities", this.parseProductText(this.productText));
+      const productQuantities = this.parseProductText(this.productText);
+      console.log("Quantities updated:", productQuantities);
+      this.$emit("quantities-updated", productQuantities);
     },
     parseProductText(text) {
       const productQuantities = {};
       const lines = text.split("\n");
       lines.forEach((line) => {
-        const parts = line.split("x");
-        if (parts.length === 2) {
-          const code = parts[0].trim().match(/[A-Za-z0-9-]+$/)[0]; // Extract code at the end of the string
-          const quantity = parseInt(parts[1], 10);
-          if (code && !isNaN(quantity)) {
-            productQuantities[code] = quantity;
-          }
+        const [code, quantity] = line.split("x").map((part) => part.trim());
+        if (code && !isNaN(parseInt(quantity, 10))) {
+          productQuantities[code] = parseInt(quantity, 10);
         }
       });
       return productQuantities;
@@ -45,3 +49,5 @@ export default {
   },
 };
 </script>
+
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductQtyUpdater.vue -->
