@@ -11,3 +11,4 @@ module.exports = defineConfig({
     },
   },
 });
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/vue.config.js

@@ -5,9 +5,11 @@ const productRoutes = require("./productRoutes");
 const app = express();
 const port = 3000;
 const mongoURI = "mongodb://localhost:27017/jewelryStoreDB";
+const morgan = require("morgan");
 
 app.use(cors());
 app.use(express.json());
+app.use(morgan("dev"));
 app.use("/api", productRoutes); // Prefix all routes with '/api'
 
 mongoose

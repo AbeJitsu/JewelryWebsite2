@@ -63,25 +63,55 @@ exports.uploadCSV = async (req, res) => {
   }
 
   const file = req.file.path;
-  const quantities = JSON.parse(req.body.quantities || "{}");
+  let productsByHandle = {};
 
   fs.createReadStream(file)
     .pipe(csvParser())
-    .on("data", async (row) => {
-      const code = row.code; // Adapt 'code' based on your CSV structure
-      if (quantities[code]) {
-        row.quantity = quantities[code];
+    .on("data", (row) => {
+      const handle = row["Handle"];
+      if (!productsByHandle[handle]) {
+        productsByHandle[handle] = {
+          variantPrice: parseFloat(row["Variant Price"]) || 0,
+          skus: [],
+          imageSrcs: [],
+        };
       }
-      await Product.findOneAndUpdate({ code }, row, {
-        upsert: true,
-        new: true,
-      });
+      if (row["Variant SKU"])
+        productsByHandle[handle].skus.push(row["Variant SKU"]);
+      if (row["Image Src"])
+        productsByHandle[handle].imageSrcs.push(row["Image Src"]);
     })
-    .on("end", () => {
-      fs.unlink(file, (err) => {
-        if (err) console.error("Error removing the file:", err);
-      });
-      res.json({ message: "CSV processed successfully." });
+    .on("end", async () => {
+      const updateInsertPromises = Object.keys(productsByHandle).map(
+        async (handle) => {
+          const productData = productsByHandle[handle];
+          for (const sku of productData.skus) {
+            await Product.findOneAndUpdate(
+              { variantSKU: sku },
+              {
+                handle: handle,
+                variantPrice: productData.variantPrice,
+                imageSrcs: productData.imageSrcs,
+              },
+              { upsert: true, new: true }
+            ).catch((err) => console.error("Update/Insert error:", err));
+          }
+        }
+      );
+
+      try {
+        await Promise.all(updateInsertPromises);
+        console.log("All products updated/inserted successfully.");
+        fs.unlink(file, (err) => {
+          if (err) console.error("Error removing the file:", err);
+          else res.json({ message: "CSV processed successfully." });
+        });
+      } catch (error) {
+        console.error("Error during database update/insert:", error);
+        res
+          .status(500)
+          .send({ message: "Error processing products", error: error.message });
+      }
     })
     .on("error", (err) => {
       res
@@ -89,3 +119,5 @@ exports.uploadCSV = async (req, res) => {
         .send({ message: "Error processing CSV", error: err.message });
     });
 };
+
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/productController.js

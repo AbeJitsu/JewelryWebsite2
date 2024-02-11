@@ -25,3 +25,5 @@ export default new Vuex.Store({
   },
   modules: {},
 });
+
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/index.js

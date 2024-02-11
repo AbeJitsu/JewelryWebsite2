@@ -125,7 +125,7 @@ export default {
       formData.append("quantities", JSON.stringify(this.productQuantities));
 
       axios
-        .post("http://localhost:3000/api/upload-csv", formData, {
+        .post("http://127.0.0.1:3000/api/upload-csv", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
