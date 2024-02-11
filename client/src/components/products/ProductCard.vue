@@ -1,17 +1,31 @@
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
 <template>
   <div class="product-card">
-    <img :src="product.imageUrl" alt="Product Image" class="product-image" />
-    <h3 class="product-name">{{ product.name }}</h3>
-    <p class="product-description">{{ product.description }}</p>
-    <div class="product-price">${{ product.price }}</div>
-    <!-- Add any additional product details here -->
+    <vue-slick-carousel :dots="true" :infinite="true">
+      <div v-for="(image, index) in product.imageSrc" :key="index">
+        <img :src="image" alt="Product image" />
+      </div>
+    </vue-slick-carousel>
+
+    <h3 class="product-name">{{ product.title }}</h3>
+    <p class="product-description" v-html="product.bodyHtml"></p>
+    <div class="product-price">${{ product.variantPrice }}</div>
+
+    <!-- Interactive buttons -->
+    <button class="btn-quick-view">Quick View</button>
+    <button class="btn-add-cart">Add to Cart</button>
+    <button class="btn-wishlist">Wishlist</button>
   </div>
 </template>
 
 <script>
+import VueSlickCarousel from "vue-slick-carousel";
+import "vue-slick-carousel/dist/vue-slick-carousel.css";
+
 export default {
   name: "ProductCard",
+  components: {
+    VueSlickCarousel,
+  },
   props: {
     product: {
       type: Object,
@@ -58,4 +72,30 @@ export default {
   color: #333;
   font-weight: bold;
 }
+
+.btn-quick-view,
+.btn-add-cart,
+.btn-wishlist {
+  cursor: pointer;
+  padding: 10px;
+  margin-top: 10px;
+  width: 100%;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+}
+
+.btn-quick-view:hover,
+.btn-add-cart:hover,
+.btn-wishlist:hover {
+  background-color: #0056b3;
+}
+
+.product-images-swiper {
+  margin-bottom: 20px;
+}
+
+/* Additional styles for swiper pagination, navigation, etc., if needed */
 </style>
