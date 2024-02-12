@@ -24,8 +24,8 @@ mongoose
     console.error("Error connecting to MongoDB", err);
   });
 
-app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server listening on port ${port}`);
 });
 
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js

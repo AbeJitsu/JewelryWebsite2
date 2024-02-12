@@ -1,10 +1,14 @@
 // main.js
 
 import Vue from "vue";
-import BootstrapVue from "bootstrap-vue";
-import { IconsPlugin } from "bootstrap-vue";
+import BootstrapVue, { IconsPlugin } from "bootstrap-vue";
 import PortalVue from "portal-vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faEye,
+  faShoppingCart,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebookF,
   faInstagram,
@@ -24,13 +28,23 @@ import store from "./store";
 import TheHeader from "@/components/layout/TheHeader.vue";
 import TheFooter from "@/components/layout/TheFooter.vue";
 
-library.add(faFacebookF, faInstagram, faYoutube);
+// Adding both solid and brand icons to the library
+library.add(
+  faEye,
+  faShoppingCart,
+  faHeart,
+  faFacebookF,
+  faInstagram,
+  faYoutube
+);
 
+// Registering components globally
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("TheHeader", TheHeader);
 Vue.component("TheFooter", TheFooter);
 Vue.component("VueSlickCarousel", VueSlickCarousel);
 
+// Using plugins
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(PortalVue);

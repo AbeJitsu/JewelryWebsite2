@@ -1,6 +1,6 @@
 <template>
   <div class="jewelry-showcase">
-    <h1>Jewelry Showcase</h1>
+    <!-- <h1>Jewelry Showcase</h1> -->
     <div class="products-container">
       <ProductCard
         v-for="product in products"
@@ -41,18 +41,27 @@ export default {
 </script>
 
 <style>
-.jewelry-showcase {
+.jewelry-showcase,
+.products-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   padding: 20px;
 }
 
-.products-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+@media (max-width: 768px) {
+  .jewelry-showcase,
+  .products-container {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
 }
 
-/* Add more styles as necessary */
+@media (max-width: 480px) {
+  .jewelry-showcase,
+  .products-container {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 15px;
+  }
+}
 </style>
