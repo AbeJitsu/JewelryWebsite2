@@ -41,6 +41,11 @@ const routes = [
     component: () => import("../views/AdminPage.vue"), // You need to create this view
     meta: { requiresAuth: true, role: "admin" },
   },
+  {
+    path: "/product/:id", // Dynamic segment for product ID
+    name: "product-detail",
+    component: () => import("../views/ProductDetailView.vue"), // Assuming you create this component
+  },
 ];
 
 const router = new VueRouter({

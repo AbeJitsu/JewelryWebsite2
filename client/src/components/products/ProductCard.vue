@@ -16,7 +16,7 @@
         <img :src="image" alt="Product image" class="product-image" />
         <div class="action-icons">
           <!-- Trigger Quick View Modal -->
-          <i class="bi bi-eye-fill" @click="quickView(product)"></i>
+          <i class="bi bi-eye-fill" @click="quickView"></i>
           <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
           <i class="bi bi-heart-fill" @click="addToWishlist(product)"></i>
         </div>
@@ -27,17 +27,13 @@
     <div class="product-price">${{ product.variantPrice }}</div>
     <h3 class="product-name">{{ product.title }}</h3>
     <p class="product-description" v-html="product.bodyHtml"></p>
-
-    <!-- Quick View Modal -->
-    <QuickViewModal
-      :product="selectedProduct"
-      :isVisible.sync="isModalVisible"
-    />
   </div>
 </template>
 
 <script>
 import VueSlickCarousel from "vue-slick-carousel";
+import { mapActions } from "vuex";
+
 export default {
   name: "ProductCard",
   components: {
@@ -46,22 +42,30 @@ export default {
   props: {
     product: Object,
   },
-  mounted() {
-    console.log(this.product.imageSrc);
-  },
   methods: {
-    quickView() {
-      // Implementation for quick view
+    ...mapActions(["addToCart", "addToWishlist", "selectProductForQuickView"]),
+    quickView(productId) {
+      // Dispatch action to update the selected product for quick view in Vuex
+      this.selectProductForQuickView(productId);
+
+      // Here, decide how to toggle the visibility of the QuickViewModal.
+      // If using Vuex, dispatch an action like this.toggleQuickViewModal(true).
+      // If using an event, emit an event like this.$emit("toggleQuickView", true);
+
+      // Example for Vuex (ensure you have the action defined in your store):
+      // this.toggleQuickViewModal(true);
+
+      // Example for emitting an event to the parent component:
+      this.$emit("toggleQuickView", true);
     },
-    addToCart() {
-      // Implementation for adding to cart
-    },
-    addToWishlist() {
-      // Implementation for adding to wishlist
-    },
+    // You would also include the toggleQuickViewModal action in your ...mapActions if using Vuex for modal visibility
   },
 };
 </script>
+
+<style scoped>
+/* Your existing styles */
+</style>
 
 <style scoped>
 .product-card {
