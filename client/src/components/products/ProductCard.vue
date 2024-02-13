@@ -5,7 +5,7 @@
       :dots="true"
       :infinite="true"
       :autoplay="true"
-      :autoplaySpeed="3000"
+      :autoplaySpeed="4000"
       class="product-images-swiper"
     >
       <div
