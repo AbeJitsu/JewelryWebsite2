@@ -1,8 +1,11 @@
 <template>
   <div class="product-card">
+    <!-- Product Carousel -->
     <vue-slick-carousel
       :dots="true"
       :infinite="true"
+      :autoplay="true"
+      :autoplaySpeed="3000"
       class="product-images-swiper"
     >
       <div
@@ -12,21 +15,24 @@
       >
         <img :src="image" alt="Product image" class="product-image" />
         <div class="action-icons">
-          <i class="bi bi-eye-fill" @click="quickView"></i>
-          <i class="bi bi-cart-fill" @click="addToCart"></i>
-          <i class="bi bi-heart-fill" @click="addToWishlist"></i>
+          <!-- Trigger Quick View Modal -->
+          <i class="bi bi-eye-fill" @click="quickView(product)"></i>
+          <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
+          <i class="bi bi-heart-fill" @click="addToWishlist(product)"></i>
         </div>
       </div>
     </vue-slick-carousel>
-    <!-- <vue-slick-carousel :dots="true" :infinite="true">
-      <div v-for="(image, index) in product.imageSrc" :key="index">
-        <img :src="image" alt="Product image" />
-      </div>
-    </vue-slick-carousel> -->
 
+    <!-- Product Details -->
+    <div class="product-price">${{ product.variantPrice }}</div>
     <h3 class="product-name">{{ product.title }}</h3>
     <p class="product-description" v-html="product.bodyHtml"></p>
-    <div class="product-price">${{ product.variantPrice }}</div>
+
+    <!-- Quick View Modal -->
+    <QuickViewModal
+      :product="selectedProduct"
+      :isVisible.sync="isModalVisible"
+    />
   </div>
 </template>
 
@@ -62,7 +68,7 @@ export default {
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 20px;
-  margin: 10px auto; /* Center the card */
+  margin: 1em; /* Center the card */
   width: 100%; /* Use maximum width */
   max-width: 300px; /* Maximum width of the card */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -102,7 +108,7 @@ export default {
   width: 100%;
   padding: 10px 0; /* Adjust padding */
   background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
-  gap: 10px; /* Space between icons */
+  gap: 2em; /* Space between icons */
   color: white;
   transition: transform 0.3s ease;
   transform: translateY(100%);
@@ -116,19 +122,38 @@ export default {
   font-size: 20px;
 }
 
-.product-name,
+.product-name {
+  margin: 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Limit to 1 line */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
 .product-price {
-  margin: 10px 0;
+  margin: 1rem;
+  padding-top: 1rem;
+  font-size: 0.9;
 }
 
 .product-description {
-  -webkit-line-clamp: 3;
+  margin: 2rem;
+  -webkit-line-clamp: 2;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
 }
 .bi {
-  font-size: 2rem; /* Adjust the size as needed */
+  font-family: "bootstrap-icons";
+  font-size: 1.1rem; /* Adjust the size as needed */
 }
 </style>
+
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
+```

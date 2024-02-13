@@ -69,37 +69,50 @@ exports.uploadCSV = async (req, res) => {
     .pipe(csvParser())
     .on("data", (row) => {
       const handle = row["Handle"];
-      if (!productsByHandle[handle]) {
-        productsByHandle[handle] = {
-          variantPrice: parseFloat(row["Variant Price"]) || 0,
-          skus: [],
-          imageSrcs: [],
-        };
+      if (handle) {
+        if (!productsByHandle[handle]) {
+          productsByHandle[handle] = {
+            title: row["Title"], // Capture the title from the CSV
+            bodyHtml: row["Body (HTML)"], // Capture the HTML body from the CSV
+            variantPrice: parseFloat(row["Variant Price"]) || 0,
+            skus: new Set(),
+            imageSrc: [],
+            imagePosition: [],
+          };
+        }
+        if (row["Variant SKU"]) {
+          productsByHandle[handle].skus.add(row["Variant SKU"]);
+        }
+        if (row["Image Src"]) {
+          productsByHandle[handle].imageSrc.push(row["Image Src"]);
+        }
+        if (row["Image Position"]) {
+          productsByHandle[handle].imagePosition.push(
+            parseInt(row["Image Position"], 10)
+          );
+        }
       }
-      if (row["Variant SKU"])
-        productsByHandle[handle].skus.push(row["Variant SKU"]);
-      if (row["Image Src"])
-        productsByHandle[handle].imageSrcs.push(row["Image Src"]);
     })
     .on("end", async () => {
-      const updateInsertPromises = Object.keys(productsByHandle).map(
-        async (handle) => {
-          const productData = productsByHandle[handle];
-          for (const sku of productData.skus) {
+      try {
+        const updateInsertPromises = Object.keys(productsByHandle).map(
+          async (handle) => {
+            const productData = productsByHandle[handle];
             await Product.findOneAndUpdate(
-              { variantSKU: sku },
+              { handle: handle },
               {
-                handle: handle,
-                variantPrice: productData.variantPrice,
-                imageSrcs: productData.imageSrcs,
+                $setOnInsert: {
+                  title: productData.title,
+                  bodyHtml: productData.bodyHtml,
+                  variantPrice: productData.variantPrice,
+                  // Assuming you want to set SKU and imageSrc only if the document is newly inserted
+                },
+                $addToSet: { imageSrc: { $each: productData.imageSrc } }, // Use $addToSet to avoid duplicates
               },
               { upsert: true, new: true }
             ).catch((err) => console.error("Update/Insert error:", err));
           }
-        }
-      );
-
-      try {
+        );
         await Promise.all(updateInsertPromises);
         console.log("All products updated/inserted successfully.");
         fs.unlink(file, (err) => {
