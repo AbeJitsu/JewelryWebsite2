@@ -1,51 +1,56 @@
 <template>
-  <div v-if="isVisible" class="modal-overlay" @click.self="closeModal">
-    <div class="modal-content">
-      <span class="close-button" @click="closeModal">&times;</span>
-      <div class="product-details">
-        <img :src="product.imageSrc" alt="Product Image" class="product-image" />
-        <h2>{{ product.name }}</h2>
-        <p>{{ product.description }}</p>
-        <p class="price">Price: {{ product.price }}</p>
-
-        <div class="modal-actions">
-          <div class="quantity-selector">
-            <button @click="decreaseQuantity">-</button>
-            <input type="number" v-model="quantity" min="1" />
-            <button @click="increaseQuantity">+</button>
-          </div>
-          <button class="btn btn-primary" @click="handleAddToCart">Add to Cart</button>
-          <button class="btn btn-secondary" @click="handleAddToWishlist">Add to Wishlist</button>
+  <b-modal v-model="isModalOpen" @hide="closeModal" id="quick-view-modal">
+    <template v-slot:modal-title>
+      {{ selectedProduct?.title || 'Product Details' }}
+    </template>
+    <div v-if="selectedProduct" class="product-details">
+      <img :src="selectedProduct.imageSrc[0]" alt="Product Image" class="product-image" />
+      <h2>{{ selectedProduct.title }}</h2>
+      <p>{{ selectedProduct.description }}</p>
+      <p class="price">Price: ${{ selectedProduct.variantPrice }}</p>
+      <div class="modal-actions">
+        <div class="quantity-selector">
+          <button @click="decreaseQuantity">-</button>
+          <input type="number" v-model="quantity" min="1" />
+          <button @click="increaseQuantity">+</button>
         </div>
+        <button class="btn btn-primary" @click="handleAddToCart">Add to Cart</button>
+        <button class="btn btn-secondary" @click="handleAddToWishlist">Add to Wishlist</button>
       </div>
     </div>
-  </div>
+    <div v-else>Product details not available.</div>
+  </b-modal>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 export default {
-  props: {
-    product: Object,
-    isVisible: Boolean,
-  },
   data() {
     return {
       quantity: 1,
     };
   },
+  computed: {
+    ...mapState('modal', ['isModalOpen']),
+    selectedProduct() {
+      // Assuming your product details are stored in a 'product' module
+      // and that 'getProductById' is a getter that returns a product based on ID
+      console.log('selectedProductId', this.$store.state.modal.selectedProductId);
+      return this.$store.getters['product/getProductById'](this.$store.state.modal.selectedProductId);
+    },
+  },
   methods: {
-    ...mapActions(['addToCart', 'addToWishlist']),
+    ...mapActions('cart', ['addToCart', 'addToWishlist']),
     closeModal() {
-      this.$emit('update:isVisible', false);
+      this.$store.dispatch('modal/toggleModal', false);
     },
     handleAddToCart() {
-      this.addToCart({ product: this.product, quantity: this.quantity });
+      this.addToCart({ product: this.selectedProduct, quantity: this.quantity });
       this.closeModal();
     },
     handleAddToWishlist() {
-      this.addToWishlist(this.product);
+      this.addToWishlist(this.selectedProduct);
       this.closeModal();
     },
     increaseQuantity() {
@@ -60,35 +65,22 @@ export default {
 };
 </script>
 
-
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
+.product-image {
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+}
+
+.modal-actions {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  max-width: 500px;
-  width: 90%;
-}
-
-.close-button {
-  float: right;
-  cursor: pointer;
-}
-
-.product-details img {
-  max-width: 100%;
-  height: auto;
+.quantity-selector, .btn {
+  margin: 5px;
 }
 </style>
+
+
+<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/QuickViewModal.vue -->

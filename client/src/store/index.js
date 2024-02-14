@@ -1,8 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import axios from "axios";
 
-// Modular imports
+// Import Vuex modules
 import productModule from "./modules/product";
 import userModule from "./modules/user";
 import cartModule from "./modules/cart";
@@ -10,43 +9,37 @@ import modalModule from "./modules/modal";
 
 Vue.use(Vuex);
 
-const store = new Vuex.Store({
+export default new Vuex.Store({
+  // Registering modules with namespaced: true
+  modules: {
+    product: {
+      ...productModule,
+      namespaced: true,
+    },
+    user: {
+      ...userModule,
+      namespaced: true,
+    },
+    cart: {
+      ...cartModule,
+      namespaced: true,
+    },
+    modal: {
+      ...modalModule,
+      namespaced: true,
+    },
+  },
+  // Optional: Define global state, mutations, actions, getters here
   state: {
-    // Retain the global jewelryData state for shared access
-    jewelryData: [],
+    // Your global state
   },
   mutations: {
-    // Global mutation for setting products
-    SET_PRODUCTS(state, products) {
-      state.jewelryData = products;
-    },
+    // Your global mutations
   },
   actions: {
-    // Global action for fetching products
-    fetchProducts({ commit }) {
-      axios
-        .get(`${process.env.VUE_APP_API_BASE_URL}/api/products`)
-        .then((response) => commit("SET_PRODUCTS", response.data))
-        .catch((error) =>
-          console.error("There was an error fetching the products:", error)
-        );
-    },
+    // Your global actions
   },
   getters: {
-    // Global getter for accessing all jewelry items
-    jewelryItems(state) {
-      return state.jewelryData;
-    },
-  },
-  modules: {
-    // Integrate modules for handling specific domains
-    product: productModule,
-    user: userModule,
-    cart: cartModule,
-    modal: modalModule,
+    // Your global getters
   },
 });
-
-export default store;
-
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/index.js

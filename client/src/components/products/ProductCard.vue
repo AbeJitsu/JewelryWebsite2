@@ -1,11 +1,11 @@
 <template>
   <div class="product-card">
-    <!-- Product Carousel -->
     <vue-slick-carousel
       :dots="true"
       :infinite="true"
       :autoplay="true"
       :autoplaySpeed="4000"
+      :arrows="true"
       class="product-images-swiper"
     >
       <div
@@ -15,15 +15,12 @@
       >
         <img :src="image" alt="Product image" class="product-image" />
         <div class="action-icons">
-          <!-- Trigger Quick View Modal -->
-          <i class="bi bi-eye-fill" @click="quickView"></i>
+          <i class="bi bi-eye-fill" @click="quickView(product._id)"></i>
           <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
           <i class="bi bi-heart-fill" @click="addToWishlist(product)"></i>
         </div>
       </div>
     </vue-slick-carousel>
-
-    <!-- Product Details -->
     <div class="product-price">${{ product.variantPrice }}</div>
     <h3 class="product-name">{{ product.title }}</h3>
     <p class="product-description" v-html="product.bodyHtml"></p>
@@ -43,29 +40,15 @@ export default {
     product: Object,
   },
   methods: {
-    ...mapActions(["addToCart", "addToWishlist", "selectProductForQuickView"]),
+    ...mapActions("cart", ["addToCart", "addToWishlist"]),
     quickView(productId) {
-      // Dispatch action to update the selected product for quick view in Vuex
-      this.selectProductForQuickView(productId);
-
-      // Here, decide how to toggle the visibility of the QuickViewModal.
-      // If using Vuex, dispatch an action like this.toggleQuickViewModal(true).
-      // If using an event, emit an event like this.$emit("toggleQuickView", true);
-
-      // Example for Vuex (ensure you have the action defined in your store):
-      // this.toggleQuickViewModal(true);
-
-      // Example for emitting an event to the parent component:
-      this.$emit("toggleQuickView", true);
+      // Directly dispatch the selectProductForQuickView action to the 'modal' namespace
+      console.log("productId", productId);
+      this.$store.dispatch("modal/selectProductForQuickView", productId);
     },
-    // You would also include the toggleQuickViewModal action in your ...mapActions if using Vuex for modal visibility
   },
 };
 </script>
-
-<style scoped>
-/* Your existing styles */
-</style>
 
 <style scoped>
 .product-card {
@@ -157,7 +140,28 @@ export default {
   font-family: "bootstrap-icons";
   font-size: 1.1rem; /* Adjust the size as needed */
 }
-</style>
 
+/* Custom arrow styles */
+.slick-prev,
+.slick-next {
+  color: #000; /* Arrow color */
+  font-size: 24px; /* Arrow size */
+  z-index: 1; /* Ensure arrows are above other elements */
+}
+
+/* Adjust arrow positions if necessary */
+.slick-prev {
+  left: -25px; /* Adjust as needed */
+}
+.slick-next {
+  right: -25px; /* Adjust as needed */
+}
+
+/* Optional: Add hover effects */
+.slick-prev:hover,
+.slick-next:hover {
+  color: #555; /* Color change on hover */
+}
+</style>
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
 ```

@@ -11,25 +11,24 @@ export default {
       state.products = products;
     },
     SET_SELECTED_PRODUCT(state, productId) {
-      // Find and set the selected product based on productId
-      state.selectedProduct = state.products.find((p) => p.id === productId);
+      // Adjusted to use '_id' matching backend MongoDB convention
+      state.selectedProduct = state.products.find((p) => p._id === productId);
     },
   },
   actions: {
     fetchProducts({ commit }) {
-      // Mock API call to fetch products
+      // Updated to use the actual endpoint provided by the backend
       axios
-        .get("path/to/your/products/api")
+        .get("/api/products") // Ensure this matches your actual API endpoint
         .then((response) => {
-          // Use commit to call SET_PRODUCTS mutation with the response data
-          commit("SET_PRODUCTS", response.data);
+          commit("SET_PRODUCTS", response.data); // Assumes response.data is the array of products
         })
         .catch((error) => {
           console.error("There was an error fetching the products:", error);
         });
     },
     selectProduct({ commit }, productId) {
-      // Use commit to call SET_SELECTED_PRODUCT mutation with the productId
+      // No change needed here, but ensuring 'productId' matches the '_id' used in your backend
       commit("SET_SELECTED_PRODUCT", productId);
     },
   },

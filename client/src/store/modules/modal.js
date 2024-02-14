@@ -1,31 +1,40 @@
-// store/modules/product.js
+// store/modules/modal.js
+
 export default {
+  namespaced: true, // Using namespaced for better modularity
   state: {
-    products: [],
-    selectedProduct: null,
+    isModalOpen: false,
+    selectedProductId: null, // Tracks the selected product by its ID
   },
   mutations: {
-    SET_PRODUCTS(state, products) {
-      state.products = products;
+    TOGGLE_MODAL(state, isVisible) {
+      state.isModalOpen = isVisible; // Toggles modal visibility
     },
-    SET_SELECTED_PRODUCT(state, productId) {
-      state.selectedProduct = state.products.find((p) => p.id === productId);
+    SET_SELECTED_PRODUCT_ID(state, productId) {
+      state.selectedProductId = productId; // Sets the selected product ID
     },
   },
   actions: {
-    fetchProducts({}) {
-      // API call to fetch products and commit SET_PRODUCTS mutation
+    toggleModal({ commit }, isVisible) {
+      commit("TOGGLE_MODAL", isVisible); // Action to toggle modal visibility
     },
-    selectProduct({}, productId) {
-      commit("SET_SELECTED_PRODUCT", productId);
+    selectProductForQuickView({ commit }, productId) {
+      // Action to set selected product ID and open the modal
+      commit("SET_SELECTED_PRODUCT_ID", productId);
+      commit("TOGGLE_MODAL", true); // Opens the modal after setting the product ID
     },
   },
   getters: {
-    allProducts(state) {
-      return state.products;
+    isModalOpen(state) {
+      return state.isModalOpen; // Returns the modal's visibility state
     },
-    selectedProduct(state) {
-      return state.selectedProduct;
+    selectedProductId(state) {
+      return state.selectedProductId; // Returns the selected product ID
+    },
+    selectedProduct(state, getters, rootState, rootGetters) {
+      // Optionally, a getter to return the selected product details
+      // Ensure your product module and root getters are correctly set up to support this
+      return rootGetters["product/getProductById"](state.selectedProductId);
     },
   },
 };
