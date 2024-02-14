@@ -14,16 +14,18 @@
         class="product-image-container"
       >
         <img :src="image" alt="Product image" class="product-image" />
-        <div class="action-icons">
-          <i class="bi bi-eye-fill" @click="quickView(product._id)"></i>
-          <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
-          <i class="bi bi-heart-fill" @click="addToWishlist(product)"></i>
-        </div>
       </div>
     </vue-slick-carousel>
-    <div class="product-price">${{ product.variantPrice }}</div>
-    <h3 class="product-name">{{ product.title }}</h3>
-    <p class="product-description" v-html="product.bodyHtml"></p>
+    <div class="action-icons">
+      <i class="bi bi-eye-fill" @click="quickView(product._id)"></i>
+      <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
+      <i class="bi bi-heart-fill" @click="addToWishlist(product)"></i>
+    </div>
+    <div class="product-info">
+      <div class="product-price">${{ product.variantPrice }}</div>
+      <h3 class="product-name">{{ product.title }}</h3>
+      <p class="product-description" v-html="product.bodyHtml"></p>
+    </div>
   </div>
 </template>
 
@@ -55,15 +57,15 @@ export default {
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 20px;
-  margin: 1em; /* Center the card */
-  width: 100%; /* Use maximum width */
-  max-width: 300px; /* Maximum width of the card */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease-in-out;
-  position: relative;
+  margin: 1em auto; /* Center the card */
   display: flex;
   flex-direction: column;
   overflow: hidden; /* Ensure overflow from children is contained */
+  width: 100%; /* Use maximum width */
+  max-width: 400px; /* Maximum width of the card */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease-in-out;
+  position: relative;
 }
 
 .product-card:hover {
