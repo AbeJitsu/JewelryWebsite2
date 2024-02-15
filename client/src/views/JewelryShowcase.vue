@@ -44,22 +44,22 @@ export default {
 .jewelry-showcase,
 .products-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(24%, 2fr));
+  gap: 1rem;
+  padding: 1rem;
 }
 
 @media (max-width: 768px) {
   .jewelry-showcase,
   .products-container {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(36%, 2fr));
   }
 }
 
 @media (max-width: 480px) {
   .jewelry-showcase,
   .products-container {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
     gap: 15px;
     padding: 15px;
   }

@@ -16,6 +16,7 @@
         <img :src="image" alt="Product image" class="product-image" />
       </div>
     </vue-slick-carousel>
+    <!-- Repositioned Action Icons Here -->
     <div class="action-icons">
       <i class="bi bi-eye-fill" @click="quickView(product._id)"></i>
       <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
@@ -57,15 +58,12 @@ export default {
   border: 1px solid #eee;
   border-radius: 8px;
   padding: 20px;
-  margin: 1em auto; /* Center the card */
+  margin: 1em auto;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Ensure overflow from children is contained */
-  width: 100%; /* Use maximum width */
-  max-width: 400px; /* Maximum width of the card */
+  width: 100%;
+  max-width: 400px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease-in-out;
-  position: relative;
 }
 
 .product-card:hover {
@@ -73,10 +71,9 @@ export default {
 }
 
 .product-image-container {
-  position: relative;
   width: 100%;
-  height: 0;
   padding-top: 100%; /* Maintain aspect ratio */
+  position: relative;
 }
 
 .product-image {
@@ -85,26 +82,27 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Ensure cover but adjust if necessary */
+  object-fit: contain;
+  overflow: auto;
 }
 
 .action-icons {
+  color: #ff6b81;
   display: flex;
   justify-content: center;
-  align-items: center;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 10px 0; /* Adjust padding */
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
   gap: 2em; /* Space between icons */
-  color: white;
-  transition: transform 0.3s ease;
-  transform: translateY(100%);
+  margin-top: 2em; /* Adjust spacing as needed */
 }
 
-.product-image-container:hover .action-icons {
-  transform: translateY(0); /* Slide up icons on hover */
+.action-icons i {
+  color: #ff6b81; /* Set icon color */
+  transition: transform 0.3s ease, color 0.3s ease; /* Smooth transition for transform and color */
+  cursor: pointer; /* Change cursor to pointer to indicate clickable items */
+}
+
+.action-icons i:hover {
+  transform: scale(1.2); /* Slightly enlarge icons on hover */
+  color: #b43a53; /* Darken the color on hover for feedback */
 }
 
 .font-awesome-icon {
@@ -117,7 +115,7 @@ export default {
   font-weight: 500;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2; /* Limit to 1 line */
+  -webkit-line-clamp: 1; /* Limit to 1 line */
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
@@ -125,7 +123,7 @@ export default {
 
 .product-price {
   margin: 1rem;
-  padding-top: 1rem;
+  padding-top: 1em;
   font-size: 0.9;
 }
 
@@ -141,28 +139,6 @@ export default {
 .bi {
   font-family: "bootstrap-icons";
   font-size: 1.1rem; /* Adjust the size as needed */
-}
-
-/* Custom arrow styles */
-.slick-prev,
-.slick-next {
-  color: #000; /* Arrow color */
-  font-size: 24px; /* Arrow size */
-  z-index: 1; /* Ensure arrows are above other elements */
-}
-
-/* Adjust arrow positions if necessary */
-.slick-prev {
-  left: -25px; /* Adjust as needed */
-}
-.slick-next {
-  right: -25px; /* Adjust as needed */
-}
-
-/* Optional: Add hover effects */
-.slick-prev:hover,
-.slick-next:hover {
-  color: #555; /* Color change on hover */
 }
 </style>
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
