@@ -83,7 +83,6 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  overflow: auto;
 }
 
 .action-icons {
@@ -91,13 +90,14 @@ export default {
   display: flex;
   justify-content: center;
   gap: 2em; /* Space between icons */
-  margin-top: 2em; /* Adjust spacing as needed */
+  margin-top: 3em; /* Adjust spacing as needed */
 }
 
 .action-icons i {
   color: #ff6b81; /* Set icon color */
   transition: transform 0.3s ease, color 0.3s ease; /* Smooth transition for transform and color */
   cursor: pointer; /* Change cursor to pointer to indicate clickable items */
+  font-size: 2rem; /* Adjust icon size as needed */
 }
 
 .action-icons i:hover {
@@ -105,13 +105,9 @@ export default {
   color: #b43a53; /* Darken the color on hover for feedback */
 }
 
-.font-awesome-icon {
-  font-size: 20px;
-}
-
 .product-name {
   margin: 1rem;
-  font-size: 1.1rem;
+  font-size: 1em;
   font-weight: 500;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -122,9 +118,8 @@ export default {
 }
 
 .product-price {
-  margin: 1rem;
-  padding-top: 1em;
-  font-size: 0.9;
+  padding: 1em;
+  font-size: 1em;
 }
 
 .product-description {
@@ -135,10 +130,6 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
-}
-.bi {
-  font-family: "bootstrap-icons";
-  font-size: 1.1rem; /* Adjust the size as needed */
 }
 </style>
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
