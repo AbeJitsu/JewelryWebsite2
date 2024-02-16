@@ -44,7 +44,7 @@ export default {
 .jewelry-showcase,
 .products-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(24%, 2fr));
+  grid-template-columns: repeat(auto-fit, minmax(30%, 2fr));
   gap: 1rem;
   padding: 1rem;
 }

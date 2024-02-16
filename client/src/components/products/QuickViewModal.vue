@@ -1,10 +1,14 @@
 <template>
   <b-modal v-model="isModalOpen" @hide="closeModal" id="quick-view-modal">
     <template v-slot:modal-title>
-      {{ selectedProduct?.title || 'Product Details' }}
+      {{ selectedProduct?.title || "Product Details" }}
     </template>
     <div v-if="selectedProduct" class="product-details">
-      <img :src="selectedProduct.imageSrc[0]" alt="Product Image" class="product-image" />
+      <img
+        :src="selectedProduct.imageSrc[0]"
+        alt="Product Image"
+        class="product-image"
+      />
       <h2>{{ selectedProduct.title }}</h2>
       <p>{{ selectedProduct.description }}</p>
       <p class="price">Price: ${{ selectedProduct.variantPrice }}</p>
@@ -14,8 +18,12 @@
           <input type="number" v-model="quantity" min="1" />
           <button @click="increaseQuantity">+</button>
         </div>
-        <button class="btn btn-primary" @click="handleAddToCart">Add to Cart</button>
-        <button class="btn btn-secondary" @click="handleAddToWishlist">Add to Wishlist</button>
+        <button class="btn btn-primary" @click="handleAddToCart">
+          Add to Cart
+        </button>
+        <button class="btn btn-secondary" @click="handleAddToWishlist">
+          Add to Wishlist
+        </button>
       </div>
     </div>
     <div v-else>Product details not available.</div>
@@ -23,7 +31,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex';
+import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -32,21 +40,20 @@ export default {
     };
   },
   computed: {
-    ...mapState('modal', ['isModalOpen']),
-    selectedProduct() {
-      // Assuming your product details are stored in a 'product' module
-      // and that 'getProductById' is a getter that returns a product based on ID
-      console.log('selectedProductId', this.$store.state.modal.selectedProductId);
-      return this.$store.getters['product/getProductById'](this.$store.state.modal.selectedProductId);
-    },
+    ...mapState("modal", ["isModalOpen"]),
+    ...mapGetters("product", ["selectedProduct"]), // Ensure this getter exists and works correctly in your store
   },
   methods: {
-    ...mapActions('cart', ['addToCart', 'addToWishlist']),
+    ...mapActions("cart", ["addToCart", "addToWishlist"]),
     closeModal() {
-      this.$store.dispatch('modal/toggleModal', false);
+      // Use the namespaced action if your store is namespaced
+      this.$store.dispatch("modal/toggleModal", false);
     },
     handleAddToCart() {
-      this.addToCart({ product: this.selectedProduct, quantity: this.quantity });
+      this.addToCart({
+        product: this.selectedProduct,
+        quantity: this.quantity,
+      });
       this.closeModal();
     },
     handleAddToWishlist() {
@@ -77,10 +84,10 @@ export default {
   margin-top: 20px;
 }
 
-.quantity-selector, .btn {
+.quantity-selector,
+.btn {
   margin: 5px;
 }
 </style>
-
 
 <!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/QuickViewModal.vue -->
