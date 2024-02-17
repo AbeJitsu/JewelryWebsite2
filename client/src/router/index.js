@@ -46,6 +46,11 @@ const routes = [
     name: "product-detail",
     component: () => import("../views/ProductDetailView.vue"), // Assuming you create this component
   },
+  {
+    path: "/cart",
+    name: "cart",
+    component: () => import("../views/CartComponent.vue"), // Ensure CartComponent.vue is correctly located in your views directory
+  },
 ];
 
 const router = new VueRouter({
@@ -55,3 +60,5 @@ const router = new VueRouter({
 });
 
 export default router;
+
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js

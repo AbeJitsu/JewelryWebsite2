@@ -1,39 +1,39 @@
 // store/modules/modal.js
-
 export default {
-  namespaced: true, // Using namespaced for better modularity
+  namespaced: true,
   state: {
     isModalOpen: false,
-    selectedProductId: null, // Tracks the selected product by its ID
+    selectedProductId: null,
   },
   mutations: {
     TOGGLE_MODAL(state, isVisible) {
-      state.isModalOpen = isVisible; // Toggles modal visibility
+      state.isModalOpen = isVisible;
     },
     SET_SELECTED_PRODUCT_ID(state, productId) {
-      state.selectedProductId = productId; // Sets the selected product ID
+      state.selectedProductId = productId;
     },
   },
   actions: {
     toggleModal({ commit }, isVisible) {
-      commit("TOGGLE_MODAL", isVisible); // Action to toggle modal visibility
+      commit("TOGGLE_MODAL", isVisible);
     },
-    selectProductForQuickView({ commit }, productId) {
-      // Action to set selected product ID and open the modal
+    selectProductForQuickView({ commit, dispatch }, productId) {
       commit("SET_SELECTED_PRODUCT_ID", productId);
-      commit("TOGGLE_MODAL", true); // Opens the modal after setting the product ID
+      commit("TOGGLE_MODAL", true);
+      // Dispatch an action to the product module to update the selectedProduct based on productId
+      // Note: Ensure that the 'product/selectProduct' action is defined and properly handles setting the selected product
+      dispatch("product/selectProduct", productId, { root: true });
     },
   },
   getters: {
     isModalOpen(state) {
-      return state.isModalOpen; // Returns the modal's visibility state
+      return state.isModalOpen;
     },
     selectedProductId(state) {
-      return state.selectedProductId; // Returns the selected product ID
+      return state.selectedProductId;
     },
     selectedProduct(state, getters, rootState, rootGetters) {
-      // Optionally, a getter to return the selected product details
-      // Ensure your product module and root getters are correctly set up to support this
+      // Ensure this getter fetches the product details from the product module based on the selectedProductId
       return rootGetters["product/getProductById"](state.selectedProductId);
     },
   },

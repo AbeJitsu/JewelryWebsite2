@@ -43,3 +43,5 @@ export default new Vuex.Store({
     // Your global getters
   },
 });
+
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/index.js

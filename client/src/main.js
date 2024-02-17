@@ -1,6 +1,7 @@
 // main.js
 
 import Vue from "vue";
+import axios from "axios";
 import BootstrapVue, { IconsPlugin } from "bootstrap-vue";
 import PortalVue from "portal-vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -28,6 +29,8 @@ import router from "./router";
 import store from "./store";
 import TheHeader from "@/components/layout/TheHeader.vue";
 import TheFooter from "@/components/layout/TheFooter.vue";
+
+axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 // Adding both solid and brand icons to the library
 library.add(

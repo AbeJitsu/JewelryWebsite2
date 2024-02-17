@@ -5,39 +5,45 @@ export default {
   state: {
     products: [],
     selectedProduct: null,
+    error: null, // New state property for error handling
   },
   mutations: {
     SET_PRODUCTS(state, products) {
       state.products = products;
+      state.error = null; // Reset error state on successful fetch
     },
     SET_SELECTED_PRODUCT(state, productId) {
-      // Adjusted to use '_id' matching backend MongoDB convention
       state.selectedProduct = state.products.find((p) => p._id === productId);
+    },
+    SET_ERROR(state, error) {
+      // New mutation for setting error state
+      state.error = error;
     },
   },
   actions: {
-    fetchProducts({ commit }) {
-      // Updated to use the actual endpoint provided by the backend
-      axios
-        .get("/api/products") // Ensure this matches your actual API endpoint
-        .then((response) => {
-          commit("SET_PRODUCTS", response.data); // Assumes response.data is the array of products
-        })
-        .catch((error) => {
-          console.error("There was an error fetching the products:", error);
-        });
+    async fetchProducts({ commit }) {
+      try {
+        const response = await axios.get("/api/products");
+        commit("SET_PRODUCTS", response.data);
+      } catch (error) {
+        console.error("There was an error fetching the products:", error);
+        commit("SET_ERROR", "Failed to fetch products"); // Committing error state
+      }
     },
-    selectProduct({ commit }, productId) {
-      // No change needed here, but ensuring 'productId' matches the '_id' used in your backend
-      commit("SET_SELECTED_PRODUCT", productId);
+    selectProduct({ commit, state }, productId) {
+      if (!state.products.length) {
+        // Optional: Fetch products if not already loaded
+        this.dispatch("product/fetchProducts").then(() => {
+          commit("SET_SELECTED_PRODUCT", productId);
+        });
+      } else {
+        commit("SET_SELECTED_PRODUCT", productId);
+      }
     },
   },
   getters: {
-    allProducts(state) {
-      return state.products;
-    },
-    selectedProduct(state) {
-      return state.selectedProduct;
-    },
+    allProducts: (state) => state.products,
+    selectedProduct: (state) => state.selectedProduct,
+    isError: (state) => !!state.error, // New getter to check if there's an error
   },
 };

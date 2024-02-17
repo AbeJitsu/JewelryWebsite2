@@ -1,5 +1,5 @@
 <template>
-  <b-modal v-model="isModalOpen" @hide="closeModal" id="quick-view-modal">
+  <b-modal :visible="isModalOpen" @hide="closeModal" id="quick-view-modal">
     <template v-slot:modal-title>
       {{ selectedProduct?.title || "Product Details" }}
     </template>
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   data() {
@@ -41,7 +41,10 @@ export default {
   },
   computed: {
     ...mapState("modal", ["isModalOpen"]),
-    ...mapGetters("product", ["selectedProduct"]), // Ensure this getter exists and works correctly in your store
+    selectedProduct() {
+      // Ensure this getter exists and works correctly in your store
+      return this.$store.getters["product/selectedProduct"];
+    },
   },
   methods: {
     ...mapActions("cart", ["addToCart", "addToWishlist"]),
