@@ -1,16 +1,14 @@
-// store/modules/cart.js
-
 export default {
   state: {
     cartItems: [],
     checkedOutOrders: [],
     shippingInfo: {
-      baseShippingFee: 5, // Base fee for 1-10 pieces
-      extendedShippingFee: 7, // Fee for 11-19 pieces
-      freeShippingThreshold: 20, // Free shipping for 20+ pieces
-      currentShippingFee: 0, // Dynamically updated based on cart content
+      baseShippingFee: 5,
+      extendedShippingFee: 7,
+      freeShippingThreshold: 20,
+      currentShippingFee: 0,
     },
-    taxRate: 0.065, // 6.5% sales tax
+    taxRate: 0.065,
   },
   mutations: {
     ADD_TO_CART(state, { product, quantity }) {
@@ -22,11 +20,13 @@ export default {
       } else {
         state.cartItems.push({ product, quantity });
       }
+      this.commit("CALCULATE_SHIPPING_FEE");
     },
     REMOVE_FROM_CART(state, productId) {
       state.cartItems = state.cartItems.filter(
         (item) => item.product.id !== productId
       );
+      this.commit("CALCULATE_SHIPPING_FEE");
     },
     UPDATE_QUANTITY(state, { productId, quantity }) {
       const cartItem = state.cartItems.find(
@@ -35,16 +35,23 @@ export default {
       if (cartItem) {
         cartItem.quantity = quantity;
       }
+      this.commit("CALCULATE_SHIPPING_FEE");
     },
     CHECKOUT_ORDER(state) {
-      // Move current cart items to checkedOutOrders and clear cartItems
-      state.checkedOutOrders.push(...state.cartItems);
-      state.cartItems = [];
-      this.commit("CALCULATE_SHIPPING_FEE"); // Recalculate shipping fee for the new order state
+      if (isWithinBuyingWindow()) {
+        state.checkedOutOrders.push(...state.cartItems);
+        state.cartItems = [];
+        this.commit("CALCULATE_SHIPPING_FEE");
+      } else {
+        // As per requirements, this path is adjusted to reflect the continuous buying cycle.
+        console.error(
+          "Checkout is always within a valid window. Adjust flow accordingly."
+        );
+      }
     },
     ADD_TO_CHECKED_OUT_ORDER(state, { product, quantity }) {
-      // Logic to add additional products to the last checked out order
-      const order = state.checkedOutOrders[state.checkedOutOrders.length - 1];
+      const order =
+        state.checkedOutOrders[state.checkedOutOrders.length - 1] || [];
       const existingProduct = order.find(
         (item) => item.product.id === product.id
       );
@@ -53,17 +60,14 @@ export default {
       } else {
         order.push({ product, quantity });
       }
-      this.commit("CALCULATE_SHIPPING_FEE"); // Recalculate shipping for updated order
+      this.commit("CALCULATE_SHIPPING_FEE");
     },
     CALCULATE_SHIPPING_FEE(state) {
-      // Calculate shipping based on the current checkedOutOrders
-      const totalPieces = state.checkedOutOrders
-        .flat()
-        .reduce((acc, { product, quantity }) => {
-          const pieceCount = product.type === "fashion-fix" ? 4 : 1;
-          return acc + pieceCount * quantity;
-        }, 0);
-
+      const totalPieces = state.cartItems.reduce(
+        (acc, { product, quantity }) =>
+          acc + (product.type === "fashion-fix" ? 4 : 1) * quantity,
+        0
+      );
       if (totalPieces >= state.shippingInfo.freeShippingThreshold) {
         state.shippingInfo.currentShippingFee = 0;
       } else if (totalPieces >= 11) {
@@ -93,28 +97,52 @@ export default {
     },
   },
   getters: {
-    cartItems(state) {
-      return state.cartItems;
-    },
-    cartTotal(state) {
-      return state.cartItems.reduce(
+    cartItems: (state) => state.cartItems,
+    cartTotal: (state) =>
+      state.cartItems.reduce(
         (total, item) => total + item.product.price * item.quantity,
         0
-      );
-    },
-    itemCount(state) {
-      return state.cartItems.reduce((total, item) => total + item.quantity, 0);
-    },
+      ),
+    itemCount: (state) =>
+      state.cartItems.reduce((total, item) => total + item.quantity, 0),
     orderTotal: (state) => {
       const productsTotal = state.checkedOutOrders
         .flat()
-        .reduce((total, { product, quantity }) => {
-          return total + product.price * quantity;
-        }, 0);
+        .reduce(
+          (total, { product, quantity }) => total + product.price * quantity,
+          0
+        );
       const tax = productsTotal * state.taxRate;
-      const total = productsTotal + tax + state.shippingInfo.currentShippingFee;
-      return { productsTotal, tax, total };
+      return {
+        productsTotal,
+        tax,
+        total: productsTotal + tax + state.shippingInfo.currentShippingFee,
+      };
     },
   },
 };
+
+function isWithinBuyingWindow() {
+  const now = new Date();
+
+  // Convert now to EST, considering EST is UTC-5
+  const estOffset = -5 * 60;
+  const nowEst = new Date(
+    now.getTime() + (estOffset - now.getTimezoneOffset()) * 60000
+  );
+
+  // Determine the upcoming Sunday 7:59 AM EST
+  const endOfWeek = new Date(nowEst);
+  endOfWeek.setDate(nowEst.getDate() + (7 - nowEst.getDay()));
+  endOfWeek.setHours(7, 59, 0, 0);
+
+  // Determine the start of the current buying window, which is the previous Sunday 8 AM EST
+  const startOfWeek = new Date(endOfWeek);
+  startOfWeek.setDate(endOfWeek.getDate() - 7);
+  startOfWeek.setHours(8, 0, 0, 0);
+
+  // Check if current EST time is within the buying window
+  return nowEst >= startOfWeek && nowEst < endOfWeek;
+}
+
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
