@@ -1,17 +1,34 @@
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
-  handle: { type: String, required: true, unique: true }, // Assuming 'Handle' is a unique identifier
+  handle: { type: String, required: true, unique: true },
   title: { type: String, required: true },
-  bodyHtml: String, // 'Body (HTML)' field from the CSV
+  bodyHtml: String,
   vendor: String,
-  type: String,
-  variantSKU: String, // 'Variant SKU'
-  variantPrice: Number, // 'Variant Price'
-  imageSrc: [String], // To accommodate multiple image URLs, use an array of strings
-  imagePosition: [Number], // To store the order of images, use an array of numbers
-  // Add any other fields you deem necessary
-  quantity: { type: Number, default: 1 }, // Set default quantity to 1
+  type: {
+    type: String,
+    enum: ["zi", "fashion-fix", "everyday"],
+    default: "everyday",
+  },
+  variantSKU: String,
+  variantPrice: Number,
+  imageSrc: [String],
+  imagePosition: [Number],
+  quantity: { type: Number, default: 1 },
+});
+
+productSchema.pre("save", function (next) {
+  if (this.variantPrice === 25) {
+    this.type = "zi";
+  } else if (
+    this.variantPrice === 20 ||
+    this.bodyHtml.toLowerCase().includes("fashion-fix")
+  ) {
+    this.type = "fashion-fix";
+  } else {
+    this.type = "everyday";
+  }
+  next();
 });
 
 const Product = mongoose.model("Product", productSchema);

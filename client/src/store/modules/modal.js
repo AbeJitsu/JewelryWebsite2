@@ -1,4 +1,5 @@
-// store/modules/modal.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/modal.js
+
 export default {
   namespaced: true,
   state: {
@@ -18,23 +19,19 @@ export default {
       commit("TOGGLE_MODAL", isVisible);
     },
     selectProductForQuickView({ commit, dispatch }, productId) {
-      commit("SET_SELECTED_PRODUCT_ID", productId);
+      // Correctly dispatch to `product/setSelectedProduct` with namespacing
+      dispatch("product/setSelectedProduct", productId, { root: true });
       commit("TOGGLE_MODAL", true);
-      // Dispatch an action to the product module to update the selectedProduct based on productId
-      // Note: Ensure that the 'product/selectProduct' action is defined and properly handles setting the selected product
-      dispatch("product/selectProduct", productId, { root: true });
     },
   },
   getters: {
-    isModalOpen(state) {
-      return state.isModalOpen;
-    },
-    selectedProductId(state) {
-      return state.selectedProductId;
-    },
-    selectedProduct(state, getters, rootState, rootGetters) {
-      // Ensure this getter fetches the product details from the product module based on the selectedProductId
-      return rootGetters["product/getProductById"](state.selectedProductId);
+    isModalOpen: (state) => state.isModalOpen,
+    selectedProduct: (state, getters, rootState) => {
+      // Adjusted to directly access the product from the product module's state
+      return rootState.product.products.find(
+        (product) => product._id === state.selectedProductId
+      );
     },
   },
 };
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/modal.js

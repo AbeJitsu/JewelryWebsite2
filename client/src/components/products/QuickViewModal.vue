@@ -1,29 +1,30 @@
 <template>
-  <b-modal :visible="isModalOpen" @hide="closeModal" id="quick-view-modal">
+  <b-modal :show="isModalOpen" @hide="closeModal" centered size="lg">
     <template v-slot:modal-title>
       {{ selectedProduct?.title || "Product Details" }}
     </template>
-    <div v-if="selectedProduct" class="product-details">
-      <img
-        :src="selectedProduct.imageSrc[0]"
-        alt="Product Image"
-        class="product-image"
-      />
-      <h2>{{ selectedProduct.title }}</h2>
-      <p>{{ selectedProduct.description }}</p>
-      <p class="price">Price: ${{ selectedProduct.variantPrice }}</p>
-      <div class="modal-actions">
-        <div class="quantity-selector">
-          <button @click="decreaseQuantity">-</button>
-          <input type="number" v-model="quantity" min="1" />
-          <button @click="increaseQuantity">+</button>
+    <div class="modal-body" v-if="selectedProduct">
+      <div class="modal-content-layout">
+        <div class="image-container">
+          <img
+            :src="selectedProduct.imageSrc[0]"
+            class="product-image"
+            :alt="selectedProduct.title"
+          />
         </div>
-        <button class="btn btn-primary" @click="handleAddToCart">
-          Add to Cart
-        </button>
-        <button class="btn btn-secondary" @click="handleAddToWishlist">
-          Add to Wishlist
-        </button>
+        <div class="details-container">
+          <h2>{{ selectedProduct.title }}</h2>
+          <p>{{ selectedProduct.description }}</p>
+          <p class="price">Price: ${{ selectedProduct.variantPrice }}</p>
+          <div class="actions">
+            <b-button variant="primary" @click="handleAddToCart">
+              Add to Cart
+            </b-button>
+            <b-button variant="info" @click="handleAddToWishlist">
+              Add to Wishlist
+            </b-button>
+          </div>
+        </div>
       </div>
     </div>
     <div v-else>Product details not available.</div>
@@ -34,63 +35,62 @@
 import { mapActions, mapState } from "vuex";
 
 export default {
-  data() {
-    return {
-      quantity: 1,
-    };
-  },
   computed: {
-    ...mapState("modal", ["isModalOpen"]),
-    selectedProduct() {
-      // Ensure this getter exists and works correctly in your store
-      return this.$store.getters["product/selectedProduct"];
-    },
+    ...mapState({
+      isModalOpen: (state) => state.modal.isModalOpen,
+      selectedProduct: (state) => state.product.selectedProduct,
+    }),
   },
   methods: {
     ...mapActions("cart", ["addToCart", "addToWishlist"]),
+    ...mapActions("modal", ["toggleModal"]),
     closeModal() {
-      // Use the namespaced action if your store is namespaced
-      this.$store.dispatch("modal/toggleModal", false);
+      this.toggleModal(false);
     },
     handleAddToCart() {
-      this.addToCart({
-        product: this.selectedProduct,
-        quantity: this.quantity,
-      });
-      this.closeModal();
+      this.addToCart(this.selectedProduct);
     },
     handleAddToWishlist() {
       this.addToWishlist(this.selectedProduct);
-      this.closeModal();
-    },
-    increaseQuantity() {
-      this.quantity++;
-    },
-    decreaseQuantity() {
-      if (this.quantity > 1) {
-        this.quantity--;
-      }
     },
   },
 };
 </script>
 
 <style scoped>
+.modal-content-layout {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-container {
+  flex: 1;
+  max-width: 38.2%; /* Golden ratio for image section */
+  padding: 20px;
+}
+
+.details-container {
+  flex: 1;
+  max-width: 61.8%; /* Golden ratio for details section */
+  padding: 20px;
+}
+
 .product-image {
   width: 100%;
-  margin-bottom: 20px;
+  height: auto;
+  border-radius: 8px;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
+.actions {
   margin-top: 20px;
+  display: flex;
+  gap: 10px;
 }
 
-.quantity-selector,
-.btn {
-  margin: 5px;
+@media (max-width: 768px) {
+  .modal-content-layout {
+    flex-direction: column;
+  }
 }
 </style>
-
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/QuickViewModal.vue -->

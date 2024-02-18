@@ -1,6 +1,5 @@
 <template>
   <div class="jewelry-showcase">
-    <!-- <h1>Jewelry Showcase</h1> -->
     <div class="products-container">
       <ProductCard
         v-for="product in products"
@@ -17,17 +16,13 @@ import ProductCard from "../components/products/ProductCard.vue";
 
 export default {
   name: "JewelryShowcase",
-  components: {
-    ProductCard,
-  },
+  components: { ProductCard },
   data() {
     return {
       products: [],
     };
   },
   async created() {
-    console.log("VUE_APP_API_URL:", process.env.VUE_APP_API_URL);
-    console.log(process.env);
     try {
       const response = await axios.get(
         `${process.env.VUE_APP_API_URL}/api/products`

@@ -1,49 +1,59 @@
-// store/modules/product.js
 import axios from "axios";
 
 export default {
+  namespaced: true,
   state: {
     products: [],
     selectedProduct: null,
-    error: null, // New state property for error handling
+    error: null,
   },
   mutations: {
     SET_PRODUCTS(state, products) {
-      state.products = products;
-      state.error = null; // Reset error state on successful fetch
+      // Renaming "everyday" to "everyday" for $5 jewelry
+      state.products = products.map((product) => ({
+        ...product,
+        type: product.type || "everyday", // More descriptive default type
+      }));
     },
-    SET_SELECTED_PRODUCT(state, productId) {
-      state.selectedProduct = state.products.find((p) => p._id === productId);
+    SET_SELECTED_PRODUCT(state, product) {
+      state.selectedProduct = product;
     },
     SET_ERROR(state, error) {
-      // New mutation for setting error state
       state.error = error;
     },
   },
   actions: {
     async fetchProducts({ commit }) {
       try {
-        const response = await axios.get("/api/products");
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_URL}/api/products`
+        );
         commit("SET_PRODUCTS", response.data);
       } catch (error) {
-        console.error("There was an error fetching the products:", error);
-        commit("SET_ERROR", "Failed to fetch products"); // Committing error state
+        console.error("Error fetching products:", error);
+        commit("SET_ERROR", "Failed to fetch products");
       }
     },
-    selectProduct({ commit, state }, productId) {
-      if (!state.products.length) {
-        // Optional: Fetch products if not already loaded
-        this.dispatch("product/fetchProducts").then(() => {
-          commit("SET_SELECTED_PRODUCT", productId);
-        });
+    setSelectedProduct({ commit, state }, productId) {
+      const product = state.products.find((p) => p._id === productId);
+      if (product) {
+        commit("SET_SELECTED_PRODUCT", product);
       } else {
-        commit("SET_SELECTED_PRODUCT", productId);
+        console.error("Product not found:", productId);
+        commit("SET_ERROR", `Product not found: ${productId}`); // Improved error handling
+        // Optionally, you could clear the selectedProduct or handle this error differently.
       }
     },
   },
   getters: {
     allProducts: (state) => state.products,
     selectedProduct: (state) => state.selectedProduct,
-    isError: (state) => !!state.error, // New getter to check if there's an error
+    isError: (state) => !!state.error,
+    getProductById: (state) => (productId) =>
+      state.products.find((product) => product._id === productId),
+    filteredProducts: (state) => (filter) =>
+      filter === "all"
+        ? state.products
+        : state.products.filter((product) => product.type === filter),
   },
 };

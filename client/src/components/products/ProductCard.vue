@@ -16,7 +16,6 @@
         <img :src="image" alt="Product image" class="product-image" />
       </div>
     </vue-slick-carousel>
-    <!-- Repositioned Action Icons Here -->
     <div class="action-icons">
       <i class="bi bi-eye-fill" @click="quickView(product._id)"></i>
       <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
@@ -36,18 +35,14 @@ import { mapActions } from "vuex";
 
 export default {
   name: "ProductCard",
-  components: {
-    VueSlickCarousel,
-  },
-  props: {
-    product: Object,
-  },
+  components: { VueSlickCarousel },
+  props: { product: Object },
   methods: {
     ...mapActions("cart", ["addToCart", "addToWishlist"]),
     quickView(productId) {
-      // Directly dispatch the selectProductForQuickView action to the 'modal' namespace
-      console.log("productId", productId);
-      this.$store.dispatch("modal/selectProductForQuickView", productId);
+      // Ensure correct namespacing for `setSelectedProduct` and `toggleModal`
+      this.$store.dispatch("product/setSelectedProduct", productId);
+      this.$store.dispatch("modal/toggleModal", true);
     },
   },
 };

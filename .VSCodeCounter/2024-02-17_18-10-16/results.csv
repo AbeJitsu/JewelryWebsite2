@@ -1,0 +1,37 @@
+"filename", "language", "JavaScript", "vue", "JSON", "HTML", "Markdown", "JSON with Comments", "comment", "blank", "total"
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/README.md", "Markdown", 0, 0, 0, 0, 19, 0, 0, 6, 25
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/babel.config.js", "JavaScript", 3, 0, 0, 0, 0, 0, 0, 1, 4
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/jsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 19, 0, 1, 20
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/package-lock.json", "JSON", 0, 0, 12095, 0, 0, 0, 0, 1, 12096
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/package.json", "JSON", 0, 0, 67, 0, 0, 0, 0, 1, 68
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/public/index.html", "HTML", 0, 0, 0, 26, 0, 0, 1, 2, 29
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/App.vue", "vue", 0, 41, 0, 0, 0, 0, 0, 6, 47
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/TheFooter.vue", "vue", 0, 80, 0, 0, 0, 0, 3, 8, 91
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/TheHeader.vue", "vue", 0, 87, 0, 0, 0, 0, 3, 9, 99
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/CSVUploader.vue", "vue", 0, 31, 0, 0, 0, 0, 1, 3, 35
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue", "vue", 0, 121, 0, 0, 0, 0, 1, 13, 135
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductQtyUpdater.vue", "vue", 0, 50, 0, 0, 0, 0, 1, 3, 54
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/QuickViewModal.vue", "vue", 0, 119, 0, 0, 0, 0, 0, 10, 129
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/main.js", "JavaScript", 51, 0, 0, 0, 0, 0, 4, 8, 63
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js", "JavaScript", 57, 0, 0, 0, 0, 0, 1, 7, 65
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/index.js", "JavaScript", 35, 0, 0, 0, 0, 0, 8, 5, 48
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js", "JavaScript", 113, 0, 0, 0, 0, 0, 5, 3, 121
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/modal.js", "JavaScript", 33, 0, 0, 0, 0, 0, 3, 1, 37
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/product.js", "JavaScript", 53, 0, 0, 0, 0, 0, 0, 2, 55
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/user.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/AboutView.vue", "vue", 0, 5, 0, 0, 0, 0, 0, 1, 6
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/AdminPage.vue", "vue", 0, 177, 0, 0, 0, 0, 1, 15, 193
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/CartComponent.vue", "vue", 0, 89, 0, 0, 0, 0, 0, 3, 92
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/ContactUs.vue", "vue", 0, 3, 0, 0, 0, 0, 0, 1, 4
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/JewelryShowcase.vue", "vue", 0, 57, 0, 0, 0, 0, 0, 6, 63
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/NotFound.vue", "vue", 0, 18, 0, 0, 0, 0, 0, 2, 20
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/ProductDetailView.vue", "vue", 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/ShopLive.vue", "vue", 0, 5, 0, 0, 0, 0, 0, 1, 6
+"/Users/abiezerreyes/Projects/JewelryWebsite2/client/vue.config.js", "JavaScript", 12, 0, 0, 0, 0, 0, 1, 1, 14
+"/Users/abiezerreyes/Projects/JewelryWebsite2/server/package-lock.json", "JSON", 0, 0, 1189, 0, 0, 0, 0, 1, 1190
+"/Users/abiezerreyes/Projects/JewelryWebsite2/server/package.json", "JSON", 0, 0, 22, 0, 0, 0, 0, 1, 23
+"/Users/abiezerreyes/Projects/JewelryWebsite2/server/src/models/ProductModel.js", "JavaScript", 32, 0, 0, 0, 0, 0, 1, 6, 39
+"/Users/abiezerreyes/Projects/JewelryWebsite2/server/src/productController.js", "JavaScript", 55, 0, 0, 0, 0, 0, 1, 7, 63
+"/Users/abiezerreyes/Projects/JewelryWebsite2/server/src/productRoutes.js", "JavaScript", 11, 0, 0, 0, 0, 0, 7, 7, 25
+"/Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js", "JavaScript", 26, 0, 0, 0, 0, 0, 1, 4, 31
+"Total", "-", 481, 883, 13373, 26, 19, 19, 43, 148, 14992

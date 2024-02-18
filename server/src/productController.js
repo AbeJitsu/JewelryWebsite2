@@ -2,60 +2,14 @@ const Product = require("./models/ProductModel");
 const csvParser = require("csv-parser");
 const fs = require("fs");
 
-exports.getProducts = async (req, res) => {
-  try {
-    const products = await Product.find({});
-    res.json(products);
-  } catch (err) {
-    res
-      .status(500)
-      .send({ message: "Error fetching products", error: err.message });
-  }
-};
-
-exports.addProduct = async (req, res) => {
-  try {
-    const newProduct = new Product(req.body);
-    const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
-  } catch (err) {
-    res
-      .status(500)
-      .send({ message: "Error adding product", error: err.message });
-  }
-};
-
-exports.updateProduct = async (req, res) => {
-  try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!updatedProduct) {
-      return res.status(404).send({ message: "Product not found" });
-    }
-    res.json(updatedProduct);
-  } catch (err) {
-    res
-      .status(500)
-      .send({ message: "Error updating product", error: err.message });
-  }
-};
-
-exports.deleteProduct = async (req, res) => {
-  try {
-    const product = await Product.findByIdAndRemove(req.params.id);
-    if (!product) {
-      return res.status(404).send({ message: "Product not found" });
-    }
-    res.send({ message: "Product deleted successfully" });
-  } catch (err) {
-    res
-      .status(500)
-      .send({ message: "Error deleting product", error: err.message });
-  }
-};
+function determineProductType(row) {
+  const price = parseFloat(row["Variant Price"]);
+  const description = row["Body (HTML)"].toLowerCase();
+  if (price === 25) return "zi";
+  else if (price === 20 || description.includes("fashion-fix"))
+    return "fashion-fix";
+  return "everyday";
+}
 
 exports.uploadCSV = async (req, res) => {
   if (!req.file) {
@@ -72,53 +26,23 @@ exports.uploadCSV = async (req, res) => {
       if (handle) {
         if (!productsByHandle[handle]) {
           productsByHandle[handle] = {
-            title: row["Title"], // Capture the title from the CSV
-            bodyHtml: row["Body (HTML)"], // Capture the HTML body from the CSV
-            variantPrice: parseFloat(row["Variant Price"]) || 0,
-            skus: new Set(),
-            imageSrc: [],
-            imagePosition: [],
+            ...row,
+            type: determineProductType(row),
           };
-        }
-        if (row["Variant SKU"]) {
-          productsByHandle[handle].skus.add(row["Variant SKU"]);
-        }
-        if (row["Image Src"]) {
-          productsByHandle[handle].imageSrc.push(row["Image Src"]);
-        }
-        if (row["Image Position"]) {
-          productsByHandle[handle].imagePosition.push(
-            parseInt(row["Image Position"], 10)
-          );
         }
       }
     })
     .on("end", async () => {
       try {
-        const updateInsertPromises = Object.keys(productsByHandle).map(
-          async (handle) => {
-            const productData = productsByHandle[handle];
-            await Product.findOneAndUpdate(
-              { handle: handle },
-              {
-                $setOnInsert: {
-                  title: productData.title,
-                  bodyHtml: productData.bodyHtml,
-                  variantPrice: productData.variantPrice,
-                  // Assuming you want to set SKU and imageSrc only if the document is newly inserted
-                },
-                $addToSet: { imageSrc: { $each: productData.imageSrc } }, // Use $addToSet to avoid duplicates
-              },
-              { upsert: true, new: true }
-            ).catch((err) => console.error("Update/Insert error:", err));
-          }
-        );
-        await Promise.all(updateInsertPromises);
+        for (const handle in productsByHandle) {
+          const productData = productsByHandle[handle];
+          await Product.findOneAndUpdate({ handle }, productData, {
+            upsert: true,
+            new: true,
+          });
+        }
         console.log("All products updated/inserted successfully.");
-        fs.unlink(file, (err) => {
-          if (err) console.error("Error removing the file:", err);
-          else res.json({ message: "CSV processed successfully." });
-        });
+        res.json({ message: "CSV processed successfully." });
       } catch (error) {
         console.error("Error during database update/insert:", error);
         res
@@ -132,5 +56,7 @@ exports.uploadCSV = async (req, res) => {
         .send({ message: "Error processing CSV", error: err.message });
     });
 };
+
+module.exports = exports;
 
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/productController.js
