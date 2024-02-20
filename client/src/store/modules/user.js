@@ -1,15 +1,16 @@
+//Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/user.js
+
 import axios from "axios";
 
 // Initial state
 const state = {
   status: "", // Authentication status: '', 'loading', 'success', 'error'
-  token: localStorage.getItem("token") || "", // JWT token from localStorage
-  user: {}, // User object for logged-in user
+  user: null, // User object for logged-in user (if needed)
 };
 
 // Getters
 const getters = {
-  isLoggedIn: (state) => !!state.token,
+  isLoggedIn: (state) => !!state.user,
   authStatus: (state) => state.status,
   user: (state) => state.user,
 };
@@ -20,26 +21,27 @@ const actions = {
   login({ commit }, userCredentials) {
     commit("auth_request");
     axios
-      .post("/api/login", userCredentials)
+      .post("/api/login", userCredentials, { withCredentials: true }) // Ensure withCredentials is true to send cookies
       .then((resp) => {
-        const token = resp.data.token;
-        const user = resp.data.user;
-        localStorage.setItem("token", token); // Store the token in localStorage
-        axios.defaults.headers.common["Authorization"] = token;
-        commit("auth_success", token, user);
+        const user = resp.data.user; // Assuming the server responds with user details
+        commit("auth_success", user);
       })
       .catch((err) => {
-        commit("auth_error");
-        localStorage.removeItem("token"); // If login fails, remove any token from localStorage
+        commit("auth_error", err);
         console.error(err);
       });
   },
 
   // Logout user
   logout({ commit }) {
-    commit("logout");
-    localStorage.removeItem("token"); // Remove token from localStorage
-    delete axios.defaults.headers.common["Authorization"];
+    axios
+      .post("/api/logout", {}, { withCredentials: true }) // Ensure withCredentials is true to send cookies
+      .then(() => {
+        commit("logout");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   },
 };
 
@@ -48,18 +50,17 @@ const mutations = {
   auth_request(state) {
     state.status = "loading";
   },
-  auth_success(state, token, user) {
+  auth_success(state, user) {
     state.status = "success";
-    state.token = token;
-    state.user = user;
+    state.user = user; // Adjust based on actual response
   },
-  auth_error(state) {
+  auth_error(state, err) {
     state.status = "error";
+    console.error("Login error:", err);
   },
   logout(state) {
     state.status = "";
-    state.token = "";
-    state.user = {};
+    state.user = null;
   },
 };
 
