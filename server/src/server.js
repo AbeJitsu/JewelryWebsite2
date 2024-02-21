@@ -43,7 +43,7 @@ app.use(morgan("dev"));
 
 // MongoDB Connection
 mongoose
-  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(mongoURI)
   .then(() => console.log("Successfully connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB", err));
 
