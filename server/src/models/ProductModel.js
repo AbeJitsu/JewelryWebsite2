@@ -15,8 +15,14 @@ const productSchema = new mongoose.Schema({
   imageSrc: [String],
   imagePosition: [Number],
   quantity: { type: Number, default: 1 },
+  // New fields for enhanced search capabilities
+  colors: [{ type: String }],
+  materials: [{ type: String }],
+  looks: [{ type: String }],
+  styles: [{ type: String }],
 });
 
+// Pre-save hook for setting product type based on price and description
 productSchema.pre("save", function (next) {
   if (this.variantPrice === 25) {
     this.type = "zi";
@@ -28,6 +34,8 @@ productSchema.pre("save", function (next) {
   } else {
     this.type = "everyday";
   }
+  // Additional logic to extract and assign colors, materials, looks, and styles
+  // based on bodyHtml or other fields could be added here
   next();
 });
 

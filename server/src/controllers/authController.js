@@ -1,8 +1,9 @@
 // authController.js
 
-const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const User = require("../models/userModel");
 
-// Unified and optimized authentication controller
+const saltRounds = 10; // For bcrypt password hashing
 
 exports.register = async (req, res) => {
   try {
@@ -11,10 +12,12 @@ exports.register = async (req, res) => {
     if (user) {
       return res.status(400).send({ error: "Email is already in use" });
     }
-    user = new User({ username, email, password });
+    // Hash the password before saving to the database
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    user = new User({ username, email, password: hashedPassword });
     await user.save();
-    // Initiate a session after successful registration
-    req.session.userId = user._id;
+    // Optionally, initiate a session or generate a token here
+    // req.session.userId = user._id;
     res
       .status(201)
       .send({ message: "User registered successfully", userId: user._id });
@@ -33,12 +36,13 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).send({ error: "User not found" });
     }
-    const isMatch = await user.comparePassword(password);
+    // Compare the hashed password with the one provided by the user
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).send({ error: "Invalid email or password" });
     }
-    // Initiate a session after successful login
-    req.session.userId = user._id;
+    // Optionally, initiate a session or generate a token here
+    // req.session.userId = user._id;
     res.send({ message: "Login successful", userId: user._id });
   } catch (error) {
     console.error("Error during login:", error);

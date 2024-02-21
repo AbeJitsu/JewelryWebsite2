@@ -5,52 +5,62 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
 const morgan = require("morgan");
+const bodyParser = require("body-parser");
+
+// Adjust these paths as necessary to fit your project structure
 const productRoutes = require("./productRoutes");
-const authRoutes = require("./routes/authRoutes"); // Make sure to adjust the path as necessary
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes"); // Corrected import for userRoutes
 
 const app = express();
-const port = process.env.PORT || 3000; // Fallback to 3000 if the environment variable is not set
+const port = process.env.PORT || 3000;
 const mongoURI = "mongodb://localhost:27017/jewelryStoreDB";
 
-// CORS Configuration to allow credentials and ensure the frontend can interact with the API
+// Middleware setup
 app.use(
   cors({
-    origin: ["http://localhost:8080"], // Update this to match the URL of your frontend application
+    origin: ["http://localhost:8080"],
     credentials: true,
   })
 );
 
-// Session Configuration for secure cookie handling
 app.use(
   session({
-    secret: "your_secret_key", // Consider using environment variables for production
+    secret: "your_secret_key",
     resave: false,
-    saveUninitialized: false, // Avoid creating session until something is stored
+    saveUninitialized: false,
     cookie: {
-      httpOnly: true, // Prevent client-side JS from accessing the cookie
-      secure: false, // Should be set to true in production environments using HTTPS
-      sameSite: "strict", // Strict CSRF protection
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
     },
   })
 );
 
-// Middleware for parsing JSON and logging requests
-app.use(express.json()); // For parsing application/json
-app.use(morgan("dev")); // Logging HTTP requests
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 
 // MongoDB Connection
 mongoose
-  .connect(mongoURI) // Adjust connection options if necessary
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Successfully connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB", err));
 
-// API Routes
-app.use("/api", productRoutes);
-app.use("/api", authRoutes); // Use authRoutes with the /api prefix
+// API Route definitions
+app.use("/api/products", productRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes); // Ensuring userRoutes are properly utilized
 
-// Conditional server start to avoid conflicts during testing
+// Error Handling Middleware for unexpected errors
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send({ message: "Something broke!" });
+});
+
+// Start server only if this file is run directly
 if (require.main === module) {
-  app.listen(port, "0.0.0.0", () => {
+  app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
   });
 }
