@@ -1,11 +1,9 @@
 // productController.js
-
-const express = require("express");
-const router = express.Router();
 const Product = require("./models/ProductModel");
 const csvParser = require("csv-parser");
 const fs = require("fs");
 
+// Keyword arrays
 const color_keywords = [
     'red', 'blue', 'green', 'yellow', 'purple', 'pink', 'black', 'white', 'gold', 'silver', 'multi',
     'turquoise', 'opal', 'amber', 'marbled', 'teal', 'coral', 'navy', 'lavender', 'peach', 'mint',
@@ -42,19 +40,26 @@ const style_keywords = [
   "coil",
   "metallic",
   "crawler",
-]; // Fill in your style keywords
+];
 
-// Function to extract keywords from product descriptions
+// Extract keywords from product descriptions
 function extractKeywordsFromDescription(description) {
-  let colors = color_keywords.filter(keyword => description.toLowerCase().includes(keyword));
-  let materials = material_keywords.filter(keyword => description.toLowerCase().includes(keyword));
-  let looks = looks_keywords.filter(keyword => description.toLowerCase().includes(keyword));
-  let styles = style_keywords.filter(keyword => description.toLowerCase().includes(keyword));
-
+  let colors = color_keywords.filter((keyword) =>
+    description.toLowerCase().includes(keyword)
+  );
+  let materials = material_keywords.filter((keyword) =>
+    description.toLowerCase().includes(keyword)
+  );
+  let looks = looks_keywords.filter((keyword) =>
+    description.toLowerCase().includes(keyword)
+  );
+  let styles = style_keywords.filter((keyword) =>
+    description.toLowerCase().includes(keyword)
+  );
   return { colors, materials, looks, styles };
 }
 
-
+// Get all products
 async function getProducts(req, res) {
   try {
     const products = await Product.find({});
@@ -66,7 +71,7 @@ async function getProducts(req, res) {
   }
 }
 
-
+// Add a new product
 async function addProduct(req, res) {
   try {
     const newProduct = new Product(req.body);
@@ -81,6 +86,7 @@ async function addProduct(req, res) {
   }
 }
 
+// Update an existing product
 async function updateProduct(req, res) {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -98,6 +104,8 @@ async function updateProduct(req, res) {
       .send({ message: "Failed to update product", error: error.message });
   }
 }
+
+// Delete a product
 async function deleteProduct(req, res) {
   try {
     await Product.findByIdAndDelete(req.params.id);
@@ -109,23 +117,26 @@ async function deleteProduct(req, res) {
   }
 }
 
-// Helper function to determine product type based on CSV row data
-function determineProductType(row) {
-  const price = Float(row["Variant Price"]);
-  const description = row["Body (HTML)"].toLowerCase();
-  return price === 25
-    ? "zi"
-    : price === 20 || description.includes("fashion-fix")
-    ? "fashion-fix"
-    : "everyday";
+// Fetch a single product by its ID
+async function getProductById(req, res) {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+    res.json(product);
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Failed to fetch product", error: error.message });
+  }
 }
 
-// Controller method to handle CSV file upload and parsing
+// Handle CSV file upload and parsing
 async function uploadCSV(req, res) {
   if (!req.file) {
     return res.status(400).send({ message: "No CSV file uploaded." });
   }
-
   const filePath = req.file.path;
   const productsByHandle = {};
 
@@ -155,87 +166,28 @@ async function uploadCSV(req, res) {
           .send({ message: "Error processing products", error: error.message });
       }
     })
-    .on("error", (err) => {
+    .on("error", (error) => {
       res
         .status(500)
-        .send({ message: "Error processing CSV", error: err.message });
+        .send({ message: "Error processing CSV", error: error.message });
     });
 }
 
-// Advanced search with sorting and pagination
-router.get('/search', async (req, res) => {
-  const { query, sort = 'title', page = 1, pageSize = 10 } = req.query;
-  const searchCriteria = buildSearchCriteria(query);
-  const skipAmount = (page - 1) * pageSize;
-
-  try {
-    const products = await Product.find(searchCriteria)
-                                   .sort({ [sort]: 1 })
-                                   .skip(skipAmount)
-                                   .limit(pageSize);
-
-    res.json(products);
-  } catch (error) {
-    res.status(500).send({ message: "Error performing search", error: error.message });
-  }
-});
-
-/**
- * Improved approach to build MongoDB search criteria based on a more complex query structure.
- * This function can now handle:
-
- * 1. Index-based text search for names and treatments like "pearl".
- * 2. Discover specs from explicit query properties - color, material, etc.
- * 3. Balance fluidity between naive and detailed data seeking.
- * 
- * @param {String} searchQuery The vanilla or full-featured search query from the app user.
- * @returns A criteria builder for exploring entries in the MongoDB database.
- */
-function buildSearchCriteria(searchQuery) {
-  let searchFragments = searchQuery.split(' ').filter(fragment => fragment.length);
-  let dynamicFind = { $and: [] };
-  
-  searchFragments.forEach(fragment => {
-    if (fragment.includes(':')) {
-      let [key, value] = fragment.split(':');
-      switch(key) {
-        case 'color':
-          dynamicFind.$and.push({ colors: { $regex: value, $options: 'i' } });
-          break;
-        case 'material':
-          dynamicFind.$and.push({ materials: { $regex: value, $options: 'i' } });
-          break;
-        // Extend your code to manage other popular search choices.
-        default:
-          break;
-      }
-    } else {
-      if (!dynamicFind.$or) dynamicFind.$or = [];
-      dynamicFind.$or.push({ title: { $regex: fragment, $options: 'i' } });
-      dynamicFind.$or.push({ colors: { $regex: fragment, $options: 'i' } });
-      dynamicFind.$or.push({ materials: { $regex: fragment, $options: 'i' } });
-      // Keep adding to this logic to involve more collection fields.
-    }
-  });
-
-  if (!dynamicFind.$or?.length) delete dynamicFind.$or;
-  if (!dynamicFind.$and?.length) delete dynamicFind.$and;
-
-  return Object.keys(dynamicFind).length ? dynamicFind : {};
+// Determine product type based on CSV row
+function determineProductType(row) {
+  const price = parseFloat(row["Variant Price"]);
+  const description = row["Body (HTML)"].toLowerCase();
+  if (price === 25) return "zi";
+  if (price === 20 || description.includes("fashion-fix")) return "fashion-fix";
+  return "everyday";
 }
 
-module.exports = { buildSearchCriteria };
-
-
-// Export all functions as part of the module.exports object
 module.exports = {
   getProducts,
   addProduct,
   updateProduct,
   deleteProduct,
+  getProductById,
   uploadCSV,
-  buildSearchCriteria,
-  router,
+  extractKeywordsFromDescription, // If you need to expose this for external use
 };
-
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/productController.js

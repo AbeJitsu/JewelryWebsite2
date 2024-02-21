@@ -8,7 +8,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
 // Adjust these paths as necessary to fit your project structure
-const productRoutes = require("./productRoutes");
+const productRoutes = require("./routes/productRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes"); // Corrected import for userRoutes
 
