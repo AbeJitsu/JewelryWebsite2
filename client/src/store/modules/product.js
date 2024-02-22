@@ -1,3 +1,4 @@
+//Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/product.js
 import axios from "axios";
 
 export default {
@@ -34,14 +35,20 @@ export default {
         commit("SET_ERROR", "Failed to fetch products");
       }
     },
-    setSelectedProduct({ commit, state }, productId) {
-      const product = state.products.find((p) => p._id === productId);
-      if (product) {
-        commit("SET_SELECTED_PRODUCT", product);
+    async setSelectedProduct({ commit, state }, productId) {
+      let product = state.products.find((p) => p._id === productId);
+      if (!product) {
+        // Product not found in state, attempt to fetch from backend
+        try {
+          const response = await axios.get(`/api/products/${productId}`);
+          product = response.data;
+          commit("SET_SELECTED_PRODUCT", product);
+        } catch (error) {
+          console.error("Error fetching product:", productId, error);
+          commit("SET_ERROR", `Product fetch failed: ${productId}`);
+        }
       } else {
-        console.error("Product not found:", productId);
-        commit("SET_ERROR", `Product not found: ${productId}`); // Improved error handling
-        // Optionally, you could clear the selectedProduct or handle this error differently.
+        commit("SET_SELECTED_PRODUCT", product);
       }
     },
   },
