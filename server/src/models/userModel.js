@@ -38,7 +38,7 @@ userSchema.pre("save", async function (next) {
 });
 
 // Method to compare a candidate password with the user's stored password
-userSchema.methods.comparePassword = async function (candidatePassword) {
+userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 

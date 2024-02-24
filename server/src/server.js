@@ -1,4 +1,10 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js
+// Load environment variables from .env file
+require('dotenv').config();
+
+// Log the current environment
+const environment = process.env.NODE_ENV;
+console.log(`Running in ${environment} mode.`);
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -9,8 +15,9 @@ const bodyParser = require("body-parser");
 
 // Adjust these paths as necessary to fit your project structure
 const productRoutes = require("./routes/productRoutes");
-const authRoutes = require("./routes/authRoutes");
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js
 const userRoutes = require("./routes/userRoutes"); // Corrected import for userRoutes
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -54,8 +61,13 @@ app.use("/api/users", userRoutes); // Ensuring userRoutes are properly utilized
 
 // Error Handling Middleware for unexpected errors
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({ message: "Something broke!" });
+  console.error(err.stack); // Always log the error stack
+
+  const statusCode = err.statusCode || 500; // Use error-specific status code if available
+  const errorMessage =
+    process.env.NODE_ENV === "development" ? err.message : "Something broke!"; // Provide more detail in development mode
+
+  res.status(statusCode).send({ error: errorMessage });
 });
 
 // Start server only if this file is run directly

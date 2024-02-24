@@ -15,17 +15,17 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState } from "vuex";
 
 export default {
   computed: {
     ...mapState({
-      product: state => state.product.selectedProduct,
+      product: (state) => state.product.selectedProduct,
     }),
   },
   methods: {
-    ...mapActions('product', ['fetchProduct']),
-    ...mapActions('cart', ['addToCart']),
+    ...mapActions("product", ["fetchProduct"]),
+    ...mapActions("cart", ["addToCart"]),
   },
   async created() {
     const productId = this.$route.params.id;

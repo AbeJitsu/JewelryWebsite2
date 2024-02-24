@@ -1,6 +1,5 @@
 // authController.js
 
-const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 
 const saltRounds = 10; // For bcrypt password hashing
@@ -8,24 +7,21 @@ const saltRounds = 10; // For bcrypt password hashing
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    let user = await User.findOne({ email });
-    if (user) {
+    let existingUser = await User.findOne({ email });
+    if (existingUser) {
       return res.status(400).send({ error: "Email is already in use" });
     }
-    // Hash the password before saving to the database
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    user = new User({ username, email, password: hashedPassword });
+    let user = new User({ username, email, password });
     await user.save();
-    // Optionally, initiate a session or generate a token here
-    // req.session.userId = user._id;
     res
       .status(201)
       .send({ message: "User registered successfully", userId: user._id });
   } catch (error) {
     console.error("Error registering user:", error);
-    res
-      .status(500)
-      .send({ error: "Internal server error during registration" });
+    // Return a more specific error message if possible
+    res.status(500).send({
+      error: error.message || "Internal server error during registration",
+    });
   }
 };
 
