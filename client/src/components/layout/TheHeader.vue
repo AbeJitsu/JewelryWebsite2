@@ -24,18 +24,18 @@
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
         <b-nav-item :to="{ name: 'jewelry-showcase' }"
-          >Jewelry Showcase</b-nav-item
+          >Explore Jewelry Showcase</b-nav-item
         >
-        <b-nav-item :to="{ name: 'watch-live' }">Watch Live</b-nav-item>
+        <!-- <b-nav-item :to="{ name: 'watch-live' }">Watch Live</b-nav-item> -->
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
         <b-nav-form>
           <b-form-input
-            size="sm"
-            class="mr-sm-2"
-            placeholder="Search"
+            size="md"
+            class="mr-sm-5"
+            placeholder="Find an amazing ..."
           ></b-form-input>
-          <b-button size="sm" class="my-2 my-sm-0" type="submit"
+          <b-button size="md" class="my-2 my-sm-0" type="submit"
             >Search</b-button
           >
         </b-nav-form>
@@ -103,7 +103,7 @@ export default {
 }
 
 .logo-custom-padding {
-  margin: 0.25rem 3rem 0.25rem 0; /* top, right, bottom, left */
+  margin: 0.25rem 1rem 0.25rem 1rem; /* top, right, bottom, left */
   border-radius: 50%; /* Circular logo */
 }
 
@@ -111,11 +111,11 @@ export default {
   font-family: "Tangerine", cursive; /* Apply Tangerine font */
   font-size: 2rem; /* Adjust the size as needed */
   font-weight: 900; /* Example to apply the bold weight */
-  margin-right: 4rem;
+  margin: 0.25rem 1rem 0.25rem 0; /* top, right, bottom, left */
 }
 
 /* Additional styles for rounded search button */
 .b-button {
-  border-radius: 20px; /* Rounded edges for the search button */
+  border-radius: 30px; /* Rounded edges for the search button */
 }
 </style>
