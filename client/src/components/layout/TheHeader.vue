@@ -1,57 +1,56 @@
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/TheHeader.vue -->
 
 <template>
-  <b-navbar
-    toggleable="lg"
-    type="darker"
-    variant="darker"
-    class="custom-navbar"
-  >
-    <b-navbar-brand
-      to="/jewelry-showcase"
-      class="custom-brand-text"
-      tag="router-link"
-    >
-      <img
-        :src="require('@/assets/logo.png')"
-        alt="Logo"
-        height="55"
-        class="d-inline-block logo-custom-padding"
-      />Escape, Relax & Be Jeweled
+  <b-navbar toggleable="lg" type="darker" variant="darker" class="custom-navbar">
+    <b-navbar-brand to="/jewelry-showcase" class="custom-brand-text" tag="router-link">
+      <img :src="require('@/assets/logo.png')" alt="Logo" height="55" class="d-inline-block logo-custom-padding" />
+      Escape, Relax & Be Jeweled
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav>
-        <b-nav-item :to="{ name: 'jewelry-showcase' }"
-          >Jewelry Showcase</b-nav-item
-        >
-
-        <!-- <b-nav-item :to="{ name: 'about' }">About</b-nav-item> -->
+        <b-nav-item :to="{ name: 'jewelry-showcase' }">Jewelry Showcase</b-nav-item>
         <b-nav-item :to="{ name: 'watch-live' }">Watch Live</b-nav-item>
-        <!-- <b-nav-item :to="{ name: 'contact' }">Contact</b-nav-item> -->
       </b-navbar-nav>
-      <!-- Right aligned items -->
       <b-navbar-nav class="ml-auto">
         <b-nav-form>
-          <b-form-input
-            size="sm"
-            class="mr-sm-2"
-            placeholder="Search"
-          ></b-form-input>
-          <b-button size="sm" class="my-2 my-sm-0" type="submit"
-            >Search</b-button
-          >
+          <b-form-input size="sm" class="mr-sm-2" placeholder="Search"></b-form-input>
+          <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
         </b-nav-form>
         <b-nav-item href="#"><b-icon icon="cart-fill"></b-icon></b-nav-item>
-        <b-nav-item href="#"><b-icon icon="person-fill"></b-icon></b-nav-item>
+        <!-- Authentication Links -->
+        <b-nav-item v-if="!isLoggedIn" @click="login">Login</b-nav-item>
+        <b-nav-item v-if="isLoggedIn" @click="logout">Logout</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
+
 export default {
-  // Component logic here
+  computed: {
+    ...mapState('user', ['isLoggedIn']),
+  },
+  methods: {
+    ...mapActions('user', ['login', 'logout']),
+    async login() {
+      try {
+        // Your login logic or navigate to a login page
+        await this.login(); // Assuming this action handles the logic
+      } catch (error) {
+        console.error('Login error:', error);
+      }
+    },
+    async logout() {
+      try {
+        await this.logout(); // Logout the user
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    },
+  },
 };
 </script>
 
