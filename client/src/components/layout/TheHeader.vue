@@ -7,41 +7,30 @@
     variant="darker"
     class="custom-navbar"
   >
-    <b-navbar-brand
-      to="/jewelry-showcase"
-      class="custom-brand-text"
-      tag="router-link"
-    >
-      <img
-        :src="require('@/assets/logo.png')"
-        alt="Logo"
-        height="55"
-        class="d-inline-block logo-custom-padding"
-      />
-      Escape, Relax & Be Jeweled
+    <b-navbar-brand to="/jewelry-showcase" class="custom-brand-container">
+      <img :src="require('@/assets/logo.png')" alt="Logo" class="logo-image" />
+      <span class="logo-text">Escape, Relax & Be Jeweled</span>
     </b-navbar-brand>
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
-      <b-navbar-nav>
-        <b-nav-item :to="{ name: 'jewelry-showcase' }"
-          >Explore Jewelry Showcase</b-nav-item
-        >
-        <!-- <b-nav-item :to="{ name: 'watch-live' }">Watch Live</b-nav-item> -->
+      <b-navbar-nav class="custom-navbar-nav">
+        <b-nav-item :to="{ name: 'jewelry-showcase' }">Shop</b-nav-item>
+        <!-- Further navigation items here -->
       </b-navbar-nav>
       <b-navbar-nav class="ml-auto">
-        <b-nav-form>
+        <!-- Flex container for search -->
+        <div class="search-container d-flex align-items-center w-100 mr-3">
           <b-form-input
             size="md"
-            class="mr-sm-5"
+            class="search-input flex-grow-1"
             placeholder="Find an amazing ..."
           ></b-form-input>
-          <b-button size="md" class="my-2 my-sm-0" type="submit"
-            >Search</b-button
-          >
-        </b-nav-form>
+          <b-button size="md" class="ml-2" type="submit">Search</b-button>
+        </div>
         <b-nav-item href="#"><b-icon icon="cart-fill"></b-icon></b-nav-item>
-        <!-- Authentication Links -->
-        <b-nav-item v-if="!isLoggedIn" @click="login">Login</b-nav-item>
+        <b-nav-item v-if="!isLoggedIn" @click="showLoginModal"
+          >Hello, sign in</b-nav-item
+        >
         <b-nav-item v-if="isLoggedIn" @click="logout">Logout</b-nav-item>
       </b-navbar-nav>
     </b-collapse>
@@ -57,17 +46,12 @@ export default {
   },
   methods: {
     ...mapActions("user", ["login", "logout"]),
-    async login() {
-      try {
-        // Your login logic or navigate to a login page
-        await this.login(); // Assuming this action handles the logic
-      } catch (error) {
-        console.error("Login error:", error);
-      }
+    showLoginModal() {
+      // Trigger login modal here
     },
     async logout() {
       try {
-        await this.logout(); // Logout the user
+        await this.logout();
       } catch (error) {
         console.error("Logout error:", error);
       }
@@ -77,16 +61,36 @@ export default {
 </script>
 
 <style scoped>
+.custom-brand-container {
+  display: flex;
+  align-items: center;
+  gap: 1em; /* Space between logo image and text */
+}
+
+.logo-image {
+  height: 4em; /* Adjust as needed */
+  border-radius: 25%; /* Circular logo */
+}
+
+.logo-text {
+  color: #fff;
+  font-family: "Tangerine", cursive;
+  font-size: 3rem;
+  font-weight: 100;
+  color: #ff6b81;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
 .custom-navbar {
-  background-color: #121212; /* Harmonize with .bg-darker from TheFooter.vue */
-  color: #fff; /* Keep text color white for contrast */
+  background-color: #121212;
+  color: #fff;
+  font-size: 1.5rem;
 }
 
 .custom-navbar .navbar-nav .nav-link,
 .custom-navbar .navbar-toggler-icon,
 .custom-navbar .navbar-brand {
-  color: #ff6b81; /* Soft pink color, similar to .link-pink */
-  transition: color 0.3s ease, transform 0.3s ease; /* Smooth transition for hover effect */
+  color: #ff6b81;
+  margin-left: 2rem;
 }
 
 .custom-navbar .navbar-nav .nav-link:hover,
@@ -95,27 +99,58 @@ export default {
 .custom-navbar .navbar-toggler-icon:hover,
 .custom-navbar .navbar-brand:hover,
 .custom-navbar .navbar-brand:focus {
-  color: #ff8c99; /* Lighter pink on hover/focus, similar to .link-pink:hover */
-  text-decoration: none; /* Remove underline on hover/focus */
-  transform: scale(
-    1.01
-  ); /* Slightly increase size on hover/focus for emphasis */
+  color: #ff8c99;
 }
 
-.logo-custom-padding {
-  margin: 0.25rem 1rem 0.25rem 1rem; /* top, right, bottom, left */
-  border-radius: 50%; /* Circular logo */
+.navbar-nav.ml-auto {
+  flex-grow: 1;
 }
 
-.custom-brand-text {
-  font-family: "Tangerine", cursive; /* Apply Tangerine font */
-  font-size: 2rem; /* Adjust the size as needed */
-  font-weight: 900; /* Example to apply the bold weight */
-  margin: 0.25rem 1rem 0.25rem 0; /* top, right, bottom, left */
+.search-container {
+  flex-grow: 1; /* Allows search form to fill available space */
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between search input and button */
+  margin-left: 1rem; /* Ensures spacing from the navigation items */
+  max-width: none;
 }
 
-/* Additional styles for rounded search button */
-.b-button {
-  border-radius: 30px; /* Rounded edges for the search button */
+.search-input {
+  flex-grow: 1; /* Allows input to expand */
+}
+
+.search-button {
+  border-radius: 20px; /* Rounded edges for button */
+}
+
+@media (max-width: 768px) {
+  .search-container {
+    flex-direction: column;
+    width: 100%; /* Full width for smaller screens */
+  }
+
+  .search-input,
+  .search-button {
+    width: 100%; /* Full width for input and button */
+    margin-top: 0.5rem; /* Spacing for stacked layout */
+  }
+}
+
+.custom-navbar .navbar-nav .nav-link,
+.custom-navbar .navbar-toggler-icon,
+.custom-navbar .navbar-brand {
+  color: #ff6b81;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.custom-navbar .navbar-nav .nav-link:hover,
+.custom-navbar .navbar-nav .nav-link:focus,
+.custom-navbar .navbar-toggler-icon:focus,
+.custom-navbar .navbar-toggler-icon:hover,
+.custom-navbar .navbar-brand:hover,
+.custom-navbar .navbar-brand:focus {
+  color: #ff8c99;
+  text-decoration: none;
+  transform: scale(1.01);
 }
 </style>
