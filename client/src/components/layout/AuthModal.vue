@@ -99,20 +99,18 @@ export default {
     };
   },
   methods: {
-    ...mapActions("user", {
-      performLogin: "login", // Renaming for clarity
-      performRegister: "register", // Renaming for clarity
-    }),
+    ...mapActions("user", ["login", "register"]),
     toggleForm() {
       this.isLogin = !this.isLogin;
       this.resetForm();
     },
     async loginUser() {
       try {
-        await this.performLogin(this.loginForm);
+        await this.login(this.loginForm); // Ensure this action is correctly named as per your Vuex store
         this.$bvModal.hide("auth-modal");
+        this.resetForm(); // Reset form fields after successful login
         if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-          this.$router.replace("/jewelry-showcase");
+          this.$router.push("/jewelry-showcase");
         }
       } catch (error) {
         console.error("Login error:", error);
@@ -120,10 +118,11 @@ export default {
     },
     async registerUser() {
       try {
-        await this.performRegister(this.registerForm);
+        await this.register(this.registerForm); // Ensure this action is correctly named as per your Vuex store
         this.$bvModal.hide("auth-modal");
+        this.resetForm(); // Reset form fields after successful registration
         if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-          this.$router.replace("/jewelry-showcase");
+          this.$router.push("/jewelry-showcase");
         }
       } catch (error) {
         console.error("Registration error:", error);
