@@ -5,8 +5,8 @@ export default {
   namespaced: true,
 
   state: {
-    status: "", // Authentication status: '', 'loading', 'success', 'error'
-    user: null, // User object for logged-in user (if needed)
+    status: "",
+    user: null, // User profile information
   },
 
   getters: {
@@ -19,27 +19,36 @@ export default {
     async login({ commit }, userCredentials) {
       commit("auth_request");
       try {
-        const resp = await axios.post("/api/login", userCredentials, {
+        const response = await axios.post("/api/auth/login", userCredentials, {
           withCredentials: true,
         });
-        const user = resp.data.user;
-        commit("auth_success", user);
-        // You might want to set axios defaults or perform other actions upon successful login
+        console.log(response.data);
+        commit("auth_success", response.data); // Pass the user data to the mutation
+        // No need to separately fetch user profile if it's already obtained here
       } catch (err) {
-        commit("auth_error", err);
-        console.error("Login error:", err);
-        // Optionally clear any relevant state or perform other cleanup actions
+        commit("auth_error");
+        throw err; // Throw error to catch it in component
       }
     },
 
     async logout({ commit }) {
       try {
-        await axios.post("/api/logout", {}, { withCredentials: true });
+        await axios.post("/api/auth/logout", {}, { withCredentials: true });
         commit("logout");
-        // Again, you might want to clear axios defaults or perform other cleanup actions
       } catch (err) {
         console.error("Logout error:", err);
-        // Handle any errors that occur during logout
+      }
+    },
+
+    // Optionally, create an action to fetch the user profile
+    async fetchUserProfile({ commit }) {
+      try {
+        const response = await axios.get("/api/auth/user", {
+          withCredentials: true,
+        });
+        commit("setUser", response.data);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
       }
     },
   },
@@ -48,19 +57,20 @@ export default {
     auth_request(state) {
       state.status = "loading";
     },
-    auth_success(state, user) {
+    auth_success(state, userData) {
       state.status = "success";
-      state.user = user;
+      state.user = userData;
     },
-    auth_error(state, err) {
+    auth_error(state) {
       state.status = "error";
-      // Consider also resetting the user state here
-      console.error("Authentication error:", err);
+      state.user = null;
     },
     logout(state) {
       state.status = "";
       state.user = null;
-      // Reset additional state as necessary
+    },
+    setUser(state, user) {
+      state.user = user; // Set the user profile information
     },
   },
 };

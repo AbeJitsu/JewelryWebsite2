@@ -1,59 +1,81 @@
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/TheHeader.vue -->
 
 <template>
-  <b-navbar
-    toggleable="lg"
-    type="darker"
-    variant="darker"
-    class="custom-navbar"
-  >
-    <b-navbar-brand to="/jewelry-showcase" class="custom-brand-container">
-      <img :src="require('@/assets/logo.png')" alt="Logo" class="logo-image" />
-      <span class="logo-text">Escape, Relax & Be Jeweled</span>
-    </b-navbar-brand>
-    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-    <b-collapse id="nav-collapse" is-nav>
-      <b-navbar-nav class="custom-navbar-nav">
-        <b-nav-item :to="{ name: 'jewelry-showcase' }">Shop</b-nav-item>
-        <!-- Further navigation items here -->
-      </b-navbar-nav>
-      <b-navbar-nav class="ml-auto">
-        <!-- Flex container for search -->
-        <div class="search-container d-flex align-items-center w-100 mr-3">
-          <b-form-input
-            size="md"
-            class="search-input flex-grow-1"
-            placeholder="Find an amazing ..."
-          ></b-form-input>
-          <b-button size="md" class="ml-2" type="submit">Search</b-button>
-        </div>
-        <b-nav-item href="#"><b-icon icon="cart-fill"></b-icon></b-nav-item>
-        <b-nav-item v-if="!isLoggedIn" @click="showLoginModal"
-          >Hello, sign in</b-nav-item
-        >
-        <b-nav-item v-if="isLoggedIn" @click="logout">Logout</b-nav-item>
-      </b-navbar-nav>
-    </b-collapse>
-  </b-navbar>
+  <div>
+    <b-navbar
+      toggleable="lg"
+      type="darker"
+      variant="darker"
+      class="custom-navbar"
+    >
+      <b-navbar-brand to="/jewelry-showcase" class="custom-brand-container">
+        <img
+          :src="require('@/assets/logo.png')"
+          alt="Logo"
+          class="logo-image"
+        />
+        <span class="logo-text">Escape, Relax & Be Jeweled</span>
+      </b-navbar-brand>
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <b-collapse id="nav-collapse" is-nav>
+        <b-navbar-nav>
+          <b-nav-item :to="{ name: 'jewelry-showcase' }">Shop</b-nav-item>
+          <!-- Additional nav items here -->
+        </b-navbar-nav>
+        <b-navbar-nav class="ml-auto">
+          <div
+            class="search-container d-flex align-items-center justify-content-between flex-grow-1 mx-2"
+          >
+            <b-form-input
+              size="md"
+              class="flex-grow-1"
+              placeholder="Find an amazing ..."
+            ></b-form-input>
+            <b-button size="md" class="ml-2" type="submit">Search</b-button>
+          </div>
+          <!-- For Sign In, you could use a 'key-fill' icon to represent logging in -->
+          <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
+            <b-icon icon="key-fill"></b-icon> Shine In
+          </b-nav-item>
+
+          <!-- For Sign Out, an 'box-arrow-right' icon can represent logging out -->
+          <b-nav-item v-else @click="performLogout">
+            <b-icon icon="box-arrow-right"></b-icon> Shine Out
+          </b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
+    <auth-modal></auth-modal>
+  </div>
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
+import AuthModal from "@/components/layout/AuthModal.vue";
 
 export default {
+  components: {
+    AuthModal,
+  },
   computed: {
-    ...mapState("user", ["isLoggedIn"]),
+    // This now correctly maps the isLoggedIn getter from the Vuex store.
+    ...mapGetters("user", ["isLoggedIn"]),
   },
   methods: {
-    ...mapActions("user", ["login", "logout"]),
-    showLoginModal() {
-      // Trigger login modal here
+    // This maps the logout action from the Vuex store.
+    ...mapActions("user", {
+      logout: "logout",
+    }),
+    showAuthModal() {
+      this.$bvModal.show("auth-modal");
     },
-    async logout() {
+    async performLogout() {
       try {
         await this.logout();
+        // After logout, you might want to redirect the user or show a success message.
       } catch (error) {
         console.error("Logout error:", error);
+        // Consider handling the error, perhaps by displaying a message to the user.
       }
     },
   },
@@ -83,7 +105,7 @@ export default {
 .custom-navbar {
   background-color: #121212;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .custom-navbar .navbar-nav .nav-link,
@@ -154,3 +176,4 @@ export default {
   transform: scale(1.01);
 }
 </style>
+```
