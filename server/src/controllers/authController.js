@@ -1,24 +1,25 @@
-// authController.js
-
 const User = require("../models/userModel");
-
+const bcrypt = require("bcryptjs");
 const saltRounds = 10; // For bcrypt password hashing
 
 exports.register = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, preferredFirstName } = req.body; // Include preferredFirstName in destructuring
     let existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).send({ error: "Email is already in use" });
     }
-    let user = new User({ username, email, password });
+    // Include preferredFirstName when creating the user
+    let user = new User({ username, email, password, preferredFirstName });
     await user.save();
-    res
-      .status(201)
-      .send({ message: "User registered successfully", userId: user._id });
+    res.status(201).send({
+      message: "User registered successfully",
+      userId: user._id,
+      username: user.username,
+      preferredFirstName: user.preferredFirstName, // Return preferredFirstName in response
+    });
   } catch (error) {
     console.error("Error registering user:", error);
-    // Return a more specific error message if possible
     res.status(500).send({
       error: error.message || "Internal server error during registration",
     });

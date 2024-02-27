@@ -25,6 +25,15 @@ const userSchema = new mongoose.Schema({
     required: [true, "Password is required"],
     minLength: [6, "Password must be at least 6 characters long"],
   },
+  preferredFirstName: {
+    type: String,
+    required: [true, "Preferred first name is required"], 
+    trim: true,
+    maxLength: [
+      50,
+      "Preferred first name must be less than 50 characters long",
+    ],
+  },
   // Add any other fields you find necessary for your application
 });
 

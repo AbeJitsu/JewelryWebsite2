@@ -33,12 +33,15 @@
 
       <!-- Register Form -->
       <b-form v-else @submit.prevent="registerUser">
-        <b-form-group label="Username" label-for="register-username">
+        <b-form-group
+          label="Preferred First Name"
+          label-for="register-first-name"
+        >
           <b-form-input
-            id="register-username"
-            v-model="registerForm.username"
+            id="register-first-name"
+            v-model="registerForm.firstName"
             required
-            placeholder="Username"
+            placeholder="Preferred first name"
           ></b-form-input>
         </b-form-group>
         <b-form-group label="Email" label-for="register-email">
@@ -89,7 +92,7 @@ export default {
         password: "",
       },
       registerForm: {
-        username: "",
+        firstName: "", // Changed from username to firstName
         email: "",
         password: "",
       },
@@ -128,7 +131,7 @@ export default {
     },
     resetForm() {
       this.loginForm = { email: "", password: "" };
-      this.registerForm = { username: "", email: "", password: "" };
+      this.registerForm = { firstName: "", email: "", password: "" };
     },
   },
 };
