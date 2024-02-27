@@ -1,6 +1,7 @@
+// Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/authController.js
+
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
-const saltRounds = 10; // For bcrypt password hashing
 
 exports.register = async (req, res) => {
   try {

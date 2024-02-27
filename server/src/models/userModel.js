@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   preferredFirstName: {
     type: String,
-    required: [true, "Preferred first name is required"], 
+    required: [true, "Preferred first name is required"],
     trim: true,
     maxLength: [
       50,
@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function (next) {
   // Hash the password only if it has been modified (or is new)
   if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 8); // Salt rounds set to 8
+    this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 });
