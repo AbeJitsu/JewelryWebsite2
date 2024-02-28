@@ -2,65 +2,85 @@
 
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
+const validator = require("validator");
 
 exports.register = async (req, res) => {
   try {
     const { email, password, preferredFirstName } = req.body;
-    let existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).send({ error: "Email is already in use" });
+
+    // Enhanced Input Validation
+    if (!validator.isEmail(email)) {
+      return res.status(400).send({ error: "Invalid email format" });
+    }
+    console.log(`Password length received: ${password.length}`);
+    if (!password || password.length < 8) {
+      return res
+        .status(400)
+        .send({ error: "Password must be at least 8 characters long" });
     }
 
-    // Hash the password before saving the user
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    let existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).send({ error: "Registration error" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     let user = new User({
       email,
-      password: hashedPassword, // Save the hashed password
+      password: hashedPassword,
       preferredFirstName,
     });
 
     await user.save();
 
-    // If using sessions, establish session here. Assuming session middleware is configured.
-    req.session.userId = user._id; // Store user ID in session
-
-    res.status(201).send({
-      message: "User registered successfully",
-      userId: user._id,
-      preferredFirstName: user.preferredFirstName,
+    req.session.regenerate(function (err) {
+      if (err) {
+        console.error("Session regeneration error:", err);
+        return res.status(500).send({ error: "Session regeneration failed" });
+      }
+      req.session.userId = user._id;
+      // Configure session cookie settings assumed to be here
+      res.status(201).send({
+        message: "User registered successfully",
+        userId: user._id,
+        preferredFirstName: user.preferredFirstName,
+      });
     });
   } catch (error) {
     console.error("Error registering user:", error);
-    res.status(500).send({
-      error: error.message || "Internal server error during registration",
-    });
+    res.status(500).send({ error: "An error occurred during registration" });
   }
 };
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).send({ error: "User not found" });
+      return res.status(401).send({ error: "Authentication error" });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).send({ error: "Invalid email or password" });
+      return res.status(401).send({ error: "Authentication error" });
     }
 
-    // If using sessions, establish session here. Assuming session middleware is configured.
-    req.session.userId = user._id; // Store user ID in session
-
-    res.send({
-      message: "Login successful",
-      userId: user._id,
-      preferredFirstName: user.preferredFirstName, // Consider sending back preferredFirstName for client-side greeting or usage
+    req.session.regenerate(function (err) {
+      if (err) {
+        console.error("Session regeneration error:", err);
+        return res.status(500).send({ error: "Session regeneration failed" });
+      }
+      req.session.userId = user._id;
+      // Configure session cookie settings assumed to be here
+      res.send({
+        message: "Login successful",
+        userId: user._id,
+        preferredFirstName: user.preferredFirstName,
+      });
     });
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).send({ error: "Internal server error during login" });
+    res.status(500).send({ error: "An error occurred during login" });
   }
 };

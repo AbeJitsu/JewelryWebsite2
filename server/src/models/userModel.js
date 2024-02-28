@@ -15,15 +15,15 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Password is required"],
-    minLength: [6, "Password must be at least 6 characters long"],
+    minLength: [8, "Password must be at least 8 characters long"], // Updated minLength to 8
   },
   preferredFirstName: {
     type: String,
     required: [true, "Preferred first name is required"],
     trim: true,
     maxLength: [
-      50,
-      "Preferred first name must be less than 50 characters long",
+      20,
+      "Preferred first name must be less than 20 characters long",
     ],
   },
   // Add any other fields you find necessary for your application
