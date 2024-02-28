@@ -28,10 +28,24 @@
             placeholder="Password"
           ></b-form-input>
         </b-form-group>
+        <b-form-group
+          label="Confirm Password"
+          label-for="register-password-confirmation"
+        >
+          <b-form-input
+            id="register-password-confirmation"
+            v-model="registerForm.passwordConfirmation"
+            type="password"
+            required
+            placeholder="Confirm Password"
+          ></b-form-input>
+        </b-form-group>
+
         <b-button type="submit" variant="primary">Login</b-button>
       </b-form>
 
       <!-- Register Form -->
+      <!-- Registration Form -->
       <b-form v-else @submit.prevent="registerUser">
         <b-form-group
           label="Preferred First Name"
@@ -39,7 +53,7 @@
         >
           <b-form-input
             id="register-first-name"
-            v-model="registerForm.firstName"
+            v-model="registerForm.preferredFirstName"
             required
             placeholder="Preferred first name"
           ></b-form-input>
@@ -60,6 +74,19 @@
             type="password"
             required
             placeholder="Password"
+          ></b-form-input>
+        </b-form-group>
+        <!-- Confirm Password Field (Only in Registration) -->
+        <b-form-group
+          label="Confirm Password"
+          label-for="register-password-confirmation"
+        >
+          <b-form-input
+            id="register-password-confirmation"
+            v-model="registerForm.passwordConfirmation"
+            type="password"
+            required
+            placeholder="Confirm Password"
           ></b-form-input>
         </b-form-group>
         <b-button type="submit" variant="primary">Register</b-button>
@@ -92,9 +119,10 @@ export default {
         password: "",
       },
       registerForm: {
-        firstName: "", // Changed from username to firstName
+        preferredFirstName: "",
         email: "",
         password: "",
+        passwordConfirmation: "",
       },
     };
   },
@@ -117,10 +145,23 @@ export default {
       }
     },
     async registerUser() {
+      if (
+        this.registerForm.password !== this.registerForm.passwordConfirmation
+      ) {
+        // Handle password mismatch
+        alert("Passwords do not match."); // Simple alert, consider using a more user-friendly notification
+        return;
+      }
+
       try {
-        await this.register(this.registerForm); // Ensure this action is correctly named as per your Vuex store
+        const userData = {
+          email: this.registerForm.email,
+          password: this.registerForm.password,
+          preferredFirstName: this.registerForm.preferredFirstName,
+        };
+        await this.register(userData);
         this.$bvModal.hide("auth-modal");
-        this.resetForm(); // Reset form fields after successful registration
+        this.resetForm();
         if (this.$router.currentRoute.path !== "/jewelry-showcase") {
           this.$router.push("/jewelry-showcase");
         }
@@ -128,9 +169,15 @@ export default {
         console.error("Registration error:", error);
       }
     },
+
     resetForm() {
       this.loginForm = { email: "", password: "" };
-      this.registerForm = { firstName: "", email: "", password: "" };
+      this.registerForm = {
+        preferredFirstName: "",
+        email: "",
+        password: "",
+        passwordConfirmation: "",
+      };
     },
   },
 };

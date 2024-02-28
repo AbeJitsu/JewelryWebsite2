@@ -16,6 +16,20 @@ export default {
   },
 
   actions: {
+    async register({ commit }, userData) {
+      commit("auth_request");
+      try {
+        const response = await axios.post("/api/auth/register", userData, {
+          withCredentials: true,
+        });
+        console.log(response.data);
+        commit("auth_success", response.data); // Pass the user data to the mutation
+        // You might want to redirect the user or perform some other action upon successful registration
+      } catch (err) {
+        commit("auth_error");
+        throw err; // Throw error to catch it in component
+      }
+    },
     async login({ commit }, userCredentials) {
       commit("auth_request");
       try {

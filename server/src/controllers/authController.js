@@ -10,7 +10,7 @@ exports.register = async (req, res) => {
 
     // Enhanced Input Validation
     if (!validator.isEmail(email)) {
-      return res.status(400).send({ error: "Invalid email format" });
+      return res.status(400).send({ error: "Authentication error" });
     }
     console.log(`Password length received: ${password.length}`);
     if (!password || password.length < 8) {
