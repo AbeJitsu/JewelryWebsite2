@@ -85,6 +85,9 @@ export default {
     // Additional actions...
   },
   getters: {
+    isProductInCart: (state) => (productId) => {
+      return state.cartItems.some((item) => item.productId === productId);
+    },
     cartItems: (state) => state.cartItems,
     cartTotal: (state) =>
       state.cartItems.reduce(

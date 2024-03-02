@@ -45,19 +45,20 @@
 
 <script>
 import VueSlickCarousel from "vue-slick-carousel";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "ProductCard",
   components: { VueSlickCarousel },
   props: { product: Object },
-  data() {
-    return {
-      isInCart: false,
-    };
+  computed: {
+    ...mapGetters("cart", ["isProductInCart"]),
+    isInCart() {
+      return this.isProductInCart(this.product._id);
+    },
   },
   methods: {
-    ...mapActions("cart", ["addToCart", "addToFavorites", "checkCartStatus"]),
+    ...mapActions("cart", ["addToCart", "addToFavorites"]),
     quickView(productId) {
       this.$store.dispatch("product/setSelectedProduct", productId);
       this.$store.dispatch("modal/toggleModal", true);
@@ -69,21 +70,12 @@ export default {
           productId: product._id,
           quantity: 1,
         });
-        this.isInCart = true;
         console.log(
           `Product ${product._id} added to cart. isInCart: ${this.isInCart}`
         );
       }
     },
-    async checkIfProductIsInCart() {
-      this.isInCart = await this.checkCartStatus(this.product._id);
-      console.log(
-        `Checked cart status for ${this.product._id}: ${this.isInCart}`
-      );
-    },
-  },
-  created() {
-    this.checkIfProductIsInCart();
+    // Remove checkIfProductIsInCart method as it's no longer needed
   },
 };
 </script>
