@@ -38,10 +38,11 @@ app.use(
     secret: process.env.SESSION_SECRET || "your_secret_key",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: mongoURI || "mongodb://localhost:27017/jewelryStoreDB",
-    }),
-    cookie: { secure: false }, // Set to false during development
+    store: MongoStore.create({ mongoUrl: mongoURI }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      maxAge: 168 * 60 * 60 * 1000, // 24 hours
+    },
   })
 );
 

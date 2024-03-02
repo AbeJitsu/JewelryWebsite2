@@ -20,7 +20,7 @@
             <b-button variant="primary" @click="handleAddToCart">
               Add to Cart
             </b-button>
-            <b-button variant="info" @click="handleAddToWishlist">
+            <b-button variant="info" @click="handleaddToFavorites">
               Add to Wishlist
             </b-button>
           </div>
@@ -42,7 +42,7 @@ export default {
     }),
   },
   methods: {
-    ...mapActions("cart", ["addToCart", "addToWishlist"]),
+    ...mapActions("cart", ["addToCart", "addToFavorites"]),
     ...mapActions("modal", ["toggleModal"]),
     closeModal() {
       this.toggleModal(false);
@@ -50,8 +50,8 @@ export default {
     handleAddToCart() {
       this.addToCart(this.selectedProduct);
     },
-    handleAddToWishlist() {
-      this.addToWishlist(this.selectedProduct);
+    handleaddToFavorites() {
+      this.addToFavorites(this.selectedProduct);
     },
   },
 };

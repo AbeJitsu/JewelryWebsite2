@@ -42,12 +42,10 @@
 
 <script>
 export default {
-  data() {
-    return {
-      cartItems: this.$store.getters["cart/cartItems"],
-    };
-  },
   computed: {
+    cartItems() {
+      return this.$store.getters["cart/cartItems"];
+    },
     estimatedShippingFee() {
       const totalPieces = this.cartItems.reduce((total, item) => {
         const pieceCount =
@@ -72,7 +70,7 @@ export default {
       this.$router.push({ name: "Checkout" }); // Ensure you have a Checkout route defined
     },
     continueShopping() {
-      this.$router.push({ name: "jewelry-showcase" });
+      this.$router.push({ name: "JewelryShowcase" }); // Adjust based on your route configuration
     },
     calculateShippingFee(pieces) {
       if (pieces <= 10) return 5;

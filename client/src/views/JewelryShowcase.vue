@@ -1,11 +1,14 @@
 <template>
   <div class="jewelry-showcase">
-    <div class="products-container">
+    <div v-if="error" class="error-message">{{ error }}</div>
+    <div v-else class="products-container">
       <ProductCard
         v-for="product in products"
         :key="product._id"
         :product="product"
+        ref="productCards"
       />
+      <div v-if="isLoading" class="loading-indicator">Loading...</div>
     </div>
   </div>
 </template>
@@ -20,16 +23,63 @@ export default {
   data() {
     return {
       products: [],
+      observer: null,
+      isLoading: false,
+      error: null,
     };
   },
-  async created() {
-    try {
-      const response = await axios.get(
-        `${process.env.VUE_APP_API_URL}/api/products`
-      );
-      this.products = response.data;
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
+  methods: {
+    async fetchProducts() {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const offset = this.products.length;
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_URL}/api/products?offset=${offset}&limit=12`
+        );
+        this.products = this.products.concat(response.data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        this.error = "Failed to load products. Please try again later.";
+      } finally {
+        this.isLoading = false;
+        this.$nextTick(() => {
+          this.updateObserver();
+        });
+      }
+    },
+    createObserver() {
+      const options = {
+        root: null,
+        threshold: 1.0,
+      };
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !this.isLoading) {
+            this.fetchProducts();
+          }
+        });
+      }, options);
+    },
+    updateObserver() {
+      if (this.products.length >= 9) {
+        const newTarget = this.$refs.productCards[8]; // 9th product
+        if (this.observer && newTarget) {
+          this.observer.disconnect();
+          this.observer.observe(newTarget);
+        }
+      }
+    },
+  },
+  mounted() {
+    this.fetchProducts();
+    this.$nextTick(() => {
+      this.createObserver();
+    });
+  },
+  beforeDestroy() {
+    if (this.observer) {
+      this.observer.disconnect();
     }
   },
 };
@@ -41,7 +91,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(30%, 2fr));
   gap: 1rem;
-  padding: 1rem;
+  padding: 0.75rem;
 }
 
 @media (max-width: 768px) {
