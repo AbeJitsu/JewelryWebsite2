@@ -124,21 +124,20 @@ export default {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease; /* Apply transition here */
 }
 
-.icon-container i {
-  font-size: 2rem; /* Icon size */
-}
-
+.icon-container i,
 .icon-container span {
-  font-size: 0.8rem; /* Text size */
+  transition: color 0.3s ease, transform 0.3s ease; /* Ensure transition applies to icon and text */
 }
 
 .icon-container:hover i,
 .icon-container:hover span {
-  color: #b43a53; /* Change color on hover */
-  transform: scale(1.1); /* Slightly enlarge on hover */
+  color: #ff8c99; /* Change color on hover */
+  transform: scale(1.2); /* Slightly enlarge on hover */
 }
+
 .product-info {
   display: flex;
   flex-direction: column;

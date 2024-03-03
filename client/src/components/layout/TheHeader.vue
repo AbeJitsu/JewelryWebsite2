@@ -33,14 +33,21 @@
             ></b-form-input>
             <b-button size="md" class="ml-2" type="submit">Search</b-button>
           </div>
-          <!-- For Sign In, you could use a 'key-fill' icon to represent logging in -->
           <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
             <b-icon icon="key-fill"></b-icon> Shine In
           </b-nav-item>
-
-          <!-- For Sign Out, an 'box-arrow-right' icon can represent logging out -->
           <b-nav-item v-else @click="performLogout">
             <b-icon icon="box-arrow-right"></b-icon> Shine Out
+          </b-nav-item>
+          <!-- Cart Icon with Item Count -->
+          <b-nav-item class="cart-icon-container" @click="goToCart">
+            <div class="cart-container">
+              <b-icon icon="cart-fill" class="cart-icon"></b-icon>
+              <b-badge variant="danger" class="cart-item-count">{{
+                itemCount
+              }}</b-badge>
+              <span class="cart-text">Cart</span>
+            </div>
           </b-nav-item>
         </b-navbar-nav>
       </b-collapse>
@@ -58,11 +65,10 @@ export default {
     AuthModal,
   },
   computed: {
-    // This now correctly maps the isLoggedIn getter from the Vuex store.
     ...mapGetters("user", ["isLoggedIn"]),
+    ...mapGetters("cart", ["itemCount"]),
   },
   methods: {
-    // This maps the logout action from the Vuex store.
     ...mapActions("user", {
       logout: "logout",
     }),
@@ -72,11 +78,12 @@ export default {
     async performLogout() {
       try {
         await this.logout();
-        // After logout, you might want to redirect the user or show a success message.
       } catch (error) {
         console.error("Logout error:", error);
-        // Consider handling the error, perhaps by displaying a message to the user.
       }
+    },
+    goToCart() {
+      this.$router.push({ name: "cart" }); // Adjust if your cart route has a different name
     },
   },
 };
@@ -90,15 +97,15 @@ export default {
 }
 
 .logo-image {
-  height: 4em; /* Adjust as needed */
+  height: 2em; /* Adjust as needed */
   border-radius: 25%; /* Circular logo */
 }
 
 .logo-text {
   color: #fff;
   font-family: "Tangerine", cursive;
-  font-size: 3rem;
-  font-weight: 100;
+  font-size: 2rem;
+  font-weight: 900;
   color: #ff6b81;
   transition: color 0.3s ease, transform 0.3s ease;
 }
@@ -112,7 +119,7 @@ export default {
 .custom-navbar .navbar-toggler-icon,
 .custom-navbar .navbar-brand {
   color: #ff6b81;
-  margin-left: 2rem;
+  margin-left: 1rem;
 }
 
 .custom-navbar .navbar-nav .nav-link:hover,
@@ -174,6 +181,47 @@ export default {
   color: #ff8c99;
   text-decoration: none;
   transform: scale(1.01);
+}
+.cart-icon-container {
+  position: relative;
+}
+
+.cart-container {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  transform: scale(1);
+  transition: transform 0.3s ease;
+  font-size: 1.5em;
+}
+
+.cart-icon {
+  align-self: center;
+}
+
+.cart-text {
+  margin-left: px;
+  font-size: 0.5em;
+  margin-top: 20px;
+}
+
+.cart-container:hover {
+  transform: scale(1.03); /* Scale up the container on hover */
+}
+
+.cart-item-count {
+  background-color: transparent !important;
+  color: #ffffff;
+  position: absolute;
+  top: 9px;
+  right: 40px;
+  font-size: 1rem; /* Adjust the font size of the badge */
+  text-decoration: none;
+}
+
+/* If you want the badge's background color to change on hover, keep this */
+.cart-item-count:hover {
+  background-color: #ff8c99 !important;
 }
 </style>
 ```
