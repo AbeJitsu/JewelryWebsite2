@@ -118,34 +118,34 @@ export default {
   font-size: 1.4rem;
 }
 
+/* Adjusting the navbar links and icons */
 .custom-navbar .navbar-nav .nav-link,
 .custom-navbar .navbar-toggler-icon,
-.custom-navbar .navbar-brand {
+.custom-navbar .navbar-brand,
+.user-actions-container .nav-link {
   color: #ff6b81;
-  margin-left: 1rem;
 }
 
+/* Hover effects */
 .custom-navbar .navbar-nav .nav-link:hover,
 .custom-navbar .navbar-nav .nav-link:focus,
 .custom-navbar .navbar-toggler-icon:focus,
 .custom-navbar .navbar-toggler-icon:hover,
 .custom-navbar .navbar-brand:hover,
-.custom-navbar .navbar-brand:focus {
+.custom-navbar .navbar-brand:focus,
+.user-actions-container .nav-link:hover,
+.user-actions-container .nav-link:focus {
   color: #ff8c99;
   text-decoration: none;
   transform: scale(1.01);
 }
 
+/* Ensuring no list-style for navbar items */
 .custom-navbar b-navbar-nav ul,
-.custom-navbar b-navbar-nav li {
-  list-style-type: none !important; /* Ensures no bullets */
-  display: block !important; /* Adjust display to block or inline-block based on your layout needs */
-}
-
-/* You can also target li elements directly if they are not being styled as expected */
+.custom-navbar b-navbar-nav li,
 .custom-navbar li {
   list-style-type: none !important;
-  display: block !important;
+  display: inline-block !important;
 }
 
 .header-right {
@@ -170,30 +170,27 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
+  white-space: nowrap; /* Ensures the text doesn't wrap */
 }
 
 .cart-icon-container {
   position: relative;
 }
 
+.cart-icon {
+  transform: scale(1.15);
+}
+
 .cart-container {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   cursor: pointer;
   font-size: 1.4em;
 }
 
-.cart-icon {
-  transform: scale(1.15);
-}
-
 .cart-text {
-  margin-left: 10px;
+  margin-left: 10px; /* Space from the cart icon */
   font-size: 0.7em;
-}
-
-.cart-container:hover {
-  transform: scale(1.03);
 }
 
 .cart-item-count {
@@ -201,7 +198,7 @@ export default {
   color: #ffffff;
   position: absolute;
   top: 13px;
-  right: 76px;
+  right: 72px;
   font-size: 0.6em;
 }
 
