@@ -1,5 +1,3 @@
-<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/TheHeader.vue -->
-
 <template>
   <div>
     <b-navbar
@@ -22,16 +20,19 @@
           <b-nav-item :to="{ name: 'jewelry-showcase' }">Shop</b-nav-item>
           <!-- Additional nav items here -->
         </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
-          <div class="search-container search-container-custom">
+
+        <div
+          class="header-right d-flex align-items-center justify-content-end flex-grow-1"
+        >
+          <div class="search-container d-flex flex-grow-1 mx-2">
             <b-form-input
               size="md"
-              class="flex-grow-1"
+              class="me-2 flex-grow-1"
               placeholder="Find an amazing ..."
             />
-            <b-button size="md" class="ml-2" type="submit">Search</b-button>
+            <b-button size="md" type="submit">Search</b-button>
           </div>
-          <div class="user-actions-container">
+          <div class="user-actions-container d-flex align-items-center">
             <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
               <b-icon icon="key-fill"></b-icon> Shine In
             </b-nav-item>
@@ -51,7 +52,7 @@
               </div>
             </b-nav-item>
           </div>
-        </b-navbar-nav>
+        </div>
       </b-collapse>
     </b-navbar>
     <auth-modal></auth-modal>
@@ -85,7 +86,7 @@ export default {
       }
     },
     goToCart() {
-      this.$router.push({ name: "cart" }); // Adjust if your cart route has a different name
+      this.$router.push({ name: "cart" });
     },
   },
 };
@@ -109,15 +110,6 @@ export default {
   font-size: 2rem;
   font-weight: 900;
   color: #ff6b81;
-}
-
-.search-container-custom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-grow: 1;
-  margin-right: 0.5rem;
-  margin-left: 0.5rem;
 }
 
 .custom-navbar {
@@ -144,6 +136,36 @@ export default {
   transform: scale(1.01);
 }
 
+.custom-navbar b-navbar-nav ul,
+.custom-navbar b-navbar-nav li {
+  list-style-type: none !important; /* Ensures no bullets */
+  display: block !important; /* Adjust display to block or inline-block based on your layout needs */
+}
+
+/* You can also target li elements directly if they are not being styled as expected */
+.custom-navbar li {
+  list-style-type: none !important;
+  display: block !important;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.search-container {
+  display: flex;
+  flex-grow: 1;
+  margin-right: 0.5rem;
+  align-items: center;
+}
+
+.search-container .flex-grow-1 {
+  flex-grow: 1;
+}
+
 .user-actions-container {
   display: flex;
   align-items: center;
@@ -158,7 +180,7 @@ export default {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  font-size: 1.5em;
+  font-size: 1.4em;
 }
 
 .cart-icon {
@@ -178,9 +200,9 @@ export default {
   background-color: transparent;
   color: #ffffff;
   position: absolute;
-  top: 17px;
-  right: 71px;
-  font-size: 1rem;
+  top: 13px;
+  right: 76px;
+  font-size: 0.6em;
 }
 
 .cart-item-count:hover {
