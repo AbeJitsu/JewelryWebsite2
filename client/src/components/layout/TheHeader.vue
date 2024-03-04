@@ -178,7 +178,7 @@ export default {
 }
 
 .cart-icon {
-  transform: scale(1.15);
+  transform: scale(1.1);
 }
 
 .cart-container {
@@ -197,9 +197,9 @@ export default {
   background-color: transparent;
   color: #ffffff;
   position: absolute;
-  top: 13px;
-  right: 72px;
-  font-size: 0.6em;
+  top: 15px;
+  right: 74px;
+  font-size: 0.5em;
 }
 
 .cart-item-count:hover {
