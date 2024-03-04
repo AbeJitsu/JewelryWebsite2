@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
+  <div id="app" class="d-flex flex-column min-vh-100">
     <TheHeader />
-    <div style="flex: 1">
+    <div class="flex-grow-1">
       <router-view />
     </div>
     <TheFooter />
@@ -24,23 +24,24 @@ export default {
 </script>
 
 <style>
-/* html,
+html,
 body {
   height: 100%;
   margin: 0;
-} */
+}
 
-/* #app {
+#app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-} */
-
-#app {
-  font-family: "'Arimo'", sans-serif;
+  font-family: "Arimo", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #371f2d;
+}
+
+.flex-grow-1 {
+  flex-grow: 1;
 }
 </style>
