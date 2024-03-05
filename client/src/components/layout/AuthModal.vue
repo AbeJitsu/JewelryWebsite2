@@ -2,7 +2,6 @@
 
 <template>
   <div>
-    <!-- AuthModal Component -->
     <b-modal v-model="showModal" @hide="resetForm" id="auth-modal">
       <template #modal-title>
         {{ isLogin ? "Login" : "Register" }}
@@ -28,23 +27,10 @@
             placeholder="Password"
           ></b-form-input>
         </b-form-group>
-        <b-form-group
-          label="Confirm Password"
-          label-for="register-password-confirmation"
-        >
-          <b-form-input
-            id="register-password-confirmation"
-            v-model="registerForm.passwordConfirmation"
-            type="password"
-            required
-            placeholder="Confirm Password"
-          ></b-form-input>
-        </b-form-group>
 
         <b-button type="submit" variant="primary">Login</b-button>
       </b-form>
 
-      <!-- Register Form -->
       <!-- Registration Form -->
       <b-form v-else @submit.prevent="registerUser">
         <b-form-group
@@ -76,7 +62,6 @@
             placeholder="Password"
           ></b-form-input>
         </b-form-group>
-        <!-- Confirm Password Field (Only in Registration) -->
         <b-form-group
           label="Confirm Password"
           label-for="register-password-confirmation"
@@ -89,6 +74,7 @@
             placeholder="Confirm Password"
           ></b-form-input>
         </b-form-group>
+
         <b-button type="submit" variant="primary">Register</b-button>
       </b-form>
 
