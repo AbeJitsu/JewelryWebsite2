@@ -1,10 +1,12 @@
+<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
+
 <template>
   <div class="product-card">
     <vue-slick-carousel
       :dots="true"
       :infinite="true"
       :autoplay="true"
-      :autoplaySpeed="4000"
+      :autoplaySpeed="3000"
       :arrows="true"
       class="product-images-swiper"
     >
@@ -17,13 +19,25 @@
       </div>
     </vue-slick-carousel>
     <div class="action-icons">
-      <i class="bi bi-eye-fill" @click="quickView(product._id)"></i>
-      <i class="bi bi-cart-fill" @click="addToCart(product)"></i>
-      <i class="bi bi-heart-fill" @click="addToWishlist(product)"></i>
+      <div @click="quickView(product._id)" class="icon-container">
+        <i class="bi bi-eye-fill"></i>
+        <span>Quick View</span>
+      </div>
+      <div @click="handleAddToCart(product)" class="icon-container">
+        <i class="bi bi-cart-fill"></i>
+        <span>{{ isInCart ? "In Cart" : "Add to Cart" }}</span>
+      </div>
+      <div @click="addToFavorites(product)" class="icon-container">
+        <i class="bi bi-heart-fill"></i>
+        <span>Favorite</span>
+      </div>
     </div>
+
     <div class="product-info">
-      <div class="product-price">${{ product.variantPrice }}</div>
-      <h3 class="product-name">{{ product.title }}</h3>
+      <div class="name-price-container">
+        <h3 class="product-name">{{ product.title }}</h3>
+        <div class="product-price">${{ product.variantPrice }}</div>
+      </div>
       <p class="product-description" v-html="product.bodyHtml"></p>
     </div>
   </div>
@@ -31,19 +45,37 @@
 
 <script>
 import VueSlickCarousel from "vue-slick-carousel";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "ProductCard",
   components: { VueSlickCarousel },
   props: { product: Object },
+  computed: {
+    ...mapGetters("cart", ["isProductInCart"]),
+    isInCart() {
+      return this.isProductInCart(this.product._id);
+    },
+  },
   methods: {
-    ...mapActions("cart", ["addToCart", "addToWishlist"]),
+    ...mapActions("cart", ["addToCart", "addToFavorites"]),
     quickView(productId) {
-      // Ensure correct namespacing for `setSelectedProduct` and `toggleModal`
       this.$store.dispatch("product/setSelectedProduct", productId);
       this.$store.dispatch("modal/toggleModal", true);
     },
+    async handleAddToCart(product) {
+      if (!this.isInCart) {
+        console.log(`Adding ${product._id} to cart`);
+        await this.addToCart({
+          productId: product._id,
+          quantity: 1,
+        });
+        console.log(
+          `Product ${product._id} added to cart. isInCart: ${this.isInCart}`
+        );
+      }
+    },
+    // Remove checkIfProductIsInCart method as it's no longer needed
   },
 };
 </script>
@@ -58,11 +90,11 @@ export default {
   flex-direction: column;
   width: 100%;
   max-width: 400px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
 .product-card:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .product-image-container {
@@ -79,29 +111,46 @@ export default {
   height: 100%;
   object-fit: contain;
 }
-
 .action-icons {
   color: #ff6b81;
   display: flex;
   justify-content: center;
-  gap: 2em; /* Space between icons */
-  margin-top: 3em; /* Adjust spacing as needed */
+  gap: 50px; /* Adjust the space between icon containers */
+  margin-top: 2rem; /* Adjust spacing as needed */
 }
 
-.action-icons i {
-  color: #ff6b81; /* Set icon color */
-  transition: transform 0.3s ease, color 0.3s ease; /* Smooth transition for transform and color */
-  cursor: pointer; /* Change cursor to pointer to indicate clickable items */
-  font-size: 2rem; /* Adjust icon size as needed */
+.icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease; /* Apply transition here */
 }
 
-.action-icons i:hover {
-  transform: scale(1.2); /* Slightly enlarge icons on hover */
-  color: #b43a53; /* Darken the color on hover for feedback */
+.icon-container i,
+.icon-container span {
+  transition: color 0.3s ease, transform 0.3s ease; /* Ensure transition applies to icon and text */
 }
 
+.icon-container:hover i,
+.icon-container:hover span {
+  color: #ff8c99; /* Change color on hover */
+  transform: scale(1.2); /* Slightly enlarge on hover */
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.name-price-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
 .product-name {
-  margin: 1rem;
+  margin: 10px;
   font-size: 1em;
   font-weight: 500;
   display: -webkit-box;
@@ -118,8 +167,8 @@ export default {
 }
 
 .product-description {
-  margin: 2rem;
-  -webkit-line-clamp: 2;
+  margin: 10px;
+  -webkit-line-clamp: 3;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;

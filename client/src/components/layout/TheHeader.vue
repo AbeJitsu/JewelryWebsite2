@@ -1,5 +1,3 @@
-<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/TheHeader.vue -->
-
 <template>
   <div>
     <b-navbar
@@ -22,27 +20,39 @@
           <b-nav-item :to="{ name: 'jewelry-showcase' }">Shop</b-nav-item>
           <!-- Additional nav items here -->
         </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
-          <div
-            class="search-container d-flex align-items-center justify-content-between flex-grow-1 mx-2"
-          >
+
+        <div
+          class="header-right d-flex align-items-center justify-content-end flex-grow-1"
+        >
+          <div class="search-container d-flex flex-grow-1 mx-2">
             <b-form-input
               size="md"
-              class="flex-grow-1"
+              class="me-2 flex-grow-1"
               placeholder="Find an amazing ..."
-            ></b-form-input>
-            <b-button size="md" class="ml-2" type="submit">Search</b-button>
+            />
+            <b-button size="md" type="submit">Search</b-button>
           </div>
-          <!-- For Sign In, you could use a 'key-fill' icon to represent logging in -->
-          <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
-            <b-icon icon="key-fill"></b-icon> Shine In
-          </b-nav-item>
-
-          <!-- For Sign Out, an 'box-arrow-right' icon can represent logging out -->
-          <b-nav-item v-else @click="performLogout">
-            <b-icon icon="box-arrow-right"></b-icon> Shine Out
-          </b-nav-item>
-        </b-navbar-nav>
+          <div class="user-actions-container d-flex align-items-center">
+            <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
+              <b-icon icon="key-fill"></b-icon> Shine In
+            </b-nav-item>
+            <b-nav-item v-else @click="performLogout">
+              <b-icon icon="box-arrow-right"></b-icon> Shine Out
+            </b-nav-item>
+            <b-nav-item @click="goToAccount">
+              <b-icon icon="person-circle"></b-icon> Account & Orders
+            </b-nav-item>
+            <b-nav-item class="cart-icon-container" @click="goToCart">
+              <div class="cart-container">
+                <b-icon icon="cart-fill" class="cart-icon"></b-icon>
+                <b-badge variant="danger" class="cart-item-count">{{
+                  itemCount
+                }}</b-badge>
+                <span class="cart-text">Cart</span>
+              </div>
+            </b-nav-item>
+          </div>
+        </div>
       </b-collapse>
     </b-navbar>
     <auth-modal></auth-modal>
@@ -58,11 +68,10 @@ export default {
     AuthModal,
   },
   computed: {
-    // This now correctly maps the isLoggedIn getter from the Vuex store.
     ...mapGetters("user", ["isLoggedIn"]),
+    ...mapGetters("cart", ["itemCount"]),
   },
   methods: {
-    // This maps the logout action from the Vuex store.
     ...mapActions("user", {
       logout: "logout",
     }),
@@ -72,11 +81,12 @@ export default {
     async performLogout() {
       try {
         await this.logout();
-        // After logout, you might want to redirect the user or show a success message.
       } catch (error) {
         console.error("Logout error:", error);
-        // Consider handling the error, perhaps by displaying a message to the user.
       }
+    },
+    goToCart() {
+      this.$router.push({ name: "cart" });
     },
   },
 };
@@ -86,94 +96,113 @@ export default {
 .custom-brand-container {
   display: flex;
   align-items: center;
-  gap: 1em; /* Space between logo image and text */
+  gap: 1em;
 }
 
 .logo-image {
-  height: 4em; /* Adjust as needed */
-  border-radius: 25%; /* Circular logo */
+  height: 2em;
+  border-radius: 25%;
 }
 
 .logo-text {
   color: #fff;
   font-family: "Tangerine", cursive;
-  font-size: 3rem;
-  font-weight: 100;
+  font-size: 2rem;
+  font-weight: 900;
   color: #ff6b81;
-  transition: color 0.3s ease, transform 0.3s ease;
 }
+
 .custom-navbar {
   background-color: #121212;
   color: #fff;
   font-size: 1.4rem;
 }
 
+/* Adjusting the navbar links and icons */
 .custom-navbar .navbar-nav .nav-link,
 .custom-navbar .navbar-toggler-icon,
-.custom-navbar .navbar-brand {
+.custom-navbar .navbar-brand,
+.user-actions-container .nav-link {
   color: #ff6b81;
-  margin-left: 2rem;
 }
 
+/* Hover effects */
 .custom-navbar .navbar-nav .nav-link:hover,
 .custom-navbar .navbar-nav .nav-link:focus,
 .custom-navbar .navbar-toggler-icon:focus,
 .custom-navbar .navbar-toggler-icon:hover,
 .custom-navbar .navbar-brand:hover,
-.custom-navbar .navbar-brand:focus {
-  color: #ff8c99;
-}
-
-.navbar-nav.ml-auto {
-  flex-grow: 1;
-}
-
-.search-container {
-  flex-grow: 1; /* Allows search form to fill available space */
-  display: flex;
-  align-items: center;
-  gap: 10px; /* Space between search input and button */
-  margin-left: 1rem; /* Ensures spacing from the navigation items */
-  max-width: none;
-}
-
-.search-input {
-  flex-grow: 1; /* Allows input to expand */
-}
-
-.search-button {
-  border-radius: 20px; /* Rounded edges for button */
-}
-
-@media (max-width: 768px) {
-  .search-container {
-    flex-direction: column;
-    width: 100%; /* Full width for smaller screens */
-  }
-
-  .search-input,
-  .search-button {
-    width: 100%; /* Full width for input and button */
-    margin-top: 0.5rem; /* Spacing for stacked layout */
-  }
-}
-
-.custom-navbar .navbar-nav .nav-link,
-.custom-navbar .navbar-toggler-icon,
-.custom-navbar .navbar-brand {
-  color: #ff6b81;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.custom-navbar .navbar-nav .nav-link:hover,
-.custom-navbar .navbar-nav .nav-link:focus,
-.custom-navbar .navbar-toggler-icon:focus,
-.custom-navbar .navbar-toggler-icon:hover,
-.custom-navbar .navbar-brand:hover,
-.custom-navbar .navbar-brand:focus {
+.custom-navbar .navbar-brand:focus,
+.user-actions-container .nav-link:hover,
+.user-actions-container .nav-link:focus {
   color: #ff8c99;
   text-decoration: none;
   transform: scale(1.01);
 }
+
+/* Ensuring no list-style for navbar items */
+.custom-navbar b-navbar-nav ul,
+.custom-navbar b-navbar-nav li,
+.custom-navbar li {
+  list-style-type: none !important;
+  display: inline-block !important;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.search-container {
+  display: flex;
+  flex-grow: 1;
+  margin-right: 0.5rem;
+  align-items: center;
+}
+
+.search-container .flex-grow-1 {
+  flex-grow: 1;
+}
+
+.user-actions-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap; /* Ensures the text doesn't wrap */
+}
+
+.cart-icon-container {
+  position: relative;
+}
+
+.cart-icon {
+  transform: scale(1.1);
+}
+
+.cart-container {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1.4em;
+}
+
+.cart-text {
+  margin-left: 10px; /* Space from the cart icon */
+  font-size: 0.7em;
+}
+
+.cart-item-count {
+  background-color: transparent;
+  color: #ffffff;
+  position: absolute;
+  top: 15px;
+  right: 74px;
+  font-size: 0.5em;
+}
+
+.cart-item-count:hover {
+  background-color: #ff8c99;
+}
 </style>
-```

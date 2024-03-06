@@ -9,8 +9,17 @@
             :key="index"
             class="d-flex justify-content-between align-items-center"
           >
-            {{ item.product.name }} - ${{ item.product.price }} x
-            {{ item.quantity }}
+            <div class="d-flex align-items-center">
+              <b-img
+                :src="item.product.image"
+                alt="Product image"
+                class="cart-product-image"
+              />
+              <div class="ms-3">
+                <div>{{ item.product.name }} - ${{ item.product.price }}</div>
+                <div>Quantity: {{ item.quantity }}</div>
+              </div>
+            </div>
             <div>
               <b-button
                 variant="outline-danger"
@@ -42,23 +51,12 @@
 
 <script>
 export default {
-  data() {
-    return {
-      cartItems: this.$store.getters["cart/cartItems"],
-    };
-  },
   computed: {
+    cartItems() {
+      return this.$store.getters["cart/cartItems"];
+    },
     estimatedShippingFee() {
-      const totalPieces = this.cartItems.reduce((total, item) => {
-        const pieceCount =
-          item.product.type === "zi"
-            ? 1
-            : item.product.type === "fashion-fix"
-            ? 4
-            : 1;
-        return total + pieceCount * item.quantity;
-      }, 0);
-      return this.calculateShippingFee(totalPieces);
+      return this.$store.getters["cart/currentShippingFee"];
     },
   },
   methods: {
@@ -69,15 +67,10 @@ export default {
       this.$store.dispatch("cart/updateQuantity", { productId, quantity });
     },
     proceedToCheckout() {
-      this.$router.push({ name: "Checkout" }); // Ensure you have a Checkout route defined
+      this.$router.push({ name: "Checkout" });
     },
     continueShopping() {
-      this.$router.push({ name: "jewelry-showcase" });
-    },
-    calculateShippingFee(pieces) {
-      if (pieces <= 10) return 5;
-      if (pieces <= 19) return 7;
-      return 0; // Free shipping for 20 pieces or more
+      this.$router.push({ name: "JewelryShowcase" });
     },
   },
 };
@@ -87,5 +80,11 @@ export default {
 .cart-component .quantity-input {
   width: 60px;
   display: inline-block;
+}
+
+.cart-product-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
 }
 </style>

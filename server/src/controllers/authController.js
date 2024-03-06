@@ -1,49 +1,68 @@
-// Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/authController.js
-
 const User = require("../models/userModel");
-const bcrypt = require("bcryptjs");
+const validator = require("validator");
 
 exports.register = async (req, res) => {
   try {
-    const { username, email, password, preferredFirstName } = req.body; // Include preferredFirstName in destructuring
+    const { email, password, preferredFirstName } = req.body;
+
+    if (!validator.isEmail(email)) {
+      return res.status(400).send({ error: "Invalid email format" });
+    }
+
+    if (!password || password.length < 8) {
+      return res
+        .status(400)
+        .send({ error: "Password must be at least 8 characters long" });
+    }
+
     let existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).send({ error: "Email is already in use" });
+      return res.status(400).send({ error: "User already exists" });
     }
-    // Include preferredFirstName when creating the user
-    let user = new User({ username, email, password, preferredFirstName });
+
+    let user = new User({
+      email,
+      password, // Store the plain text password temporarily for testing
+      preferredFirstName,
+    });
+
     await user.save();
+
+    req.session.userId = user._id;
     res.status(201).send({
       message: "User registered successfully",
       userId: user._id,
-      username: user.username,
-      preferredFirstName: user.preferredFirstName, // Return preferredFirstName in response
+      preferredFirstName: user.preferredFirstName,
     });
   } catch (error) {
     console.error("Error registering user:", error);
-    res.status(500).send({
-      error: error.message || "Internal server error during registration",
-    });
+    res.status(500).send({ error: "An error occurred during registration" });
   }
 };
 
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findOne({ email });
     if (!user) {
+      console.log(`User not found with email: ${email}`);
       return res.status(401).send({ error: "User not found" });
     }
-    // Compare the hashed password with the one provided by the user
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).send({ error: "Invalid email or password" });
+
+    // Directly compare the plain text passwords for debugging
+    if (password !== user.password) {
+      return res.status(401).send({ error: "Invalid credentials" });
     }
-    // Optionally, initiate a session or generate a token here
-    // req.session.userId = user._id;
-    res.send({ message: "Login successful", userId: user._id });
+
+    req.session.userId = user._id;
+    res.send({
+      message: "Login successful",
+      userId: user._id,
+      preferredFirstName: user.preferredFirstName,
+    });
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).send({ error: "Internal server error during login" });
+    res.status(500).send({ error: "An internal error occurred during login" });
   }
 };

@@ -10,11 +10,13 @@ export default {
   },
   mutations: {
     SET_PRODUCTS(state, products) {
-      // Renaming "everyday" to "everyday" for $5 jewelry
-      state.products = products.map((product) => ({
-        ...product,
-        type: product.type || "everyday", // More descriptive default type
-      }));
+      state.products = [
+        ...state.products,
+        ...products.map((product) => ({
+          ...product,
+          type: product.type || "everyday",
+        })),
+      ];
     },
     SET_SELECTED_PRODUCT(state, product) {
       state.selectedProduct = product;
@@ -24,10 +26,10 @@ export default {
     },
   },
   actions: {
-    async fetchProducts({ commit }) {
+    async fetchProducts({ commit }, { offset = 0, limit = 12 }) {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_API_URL}/api/products`
+          `${process.env.VUE_APP_API_URL}/api/products?offset=${offset}&limit=${limit}`
         );
         commit("SET_PRODUCTS", response.data);
       } catch (error) {

@@ -2,14 +2,14 @@
 
 <template>
   <div>
-    <!-- AuthModal Component -->
+    <!-- Modal for authentication -->
     <b-modal v-model="showModal" @hide="resetForm" id="auth-modal">
-      <template #modal-title>
-        {{ isLogin ? "Login" : "Register" }}
-      </template>
+      <!-- Modal Title -->
+      <template #modal-title>{{ isLogin ? "Login" : "Register" }}</template>
 
       <!-- Login Form -->
       <b-form v-if="isLogin" @submit.prevent="loginUser">
+        <!-- Email Input -->
         <b-form-group label="Email" label-for="login-email">
           <b-form-input
             id="login-email"
@@ -19,6 +19,7 @@
             placeholder="Enter email"
           ></b-form-input>
         </b-form-group>
+        <!-- Password Input -->
         <b-form-group label="Password" label-for="login-password">
           <b-form-input
             id="login-password"
@@ -28,53 +29,9 @@
             placeholder="Password"
           ></b-form-input>
         </b-form-group>
+        <!-- Login Button -->
         <b-button type="submit" variant="primary">Login</b-button>
       </b-form>
-
-      <!-- Register Form -->
-      <b-form v-else @submit.prevent="registerUser">
-        <b-form-group
-          label="Preferred First Name"
-          label-for="register-first-name"
-        >
-          <b-form-input
-            id="register-first-name"
-            v-model="registerForm.firstName"
-            required
-            placeholder="Preferred first name"
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group label="Email" label-for="register-email">
-          <b-form-input
-            id="register-email"
-            v-model="registerForm.email"
-            type="email"
-            required
-            placeholder="Enter email"
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group label="Password" label-for="register-password">
-          <b-form-input
-            id="register-password"
-            v-model="registerForm.password"
-            type="password"
-            required
-            placeholder="Password"
-          ></b-form-input>
-        </b-form-group>
-        <b-button type="submit" variant="primary">Register</b-button>
-      </b-form>
-
-      <template #modal-footer>
-        <div class="w-100 text-center">
-          <p v-if="isLogin">
-            Don't have an account? <b-link @click="toggleForm">Register</b-link>
-          </p>
-          <p v-else>
-            Already have an account? <b-link @click="toggleForm">Login</b-link>
-          </p>
-        </div>
-      </template>
     </b-modal>
   </div>
 </template>
@@ -86,52 +43,29 @@ export default {
   data() {
     return {
       showModal: false,
-      isLogin: true, // Toggle between login and registration
+      isLogin: true,
       loginForm: {
-        email: "",
-        password: "",
-      },
-      registerForm: {
-        firstName: "", // Changed from username to firstName
         email: "",
         password: "",
       },
     };
   },
   methods: {
-    ...mapActions("user", {
-      performLogin: "login", // Renaming for clarity
-      performRegister: "register", // Renaming for clarity
-    }),
-    toggleForm() {
-      this.isLogin = !this.isLogin;
-      this.resetForm();
-    },
-    async loginUser() {
+    ...mapActions("user", ["login", "register"]),
+    loginUser() {
       try {
-        await this.performLogin(this.loginForm);
+        this.login(this.loginForm);
         this.$bvModal.hide("auth-modal");
+        this.resetForm();
         if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-          this.$router.replace("/jewelry-showcase");
+          this.$router.push("/jewelry-showcase");
         }
       } catch (error) {
         console.error("Login error:", error);
       }
     },
-    async registerUser() {
-      try {
-        await this.performRegister(this.registerForm);
-        this.$bvModal.hide("auth-modal");
-        if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-          this.$router.replace("/jewelry-showcase");
-        }
-      } catch (error) {
-        console.error("Registration error:", error);
-      }
-    },
     resetForm() {
       this.loginForm = { email: "", password: "" };
-      this.registerForm = { firstName: "", email: "", password: "" };
     },
   },
 };

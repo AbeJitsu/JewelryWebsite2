@@ -6,7 +6,7 @@ export default {
 
   state: {
     status: "",
-    user: null, // User profile information
+    user: null,
   },
 
   getters: {
@@ -16,18 +16,36 @@ export default {
   },
 
   actions: {
+    async register({ commit }, userData) {
+      commit("auth_request");
+      try {
+        const response = await axios.post("/api/auth/register", userData, {
+          withCredentials: true,
+        });
+        commit("auth_success", response.data);
+      } catch (err) {
+        commit("auth_error");
+        console.error("Registration error:", err);
+        throw err;
+      }
+    },
+
     async login({ commit }, userCredentials) {
       commit("auth_request");
       try {
         const response = await axios.post("/api/auth/login", userCredentials, {
           withCredentials: true,
         });
-        console.log(response.data);
-        commit("auth_success", response.data); // Pass the user data to the mutation
-        // No need to separately fetch user profile if it's already obtained here
+        if (response.data.message === "Login successful") {
+          commit("auth_success", response.data);
+        } else {
+          commit("auth_error");
+          console.error("Login error:", response.data.error);
+        }
       } catch (err) {
         commit("auth_error");
-        throw err; // Throw error to catch it in component
+        console.error("Login error:", err);
+        throw err;
       }
     },
 
@@ -40,7 +58,6 @@ export default {
       }
     },
 
-    // Optionally, create an action to fetch the user profile
     async fetchUserProfile({ commit }) {
       try {
         const response = await axios.get("/api/auth/user", {
@@ -70,7 +87,7 @@ export default {
       state.user = null;
     },
     setUser(state, user) {
-      state.user = user; // Set the user profile information
+      state.user = user;
     },
   },
 };
