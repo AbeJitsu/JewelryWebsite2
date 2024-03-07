@@ -24,6 +24,8 @@ import "bootstrap-vue/dist/bootstrap-vue.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "./assets/custom.scss"; // This will override the above styles if there are conflicts
+
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";

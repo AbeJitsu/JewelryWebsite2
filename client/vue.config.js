@@ -1,7 +1,6 @@
-const { defineConfig } = require("@vue/cli-service");
 const path = require("path");
 
-module.exports = defineConfig({
+module.exports = {
   transpileDependencies: true,
   configureWebpack: {
     resolve: {
@@ -10,5 +9,6 @@ module.exports = defineConfig({
       },
     },
   },
-});
+};
+
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/vue.config.js

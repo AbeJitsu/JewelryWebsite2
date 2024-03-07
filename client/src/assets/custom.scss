@@ -1,0 +1,63 @@
+// Importing Bootstrap's variables and mixins
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins';
+
+// Overriding Bootstrap variables
+$primary: #ff6b81; // Primary color for the application
+$hover-color: #ff8c99; // Global hover color for hover effects
+
+// Secondary color - a dark gray with a hint of pinkish tone
+$secondary: #201717; // Adjust the color as needed
+
+// Success, Info, Warning, and Danger colors
+$success: #b1e5ac; // Softer green for success messages
+$info: #89c2d9; // Soft blue/teal for informational messages
+$warning: #f9c74f; // Orange/amber for warnings
+$danger: #f28482; // Softer red for danger alerts
+
+// Increase specificity for button styles within .b-modal
+.b-modal {
+  .b-button {
+    background-color: $primary;
+    border-color: $primary;
+    color: #fff;
+
+    &:hover,
+    &:focus {
+      background-color: $hover-color;
+      border-color: $hover-color;
+    }
+  }
+
+  .modal-header,
+  .modal-footer {
+    background-color: #121212;
+    color: #fff;
+    border-bottom: 1px solid $primary;
+  }
+
+  .modal-body {
+    background-color: #121212;
+    color: #fff;
+  }
+
+  .modal-content {
+    border-color: $primary;
+  }
+
+  .b-form-input,
+  .b-form-textarea {
+    background-color: #2c2f33;
+    border: 1px solid $primary;
+    color: #fff;
+
+    &:focus {
+      border-color: $hover-color;
+      box-shadow: 0 0 0 0.2rem rgba(255, 107, 129, 0.25);
+    }
+  }
+}
+
+// Importing Bootstrap to apply the overrides
+@import '~bootstrap/scss/bootstrap';
