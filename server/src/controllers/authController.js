@@ -5,6 +5,19 @@ exports.register = async (req, res) => {
   try {
     const { email, password, preferredFirstName } = req.body;
 
+    // Enhanced Input Validation
+    if (!validator.isEmail(email)) {
+      return res.status(400).send({ error: "Authentication error" });
+    }
+    console.log(`Password length received: ${password.length}`);
+    if (!password || password.length < 8) {
+      return res
+        .status(400)
+        .send({ error: "Password must be at least 8 characters long" });
+    }
+
+    const { email, password, preferredFirstName } = req.body;
+
     if (!validator.isEmail(email)) {
       return res.status(400).send({ error: "Invalid email format" });
     }
@@ -28,11 +41,18 @@ exports.register = async (req, res) => {
 
     await user.save();
 
-    req.session.userId = user._id;
-    res.status(201).send({
-      message: "User registered successfully",
-      userId: user._id,
-      preferredFirstName: user.preferredFirstName,
+    req.session.regenerate(function (err) {
+      if (err) {
+        console.error("Session regeneration error:", err);
+        return res.status(500).send({ error: "Session regeneration failed" });
+      }
+      req.session.userId = user._id;
+      // Configure session cookie settings assumed to be here
+      res.status(201).send({
+        message: "User registered successfully",
+        userId: user._id,
+        preferredFirstName: user.preferredFirstName,
+      });
     });
   } catch (error) {
     console.error("Error registering user:", error);
@@ -55,11 +75,18 @@ exports.login = async (req, res) => {
       return res.status(401).send({ error: "Invalid credentials" });
     }
 
-    req.session.userId = user._id;
-    res.send({
-      message: "Login successful",
-      userId: user._id,
-      preferredFirstName: user.preferredFirstName,
+    req.session.regenerate(function (err) {
+      if (err) {
+        console.error("Session regeneration error:", err);
+        return res.status(500).send({ error: "Session regeneration failed" });
+      }
+      req.session.userId = user._id;
+      // Configure session cookie settings assumed to be here
+      res.send({
+        message: "Login successful",
+        userId: user._id,
+        preferredFirstName: user.preferredFirstName,
+      });
     });
   } catch (error) {
     console.error("Error during login:", error);

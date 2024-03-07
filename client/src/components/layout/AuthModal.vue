@@ -28,7 +28,6 @@
             placeholder="Password"
           ></b-form-input>
         </b-form-group>
-        <!-- Login Button -->
         <b-button type="submit" variant="primary">Login</b-button>
 
         <!-- Toggle to Registration Form -->
@@ -153,6 +152,7 @@ export default {
           console.error("Registration error:", error);
         });
     },
+
     resetForm() {
       this.loginForm = { email: "", password: "" };
       this.registerForm = {
