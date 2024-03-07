@@ -7,21 +7,9 @@ exports.register = async (req, res) => {
 
     // Enhanced Input Validation
     if (!validator.isEmail(email)) {
-      return res.status(400).send({ error: "Authentication error" });
-    }
-    console.log(`Password length received: ${password.length}`);
-    if (!password || password.length < 8) {
-      return res
-        .status(400)
-        .send({ error: "Password must be at least 8 characters long" });
-    }
-
-    const { email, password, preferredFirstName } = req.body;
-
-    if (!validator.isEmail(email)) {
       return res.status(400).send({ error: "Invalid email format" });
     }
-
+    console.log(`Password length received: ${password.length}`);
     if (!password || password.length < 8) {
       return res
         .status(400)
