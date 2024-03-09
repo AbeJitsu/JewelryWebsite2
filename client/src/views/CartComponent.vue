@@ -12,19 +12,22 @@
             >
               <div class="d-flex align-items-center">
                 <b-img
-                  :src="item.product.image"
+                  :src="item.product.imageSrc[0]"
                   alt="Product image"
                   class="cart-product-image"
+                  @click="viewProductDetails(item.product)"
                 />
                 <div class="ms-3">
-                  <div>{{ item.product.name }} - ${{ item.product.price }}</div>
+                  <div>
+                    {{ item.product.title }} - ${{ item.product.variantPrice }}
+                  </div>
                   <div>Quantity: {{ item.quantity }}</div>
                 </div>
               </div>
               <div>
                 <b-button
                   variant="outline-danger"
-                  @click="removeFromCart(item.product.id)"
+                  @click="removeFromCart(item.product._id)"
                   >Remove</b-button
                 >
                 <b-form-input
@@ -33,7 +36,7 @@
                   min="1"
                   size="sm"
                   class="quantity-input"
-                  @change="updateQuantity(item.product.id, item.quantity)"
+                  @change="updateQuantity(item.product._id, item.quantity)"
                 />
               </div>
             </b-list-group-item>
@@ -57,27 +60,13 @@
 
 <script>
 export default {
-  mounted() {
-    this.enrichedCartItems.forEach((item) => {
-      if (!item.product || Object.keys(item.product).length === 0) {
-        this.$store.dispatch("product/fetchProductById", item.productId);
-      }
-    });
-  },
   computed: {
     enrichedCartItems() {
-      return this.cartItems.map((item) => {
-        const productDetails =
-          this.getProductById(item.productId) || this.fetchPlaceholderProduct();
-        return {
-          ...item,
-          product: productDetails,
-        };
-      });
+      return this.cartItems;
     },
     cartTotal() {
       return this.enrichedCartItems.reduce(
-        (total, item) => total + item.product.price * item.quantity,
+        (total, item) => total + item.product.variantPrice * item.quantity,
         0
       );
     },
@@ -85,7 +74,8 @@ export default {
       return this.$store.getters["cart/cartItems"];
     },
     estimatedShippingFee() {
-      return this.$store.getters["cart/currentShippingFee"];
+      // Directly return the current shipping fee from the store's shipping info
+      return this.$store.state.cart.shippingInfo.currentShippingFee;
     },
   },
   methods: {
@@ -99,17 +89,21 @@ export default {
       this.$router.push({ name: "Checkout" });
     },
     continueShopping() {
-      this.$router.push({ name: "JewelryShowcase" });
+      this.$router.push("/jewelry-showcase");
     },
-    // fetchPlaceholderProduct() {
-    //   return {
-    //     name: "Loading...",
-    //     price: 0,
-    //     image: "default-product-image.jpg",
-    //   };
-    // },
-    getProductById(productId) {
-      return this.$store.getters["product/getProductById"](productId);
+    viewProductDetails(product) {
+      this.$router.push({
+        name: "ProductDetails",
+        params: { id: product._id },
+      });
+    },
+  },
+  watch: {
+    cartItems: {
+      handler() {
+        this.$store.commit("cart/CALCULATE_SHIPPING_FEE");
+      },
+      deep: true,
     },
   },
 };
@@ -117,13 +111,14 @@ export default {
 
 <style scoped>
 .cart-component .quantity-input {
-  width: 60px;
+  width: 3rem;
   display: inline-block;
+  padding-left: 1rem;
 }
 
 .cart-product-image {
   width: 100px;
   height: 100px;
-  object-fit: cover;
+  object-fit: contain;
 }
 </style>

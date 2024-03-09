@@ -63,19 +63,23 @@ export default {
       this.$store.dispatch("product/setSelectedProduct", productId);
       this.$store.dispatch("modal/toggleModal", true);
     },
-    async handleAddToCart(product) {
+    async handleAddToCart() {
       if (!this.isInCart) {
-        console.log(`Adding ${product._id} to cart`);
+        console.log(`Adding ${this.product._id} to cart`);
         await this.addToCart({
-          productId: product._id,
+          product: this.product,
           quantity: 1,
         });
+        // After adding to the cart, force a re-computation of isInCart
+        this.$forceUpdate();
         console.log(
-          `Product ${product._id} added to cart. isInCart: ${this.isInCart}`
+          `Product ${this.product._id} added to cart. isInCart: ${this.isInCart}`
         );
       }
     },
-    // Remove checkIfProductIsInCart method as it's no longer needed
+    addToFavorites() {
+      // Implementation for adding to favorites using this.product
+    },
   },
 };
 </script>

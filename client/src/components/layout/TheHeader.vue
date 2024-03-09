@@ -7,19 +7,18 @@
       class="custom-navbar"
     >
       <b-navbar-brand to="/jewelry-showcase" class="custom-brand-container">
-        <img
+        <!-- <img
           :src="require('@/assets/logo.png')"
           alt="Logo"
           class="logo-image"
-        />
+        /> -->
         <span class="logo-text">Escape, Relax & Be Jeweled</span>
       </b-navbar-brand>
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
+        <!-- <b-navbar-nav>
           <b-nav-item :to="{ name: 'jewelry-showcase' }">Shop</b-nav-item>
-          <!-- Additional nav items here -->
-        </b-navbar-nav>
+        </b-navbar-nav> -->
 
         <div
           class="header-right d-flex align-items-center justify-content-end flex-grow-1"

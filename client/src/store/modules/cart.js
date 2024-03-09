@@ -14,84 +14,82 @@ export default {
     taxRate: 0.065,
   },
   mutations: {
-    ADD_TO_CART(state, { productId, quantity }) {
+    ADD_TO_CART(state, { product, quantity }) {
       const productIndex = state.cartItems.findIndex(
-        (item) => item.productId === productId
+        (item) => item.product._id === product._id
       );
       if (productIndex !== -1) {
         state.cartItems[productIndex].quantity += quantity;
       } else {
-        state.cartItems.push({ productId, quantity });
+        state.cartItems.push({ product, quantity });
       }
-      // Recalculate shipping fee after modifying cart
-      state.commit("cart/CALCULATE_SHIPPING_FEE");
+      this.commit("cart/CALCULATE_SHIPPING_FEE");
     },
     REMOVE_FROM_CART(state, productId) {
       state.cartItems = state.cartItems.filter(
-        (item) => item.productId !== productId
+        (item) => item.product._id !== productId
       );
-      state.commit("cart/CALCULATE_SHIPPING_FEE");
+      this.commit("cart/CALCULATE_SHIPPING_FEE");
     },
     UPDATE_QUANTITY(state, { productId, quantity }) {
-      const item = state.cartItems.find((item) => item.productId === productId);
+      const item = state.cartItems.find(
+        (item) => item.product._id === productId
+      );
       if (item) {
         item.quantity = quantity;
       }
-      state.commit("cart/CALCULATE_SHIPPING_FEE");
+      this.commit("cart/CALCULATE_SHIPPING_FEE");
     },
     CALCULATE_SHIPPING_FEE(state) {
-      const totalQuantity = state.cartItems.reduce(
-        (total, item) => total + item.quantity,
-        0
-      );
-      state.shippingInfo.currentShippingFee =
-        totalQuantity >= state.shippingInfo.freeShippingThreshold
-          ? 0
-          : totalQuantity >= 11
-          ? state.shippingInfo.extendedShippingFee
-          : state.shippingInfo.baseShippingFee;
+      const totalQuantity = state.cartItems.reduce((total, item) => {
+        const itemQuantity =
+          item.product.variantPrice === 20 ? item.quantity * 4 : item.quantity;
+        return total + itemQuantity;
+      }, 0);
+
+      if (totalQuantity >= 20) {
+        state.shippingInfo.currentShippingFee = 0;
+      } else if (totalQuantity <= 10) {
+        state.shippingInfo.currentShippingFee =
+          state.shippingInfo.baseShippingFee;
+      } else {
+        state.shippingInfo.currentShippingFee =
+          state.shippingInfo.extendedShippingFee;
+      }
     },
   },
   actions: {
-    addToCart({ commit, dispatch }, payload) {
-      commit("ADD_TO_CART", payload);
-      dispatch("fetchProductDetails", payload.productId);
+    addToCart({ commit }, { product, quantity }) {
+      commit("ADD_TO_CART", { product, quantity });
     },
     removeFromCart({ commit }, productId) {
       commit("REMOVE_FROM_CART", productId);
     },
-    updateQuantity({ commit }, payload) {
-      commit("UPDATE_QUANTITY", payload);
-    },
-    checkoutOrder({ commit }) {
-      commit("CHECKOUT_ORDER");
-    },
-    addToCheckedOutOrder({ commit }, payload) {
-      commit("ADD_TO_CHECKED_OUT_ORDER", payload);
-    },
-    fetchProductDetails({ dispatch }, productId) {
-      dispatch("product/fetchProductById", productId, { root: true });
+    updateQuantity({ commit }, { productId, quantity }) {
+      commit("UPDATE_QUANTITY", { productId, quantity });
     },
   },
   getters: {
     isProductInCart: (state) => (productId) =>
       state.cartItems.some((item) => item.productId === productId),
     cartItems: (state) => state.cartItems,
-    cartTotal: (state) =>
-      state.cartItems.reduce(
-        (total, item) =>
-          item.product ? total + item.product.price * item.quantity : total,
+    cartTotal: (state) => {
+      return state.cartItems.reduce((total, item) => {
+        return total + item.product.variantPrice * item.quantity;
+      }, 0);
+    },
+    itemCount: (state) => {
+      return state.cartItems.reduce(
+        (total, item) => total + parseInt(item.quantity, 10),
         0
-      ),
-    itemCount: (state) =>
-      state.cartItems.reduce((total, item) => total + item.quantity, 0),
+      );
+    },
     orderTotal: (state) => {
-      const productsTotal = state.checkedOutOrders
-        .flat()
-        .reduce(
-          (total, { product, quantity }) => total + product.price * quantity,
-          0
-        );
+      const productsTotal = state.cartItems.reduce(
+        (total, item) =>
+          total + item.product.variantPrice * parseInt(item.quantity, 10),
+        0
+      );
       const tax = productsTotal * state.taxRate;
       return {
         productsTotal,
