@@ -53,8 +53,9 @@ export default {
     },
   },
   actions: {
-    addToCart({ commit }, payload) {
+    addToCart({ commit, dispatch }, payload) {
       commit("ADD_TO_CART", payload);
+      dispatch("fetchProductDetails", payload.productId);
     },
     removeFromCart({ commit }, productId) {
       commit("REMOVE_FROM_CART", productId);
@@ -68,6 +69,9 @@ export default {
     addToCheckedOutOrder({ commit }, payload) {
       commit("ADD_TO_CHECKED_OUT_ORDER", payload);
     },
+    fetchProductDetails({ dispatch }, productId) {
+      dispatch("product/fetchProductById", productId, { root: true });
+    },
   },
   getters: {
     isProductInCart: (state) => (productId) =>
@@ -75,7 +79,8 @@ export default {
     cartItems: (state) => state.cartItems,
     cartTotal: (state) =>
       state.cartItems.reduce(
-        (total, item) => total + item.product.price * item.quantity,
+        (total, item) =>
+          item.product ? total + item.product.price * item.quantity : total,
         0
       ),
     itemCount: (state) =>
