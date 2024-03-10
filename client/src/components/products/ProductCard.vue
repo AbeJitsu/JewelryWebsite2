@@ -1,5 +1,3 @@
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
-
 <template>
   <div class="product-card">
     <vue-slick-carousel
@@ -23,16 +21,21 @@
         <i class="bi bi-eye-fill"></i>
         <span>Quick View</span>
       </div>
-      <div @click="handleAddToCart(product)" class="icon-container">
+      <div
+        @click="handleAddToCart"
+        class="icon-container"
+        :class="{ 'in-cart': isProductInCart(product._id) }"
+      >
         <i class="bi bi-cart-fill"></i>
-        <span>{{ isInCart ? "In Cart" : "Add to Cart" }}</span>
+        <span>{{
+          isProductInCart(product._id) ? "In Cart" : "Add to Cart"
+        }}</span>
       </div>
       <div @click="addToFavorites(product)" class="icon-container">
         <i class="bi bi-heart-fill"></i>
         <span>Favorite</span>
       </div>
     </div>
-
     <div class="product-info">
       <div class="name-price-container">
         <h3 class="product-name">{{ product.title }}</h3>
@@ -53,9 +56,6 @@ export default {
   props: { product: Object },
   computed: {
     ...mapGetters("cart", ["isProductInCart"]),
-    isInCart() {
-      return this.isProductInCart(this.product._id);
-    },
   },
   methods: {
     ...mapActions("cart", ["addToCart", "addToFavorites"]),
@@ -63,18 +63,12 @@ export default {
       this.$store.dispatch("product/setSelectedProduct", productId);
       this.$store.dispatch("modal/toggleModal", true);
     },
-    async handleAddToCart() {
-      if (!this.isInCart) {
-        console.log(`Adding ${this.product._id} to cart`);
-        await this.addToCart({
+    handleAddToCart() {
+      if (!this.isProductInCart(this.product._id)) {
+        this.addToCart({
           product: this.product,
           quantity: 1,
         });
-        // After adding to the cart, force a re-computation of isInCart
-        this.$forceUpdate();
-        console.log(
-          `Product ${this.product._id} added to cart. isInCart: ${this.isInCart}`
-        );
       }
     },
     addToFavorites() {
@@ -181,4 +175,3 @@ export default {
 }
 </style>
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
-```
