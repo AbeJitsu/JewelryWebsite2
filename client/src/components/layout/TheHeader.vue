@@ -23,13 +23,17 @@
         <div
           class="header-right d-flex align-items-center justify-content-end flex-grow-1"
         >
-          <div class="search-container d-flex flex-grow-1 mx-2">
+          <div
+            class="search-container d-flex flex-grow-1 mx-2 position-relative"
+          >
             <b-form-input
               size="md"
               class="me-2 flex-grow-1"
               placeholder="Find an amazing ..."
             />
-            <b-button size="md" type="submit">Search</b-button>
+            <b-button size="md" type="submit" class="search-icon">
+              <b-icon icon="search"></b-icon>
+            </b-button>
           </div>
           <div class="user-actions-container d-flex align-items-center">
             <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
@@ -106,15 +110,16 @@ export default {
 .logo-text {
   color: #fff;
   font-family: "Tangerine", cursive;
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 900;
   color: #ff6b81;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.359);
 }
 
 .custom-navbar {
   background-color: #121212;
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.1rem;
 }
 
 /* Adjusting the navbar links and icons */
@@ -174,10 +179,13 @@ export default {
 
 .cart-icon-container {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .cart-icon {
   transform: scale(1.1);
+  position: relative; /* Add relative positioning here */
 }
 
 .cart-container {
@@ -196,9 +204,18 @@ export default {
   background-color: transparent;
   color: #ffffff;
   position: absolute;
-  top: 15px;
-  right: 74px;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
   font-size: 0.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  padding: 0 4px;
+  box-sizing: border-box;
 }
 
 .cart-item-count:hover {
