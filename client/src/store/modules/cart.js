@@ -70,8 +70,9 @@ export default {
     },
   },
   getters: {
-    isProductInCart: (state) => (productId) =>
-      state.cartItems.some((item) => item.productId === productId),
+    isProductInCart: (state) => (productId) => {
+      return state.cartItems.some((item) => item.product._id === productId);
+    },
     cartItems: (state) => state.cartItems,
     cartTotal: (state) => {
       return state.cartItems.reduce((total, item) => {
