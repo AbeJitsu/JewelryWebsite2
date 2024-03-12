@@ -35,22 +35,27 @@
               <b-icon icon="search"></b-icon>
             </b-button>
           </div>
+
           <div class="user-actions-container d-flex align-items-center">
             <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
               <b-icon icon="key-fill"></b-icon> Shine In
             </b-nav-item>
+
             <b-nav-item v-else @click="performLogout">
               <b-icon icon="box-arrow-right"></b-icon> Shine Out
             </b-nav-item>
             <b-nav-item @click="goToAccount">
               <b-icon icon="person-circle"></b-icon> Account & Orders
             </b-nav-item>
+
             <b-nav-item class="cart-icon-container" @click="goToCart">
-              <div class="cart-container">
-                <b-icon icon="cart-fill" class="cart-icon"></b-icon>
-                <b-badge variant="danger" class="cart-item-count">{{
-                  itemCount
-                }}</b-badge>
+              <div>
+                <div class="cart-icon-wrapper">
+                  <b-icon icon="cart-fill" class="cart-icon"></b-icon>
+                  <b-badge variant="danger" class="cart-item-count">{{
+                    itemCount
+                  }}</b-badge>
+                </div>
                 <span class="cart-text">Cart</span>
               </div>
             </b-nav-item>
@@ -178,47 +183,44 @@ export default {
 }
 
 .cart-icon-container {
-  position: relative;
   display: flex;
   align-items: center;
+}
+
+.cart-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  gap: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease; /* Apply transition here */
 }
 
 .cart-icon {
   transform: scale(1.1);
-  position: relative; /* Add relative positioning here */
+  font-size: 1.5em;
+  position: relative;
 }
 
-.cart-container {
+.cart-item-count {
+  position: absolute;
+  background-color: transparent;
+  color: #ffffff;
+  top: 11px;
+  right: 10px;
+  transform: translate(50%, -50%);
+  font-size: 0.55em;
+  min-width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
-  cursor: pointer;
-  font-size: 1.4em;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 0 4px;
+  box-sizing: border-box;
+  background-color: transparent;
 }
 
 .cart-text {
   margin-left: 10px; /* Space from the cart icon */
-  font-size: 0.7em;
-}
-
-.cart-item-count {
-  background-color: transparent;
-  color: #ffffff;
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translate(50%, -50%);
-  font-size: 0.5em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  padding: 0 4px;
-  box-sizing: border-box;
-}
-
-.cart-item-count:hover {
-  background-color: #ff8c99;
 }
 </style>
