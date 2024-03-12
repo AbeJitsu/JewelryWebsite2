@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import JewelryShowcase from "../views/JewelryShowcase.vue";
+import store from "@/store"; // Import Vuex store
 
 Vue.use(VueRouter);
 
@@ -17,39 +18,44 @@ const routes = [
   {
     path: "/about",
     name: "about",
-    component: () => import("../views/AboutView.vue"), // Lazy-loaded
+    component: () => import("../views/AboutView.vue"),
   },
   {
     path: "/watch-live",
     name: "watch-live",
-    component: () => import("../views/ShopLive.vue"), // Lazy-loaded
+    component: () => import("../views/ShopLive.vue"),
   },
-
   {
     path: "/contact",
     name: "contact",
-    component: () => import("../views/ContactUs.vue"), // Assuming you have a ConnectWithUs.vue
+    component: () => import("../views/ContactUs.vue"),
   },
   {
     path: "*",
     name: "not-found",
-    component: () => import("../views/NotFound.vue"), // Assuming NotFound.vue is in the views folder
+    component: () => import("../views/NotFound.vue"),
   },
   {
     path: "/admin",
     name: "admin",
-    component: () => import("../views/AdminPage.vue"), // You need to create this view
+    component: () => import("../views/AdminPage.vue"),
     meta: { requiresAuth: true, role: "admin" },
   },
   {
-    path: "/product/:id", // Dynamic segment for product ID
+    path: "/product/:id",
     name: "product-detail",
-    component: () => import("../views/ProductDetailView.vue"), // Assuming you create this component
+    component: () => import("../views/ProductDetailView.vue"),
   },
   {
     path: "/cart",
     name: "cart",
-    component: () => import("../views/CartComponent.vue"), // Ensure CartComponent.vue is correctly located in your views directory
+    component: () => import("../views/CartComponent.vue"),
+  },
+  {
+    path: "/checkout",
+    name: "checkout",
+    component: () => import("../views/CheckOut.vue"),
+    meta: { requiresCart: true },
   },
 ];
 
@@ -57,6 +63,18 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresCart)) {
+    if (store.getters["cart/cartItems"].length === 0) {
+      next({ name: "jewelry-showcase" }); // Redirect if cart is empty
+    } else {
+      next(); // Proceed if cart is not empty
+    }
+  } else {
+    next(); // Proceed for routes that don't require cart check
+  }
 });
 
 export default router;
