@@ -115,10 +115,17 @@ export default {
 .logo-text {
   color: #fff;
   font-family: "Tangerine", cursive;
-  font-size: 1.75rem;
+  font-size: 2.5rem;
   font-weight: 900;
   color: #ff6b81;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.359);
+}
+
+.logo-text:hover {
+  color: #ff8c99;
+  text-decoration: none;
+  transform: scale(1.01);
+  transition: transform 0.3s ease;
 }
 
 .custom-navbar {
@@ -147,6 +154,7 @@ export default {
   color: #ff8c99;
   text-decoration: none;
   transform: scale(1.01);
+  transition: transform 0.1s ease;
 }
 
 /* Ensuring no list-style for navbar items */
