@@ -131,7 +131,7 @@ export default {
 .custom-navbar {
   background-color: #121212;
   color: #fff;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
 }
 
 /* Adjusting the navbar links and icons */
@@ -190,8 +190,8 @@ export default {
 
 .search-button {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 1px;
+  top: 5;
   border: none;
   background-color: white;
   padding: 0.375rem 0.75rem;
@@ -233,8 +233,8 @@ export default {
   position: absolute;
   background-color: transparent;
   color: #ffffff;
-  top: 14px;
-  right: 13px;
+  top: 17px;
+  right: 15px;
   transform: translate(50%, -50%);
   font-size: 0.6em;
   min-width: 20px;
