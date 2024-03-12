@@ -131,7 +131,7 @@ export default {
 .custom-navbar {
   background-color: #121212;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
 }
 
 /* Adjusting the navbar links and icons */
@@ -233,10 +233,10 @@ export default {
   position: absolute;
   background-color: transparent;
   color: #ffffff;
-  top: 11px;
-  right: 10px;
+  top: 14px;
+  right: 13px;
   transform: translate(50%, -50%);
-  font-size: 0.55em;
+  font-size: 0.6em;
   min-width: 20px;
   height: 20px;
   display: flex;
