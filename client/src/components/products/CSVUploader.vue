@@ -21,7 +21,9 @@ export default {
     fileChanged(event) {
       const file = event.target.files[0];
       if (file) {
-        this.$emit("file-selected", file);
+        const orderNumberMatch = file.name.match(/order-(\d+)\.csv/);
+        const orderNumber = orderNumberMatch ? orderNumberMatch[1] : null;
+        this.$emit("file-selected", { file, orderNumber });
       } else {
         // Optionally handle the case where no file is selected
         console.log("No file selected");
