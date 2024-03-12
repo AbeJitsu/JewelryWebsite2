@@ -28,11 +28,11 @@
           >
             <b-form-input
               size="md"
-              class="me-2 flex-grow-1"
+              class="search-input"
               placeholder="Find an amazing ..."
             />
-            <b-button size="md" type="submit" class="search-icon">
-              <b-icon icon="search"></b-icon>
+            <b-button size="md" class="search-button" type="submit">
+              <b-icon icon="search" class="search-icon"></b-icon>
             </b-button>
           </div>
 
@@ -174,13 +174,33 @@ export default {
 
 .search-container {
   display: flex;
-  flex-grow: 1;
-  margin-right: 0.5rem;
+  position: relative;
   align-items: center;
+  flex-grow: 1;
+  border: 1px solid #ced4da; /* Border color */
+  border-radius: 0.25rem; /* Apply border radius to the container */
 }
 
-.search-container .flex-grow-1 {
+.search-input {
   flex-grow: 1;
+  border: none;
+  border-top-left-radius: 0.25rem; /* Round top-left corner */
+  border-bottom-left-radius: 0.25rem; /* Round bottom-left corner */
+}
+
+.search-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  border: none;
+  background-color: white;
+  padding: 0.375rem 0.75rem;
+  border-top-right-radius: 0.25rem; /* Round top-right corner */
+  border-bottom-right-radius: 0.25rem; /* Round bottom-right corner */
+}
+
+.search-icon {
+  color: #ff6b81;
 }
 
 .user-actions-container {
