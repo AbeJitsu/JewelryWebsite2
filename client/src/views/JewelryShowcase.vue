@@ -89,15 +89,17 @@ export default {
 .jewelry-showcase,
 .products-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(30%, 2fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(40%, 2fr));
+  gap: 3rem;
   padding: 0.75rem;
+  margin-left: 8%;
+  margin-right: 8%;
 }
 
 @media (max-width: 768px) {
   .jewelry-showcase,
   .products-container {
-    grid-template-columns: repeat(auto-fit, minmax(36%, 2fr));
+    grid-template-columns: repeat(auto-fit, minmax(45%, 2fr));
   }
 }
 

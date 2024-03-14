@@ -99,6 +99,7 @@ export default {
   width: 100%;
   padding-top: 100%; /* Maintain aspect ratio */
   position: relative;
+  margin-bottom: 2rem;
 }
 
 .product-image {
@@ -113,8 +114,8 @@ export default {
   color: #ff6b81;
   display: flex;
   justify-content: center;
-  gap: 50px; /* Adjust the space between icon containers */
-  margin-top: 2rem; /* Adjust spacing as needed */
+  gap: 1rem; /* Adjust the space between icon containers */
+  margin-top: 3rem; /* Adjust spacing as needed */
 }
 
 .icon-container {
@@ -123,6 +124,7 @@ export default {
   align-items: center;
   cursor: pointer;
   transition: color 0.3s ease, transform 0.3s ease; /* Apply transition here */
+  white-space: nowrap; /* Ensure text doesn't wrap */
 }
 
 .icon-container i,
@@ -133,7 +135,7 @@ export default {
 .icon-container:hover i,
 .icon-container:hover span {
   color: #ff8c99; /* Change color on hover */
-  transform: scale(1.2); /* Slightly enlarge on hover */
+  transform: scale(1.1); /* Slightly enlarge on hover */
 }
 
 .product-info {
