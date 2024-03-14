@@ -115,7 +115,7 @@ export default {
 .logo-text {
   color: #fff;
   font-family: "Tangerine", cursive;
-  font-size: 2.5rem;
+  font-size: 2.1rem;
   font-weight: 900;
   color: #ff6b81;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.359);
@@ -131,7 +131,7 @@ export default {
 .custom-navbar {
   background-color: #121212;
   color: #fff;
-  font-size: 1.6rem;
+  font-size: 1rem;
 }
 
 /* Adjusting the navbar links and icons */
@@ -225,7 +225,7 @@ export default {
 
 .cart-icon {
   transform: scale(1.1);
-  font-size: 1.5em;
+  font-size: 1.6em;
   position: relative;
 }
 
@@ -233,10 +233,10 @@ export default {
   position: absolute;
   background-color: transparent;
   color: #ffffff;
-  top: 17px;
-  right: 15px;
+  top: 4px;
+  right: 9px;
   transform: translate(50%, -50%);
-  font-size: 0.6em;
+  font-size: 0.8em;
   min-width: 20px;
   height: 20px;
   display: flex;
