@@ -236,7 +236,7 @@ export default {
   top: 4px;
   right: 9px;
   transform: translate(50%, -50%);
-  font-size: 0.8em;
+  font-size: 0.9em;
   min-width: 20px;
   height: 20px;
   display: flex;
