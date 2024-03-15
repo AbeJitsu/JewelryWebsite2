@@ -206,8 +206,9 @@ export default {
 .user-actions-container {
   display: flex;
   align-items: center;
-  gap: 10px;
-  white-space: nowrap; /* Ensures the text doesn't wrap */
+  gap: 1rem;
+  white-space: nowrap;
+  text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.123);
 }
 
 .cart-icon-container {

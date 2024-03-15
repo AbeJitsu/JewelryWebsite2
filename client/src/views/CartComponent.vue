@@ -8,9 +8,9 @@
             <b-list-group-item
               v-for="(item, index) in enrichedCartItems"
               :key="index"
-              class="d-flex justify-content-between align-items-center"
+              class="d-flex flex-column align-items-start"
             >
-              <div class="d-flex align-items-center">
+              <div class="d-flex align-items-center w-100">
                 <b-img
                   :src="item.product.imageSrc[0]"
                   alt="Product image"
@@ -21,15 +21,12 @@
                   <div>
                     {{ item.product.title }} - ${{ item.product.variantPrice }}
                   </div>
-                  <div>Quantity: {{ item.quantity }}</div>
                 </div>
               </div>
-              <div>
-                <b-button
-                  variant="outline-danger"
-                  @click="removeFromCart(item.product._id)"
-                  >Remove</b-button
-                >
+              <div
+                class="item-actions w-100 d-flex justify-content-start align-items-center mt-2"
+              >
+                <span class="quantity-label">Qty:</span>
                 <b-form-input
                   type="number"
                   v-model="item.quantity"
@@ -38,6 +35,11 @@
                   class="quantity-input"
                   @change="updateQuantity(item.product._id, item.quantity)"
                 />
+                <b-button
+                  class="remove-button ms-2"
+                  @click="removeFromCart(item.product._id)"
+                  >Remove</b-button
+                >
               </div>
             </b-list-group-item>
           </b-list-group>
@@ -45,12 +47,8 @@
           <div class="my-3">
             Estimated Shipping: ${{ estimatedShippingFee }}
           </div>
-          <b-button variant="primary" @click="proceedToCheckout"
-            >Checkout</b-button
-          >
-          <b-button variant="secondary" @click="continueShopping"
-            >Continue Shopping</b-button
-          >
+          <b-button @click="proceedToCheckout">Checkout</b-button>
+          <b-button @click="continueShopping">Continue Shopping</b-button>
         </div>
         <div v-else>Your cart is empty.</div>
       </b-col>
@@ -110,15 +108,71 @@ export default {
 </script>
 
 <style scoped>
-.cart-component .quantity-input {
-  width: 3rem;
+.cart-component {
+  max-width: 600px; /* Adjust the max-width as needed */
+  margin: auto;
+  margin-top: 2rem;
+}
+
+.product-info {
+  margin-left: 1rem; /* Add margin to the left of the product info */
+}
+
+.cart-product-image {
+  width: 8rem;
+  height: auto;
+  object-fit: contain;
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Adjust the space between elements */
+}
+
+.quantity-label {
+  margin-right: 0.5rem; /* Space between label and input */
+  white-space: nowrap; /* Prevent line breaks */
+}
+
+.remove-button {
+  font-size: 0.5rem; /* Adjust font size as needed */
+  padding: 0.25rem 0.5rem; /* Adjust padding as needed */
+  margin: rem; /* Adjust margin as needed */
+  background-color: white; /* Set the background to white */
+  color: #343a40; /* Set the text color to dark gray */
+  border: none;
+  transition: opacity 0.3s;
+  opacity: 0.7; /* Hide the button by default */
+}
+
+.remove-button:hover {
+  color: white; /* Text color changes to white on hover */
+  background-color: #343a40; /* Background color changes to dark gray on hover */
+  border: 1px solid white; /* Optional: invert the border color on hover */
+}
+
+.b-list-group-item:hover .remove-button {
+  opacity: 1; /* Make the button fully visible on hover */
+  color: #343a40; /* Set text color on hover */
+  background-color: white; /* Set background color on hover */
+}
+
+.quantity-input {
+  width: 5rem;
   display: inline-block;
   padding-left: 1rem;
 }
 
-.cart-product-image {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
+.action-buttons .remove-button {
+  color: #6c757d; /* Less prominent color */
+  border-color: #6c757d; /* Matching border color */
+  font-size: 0.5rem;
+}
+
+.action-buttons .remove-button:hover {
+  color: #fff; /* Color change on hover for better UX */
+  background-color: #6c757d;
+  border-color: #6c757d;
 }
 </style>

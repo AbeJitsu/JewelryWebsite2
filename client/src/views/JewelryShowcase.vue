@@ -91,7 +91,6 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(40%, 2fr));
   gap: 3rem;
-  padding: 0.75rem;
   margin: 0% 8% 1% 8%;
 }
 
