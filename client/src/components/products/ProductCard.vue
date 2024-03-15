@@ -19,7 +19,7 @@
     <div class="action-icons">
       <div @click="quickView(product._id)" class="icon-container">
         <i class="bi bi-eye-fill"></i>
-        <span>Quick View</span>
+        <span>View</span>
       </div>
       <div
         @click="handleAddToCart"
@@ -27,13 +27,11 @@
         :class="{ 'in-cart': isProductInCart(product._id) }"
       >
         <i class="bi bi-cart-fill"></i>
-        <span>{{
-          isProductInCart(product._id) ? "In Cart" : "Add to Cart"
-        }}</span>
+        <span>{{ isProductInCart(product._id) ? "In Cart" : "Add" }}</span>
       </div>
       <div @click="addToFavorites(product)" class="icon-container">
         <i class="bi bi-heart-fill"></i>
-        <span>Favorite</span>
+        <span>Fave</span>
       </div>
     </div>
     <div class="product-info">

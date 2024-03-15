@@ -89,9 +89,9 @@ export default {
 .jewelry-showcase,
 .products-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(40%, 2fr));
-  gap: 3rem;
-  margin: 0% 8% 1% 8%;
+  grid-template-columns: repeat(auto-fit, minmax(30%, 2fr));
+  gap: 1rem;
+  margin: 1% 5% 1% 5%;
 }
 
 @media (max-width: 768px) {
