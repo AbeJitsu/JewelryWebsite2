@@ -2,44 +2,60 @@
   <b-container class="cart-component">
     <b-row>
       <b-col>
-        <h2>Your Cart</h2>
         <div v-if="enrichedCartItems.length > 0">
           <b-list-group>
             <b-list-group-item
               v-for="(item, index) in enrichedCartItems"
               :key="index"
-              class="d-flex flex-column align-items-start"
+              class="item-container"
             >
-              <div class="d-flex align-items-center w-100">
+              <!-- Main Image -->
+              <div class="main-image-container">
                 <b-img
-                  :src="item.product.imageSrc[0]"
-                  alt="Product image"
-                  class="cart-product-image"
-                  @click="viewProductDetails(item.product)"
+                  :src="item.product.imageSrc[item.product.imageSrc.length - 1]"
+                  alt="Main product image"
+                  class="main-image"
+                  @click="
+                    setMainImage(
+                      item,
+                      item.product.imageSrc[item.product.imageSrc.length - 1]
+                    )
+                  "
                 />
-                <div class="ms-3">
-                  <div>
-                    {{ item.product.title }} - ${{ item.product.variantPrice }}
+              </div>
+
+              <!-- Additional Images -->
+              <div class="additional-images">
+                <b-img
+                  v-for="(image, idx) in item.product.imageSrc.slice(0, -1)"
+                  :key="`additional-${idx}`"
+                  :src="image"
+                  alt="Additional product image"
+                  class="additional-image"
+                  @click="setMainImage(item, image)"
+                />
+              </div>
+              <div class="title-price">
+                {{ item.product.title }} - ${{ item.product.variantPrice }}
+              </div>
+              <!-- Product Info -->
+              <div class="product-info">
+                <p
+                  class="product-description"
+                  v-html="item.product.bodyHtml"
+                ></p>
+
+                <div class="product-details">
+                  <div class="item-actions">
+                    <span class="quantity-label">Quantity:</span>
+                    <b-form-select
+                      v-model="item.quantity"
+                      :options="quantityOptions"
+                      class="quantity-select"
+                      @change="updateQuantity(item.product._id, item.quantity)"
+                    ></b-form-select>
                   </div>
                 </div>
-              </div>
-              <div
-                class="item-actions w-100 d-flex justify-content-start align-items-center mt-2"
-              >
-                <span class="quantity-label">Qty:</span>
-                <b-form-input
-                  type="number"
-                  v-model="item.quantity"
-                  min="1"
-                  size="sm"
-                  class="quantity-input"
-                  @change="updateQuantity(item.product._id, item.quantity)"
-                />
-                <b-button
-                  class="remove-button ms-2"
-                  @click="removeFromCart(item.product._id)"
-                  >Remove</b-button
-                >
               </div>
             </b-list-group-item>
           </b-list-group>
@@ -57,10 +73,34 @@
 </template>
 
 <script>
+import Vue from "vue";
 export default {
+  data() {
+    return {
+      quantityOptions: [
+        { value: 1, text: "1" },
+        { value: 2, text: "2" },
+        { value: 3, text: "3" },
+        { value: 4, text: "4" },
+        { value: 5, text: "5" },
+        { value: 6, text: "6" },
+        { value: 7, text: "7" },
+        { value: 8, text: "8" },
+        { value: 9, text: "9" },
+        { value: 0, text: "0" },
+      ],
+    };
+  },
+
   computed: {
     enrichedCartItems() {
-      return this.cartItems;
+      return this.cartItems.map((item) => ({
+        ...item,
+        // Set mainImage to the last item in the imageSrc array
+        mainImage:
+          item.mainImage ||
+          item.product.imageSrc[item.product.imageSrc.length - 1],
+      }));
     },
     cartTotal() {
       return this.enrichedCartItems.reduce(
@@ -72,11 +112,16 @@ export default {
       return this.$store.getters["cart/cartItems"];
     },
     estimatedShippingFee() {
-      // Directly return the current shipping fee from the store's shipping info
       return this.$store.state.cart.shippingInfo.currentShippingFee;
     },
   },
   methods: {
+    getAdditionalImages(item) {
+      return item.product.imageSrc.filter((image) => image !== item.mainImage);
+    },
+    setMainImage(item, image) {
+      Vue.set(item, "mainImage", image);
+    },
     removeFromCart(productId) {
       this.$store.dispatch("cart/removeFromCart", productId);
     },
@@ -89,90 +134,87 @@ export default {
     continueShopping() {
       this.$router.push("/jewelry-showcase");
     },
-    viewProductDetails(product) {
-      this.$router.push({
-        name: "ProductDetails",
-        params: { id: product._id },
-      });
-    },
-  },
-  watch: {
-    cartItems: {
-      handler() {
-        this.$store.commit("cart/CALCULATE_SHIPPING_FEE");
-      },
-      deep: true,
-    },
   },
 };
 </script>
 
 <style scoped>
 .cart-component {
-  max-width: 600px; /* Adjust the max-width as needed */
-  margin: auto;
+  max-width: 70%;
   margin-top: 2rem;
 }
 
-.product-info {
-  margin-left: 1rem; /* Add margin to the left of the product info */
+.item-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
 }
 
-.cart-product-image {
-  width: 8rem;
-  height: auto;
-  object-fit: contain;
+.main-image-container {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.additional-images {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
+}
+
+.additional-image {
+  width: 15%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.product-info {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.product-description {
+  margin-bottom: 1rem;
+}
+
+.product-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.title-price {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
 .item-actions {
+  grid-column: 2;
+  grid-row: 2;
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Adjust the space between elements */
+  justify-content: flex-end;
+  margin: 2rem;
 }
 
 .quantity-label {
-  margin-right: 0.5rem; /* Space between label and input */
-  white-space: nowrap; /* Prevent line breaks */
+  margin-right: 0.5rem;
 }
 
-.remove-button {
-  font-size: 0.5rem; /* Adjust font size as needed */
-  padding: 0.25rem 0.5rem; /* Adjust padding as needed */
-  margin: rem; /* Adjust margin as needed */
-  background-color: white; /* Set the background to white */
-  color: #343a40; /* Set the text color to dark gray */
-  border: none;
-  transition: opacity 0.3s;
-  opacity: 0.7; /* Hide the button by default */
-}
-
-.remove-button:hover {
-  color: white; /* Text color changes to white on hover */
-  background-color: #343a40; /* Background color changes to dark gray on hover */
-  border: 1px solid white; /* Optional: invert the border color on hover */
-}
-
-.b-list-group-item:hover .remove-button {
-  opacity: 1; /* Make the button fully visible on hover */
-  color: #343a40; /* Set text color on hover */
-  background-color: white; /* Set background color on hover */
-}
-
-.quantity-input {
-  width: 5rem;
-  display: inline-block;
-  padding-left: 1rem;
-}
-
-.action-buttons .remove-button {
-  color: #6c757d; /* Less prominent color */
-  border-color: #6c757d; /* Matching border color */
-  font-size: 0.5rem;
-}
-
-.action-buttons .remove-button:hover {
-  color: #fff; /* Color change on hover for better UX */
-  background-color: #6c757d;
-  border-color: #6c757d;
+.quantity-select {
+  width: auto;
 }
 </style>
