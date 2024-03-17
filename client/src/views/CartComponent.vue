@@ -36,7 +36,7 @@
                 />
               </div>
               <div class="title-price">
-                {{ item.product.title }} - ${{ item.product.variantPrice }}
+                {{ item.product.title }} - Only ${{ item.product.variantPrice }}
               </div>
               <!-- Product Info -->
               <div class="product-info">
