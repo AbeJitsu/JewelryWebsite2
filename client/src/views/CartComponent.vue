@@ -197,7 +197,7 @@ export default {
 .title-price {
   grid-column: 1;
   grid-row: 2;
-  font-size: 1.01rem;
+  font-size: 1rem;
   font-weight: bold;
   padding: 1rem 0;
 }
@@ -223,6 +223,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 1rem;
+  font-size: 0.9rem;
 }
 
 .product-description {
