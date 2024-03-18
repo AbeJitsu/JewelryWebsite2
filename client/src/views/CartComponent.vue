@@ -35,27 +35,31 @@
                   @click="setMainImage(item, image)"
                 />
               </div>
-              <div class="title-price">
-                {{ item.product.title }} - Only ${{ item.product.variantPrice }}
+
+              <!-- Title, Price, and Item Actions -->
+              <div class="title-price-actions">
+                <div class="title-price">
+                  {{ item.product.title }} - Only ${{
+                    item.product.variantPrice
+                  }}
+                </div>
+                <div class="item-actions">
+                  <span class="quantity-label">Quantity:</span>
+                  <b-form-select
+                    v-model="item.quantity"
+                    :options="quantityOptions"
+                    class="quantity-select"
+                    @change="updateQuantity(item.product._id, item.quantity)"
+                  ></b-form-select>
+                </div>
               </div>
+
               <!-- Product Info -->
               <div class="product-info">
                 <p
                   class="product-description"
                   v-html="item.product.bodyHtml"
                 ></p>
-
-                <div class="product-details">
-                  <div class="item-actions">
-                    <span class="quantity-label">Quantity:</span>
-                    <b-form-select
-                      v-model="item.quantity"
-                      :options="quantityOptions"
-                      class="quantity-select"
-                      @change="updateQuantity(item.product._id, item.quantity)"
-                    ></b-form-select>
-                  </div>
-                </div>
               </div>
             </b-list-group-item>
           </b-list-group>
@@ -63,8 +67,12 @@
           <div class="my-3">
             Estimated Shipping: ${{ estimatedShippingFee }}
           </div>
-          <b-button @click="proceedToCheckout">Checkout</b-button>
-          <b-button @click="continueShopping">Continue Shopping</b-button>
+          <b-button class="checkout-button" @click="proceedToCheckout"
+            >Checkout</b-button
+          >
+          <b-button class="continue-shopping-button" @click="continueShopping"
+            >Continue Shopping</b-button
+          >
         </div>
         <div v-else>Your cart is empty.</div>
       </b-col>
@@ -146,18 +154,30 @@ export default {
 
 .item-container {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 30% 70%;
   grid-template-rows: auto auto auto;
+  margin-bottom: 20px; /* Adds space between the products */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow around each product container */
+  transition: box-shadow 0.3s; /* Smooth transition for the shadow for a better visual effect */
+  border-radius: 1rem;
+}
+
+.item-container:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhances the shadow when hovering over the product */
 }
 
 .main-image-container {
   grid-column: 1;
   grid-row: 1;
+  width: 100%;
+  height: auto;
+  align-self: start;
+  justify-self: start;
 }
 
 .main-image {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: cover;
 }
 
@@ -165,14 +185,36 @@ export default {
   grid-column: 1 / -1;
   grid-row: 3;
   display: flex;
-  justify-content: space-between;
-  margin: 1rem;
+  justify-content: space-around;
 }
 
 .additional-image {
   width: 15%;
   object-fit: cover;
   cursor: pointer;
+}
+
+.title-price {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 1.01rem;
+  font-weight: bold;
+  padding: 1rem 0;
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem 0;
+}
+
+.quantity-label {
+  margin-right: 0.5rem;
+}
+
+.quantity-select {
+  width: auto;
 }
 
 .product-info {
@@ -187,34 +229,26 @@ export default {
   margin-bottom: 1rem;
 }
 
-.product-details {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.checkout-button,
+.continue-shopping-button {
+  margin: 1rem; /* Adds margin above the buttons */
+  margin-right: 1rem; /* Adds some space between the buttons */
 }
 
-.title-price {
-  grid-column: 1;
-  grid-row: 2;
-  margin: 2rem;
-  font-size: 1.1rem;
-  font-weight: bold;
+/* Apply a vibrant color scheme for buttons */
+.checkout-button {
+  background-color: #4caf50; /* A rich green, good for 'Checkout' implying go forward */
+  color: white; /* White text for better readability */
 }
 
-.item-actions {
-  grid-column: 2;
-  grid-row: 2;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin: 2rem;
+.continue-shopping-button {
+  background-color: #f76c6c; /* A soft red, inviting users to continue shopping */
+  color: white;
 }
 
-.quantity-label {
-  margin-right: 0.5rem;
-}
-
-.quantity-select {
-  width: auto;
+/* Hover effects for buttons */
+.checkout-button:hover,
+.continue-shopping-button:hover {
+  opacity: 0.9; /* Slight opacity change on hover for feedback */
 }
 </style>
