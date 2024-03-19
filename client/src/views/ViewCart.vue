@@ -137,7 +137,7 @@ export default {
       this.$store.dispatch("cart/updateQuantity", { productId, quantity });
     },
     proceedToCheckout() {
-      this.$router.push({ name: "Checkout" });
+      this.$router.push({ name: "CheckOut" });
     },
     continueShopping() {
       this.$router.push("/jewelry-showcase");

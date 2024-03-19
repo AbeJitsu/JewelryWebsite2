@@ -49,11 +49,11 @@ const routes = [
   {
     path: "/cart",
     name: "cart",
-    component: () => import("../views/CartComponent.vue"),
+    component: () => import("../views/ViewCart.vue"),
   },
   {
     path: "/checkout",
-    name: "checkout",
+    name: "CheckOut",
     component: () => import("../views/CheckOut.vue"),
     meta: { requiresCart: true },
   },
