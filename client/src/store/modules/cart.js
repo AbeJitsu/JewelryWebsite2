@@ -1,5 +1,4 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
-
 export default {
   namespaced: true,
   state: {
@@ -12,6 +11,7 @@ export default {
       currentShippingFee: 0,
     },
     taxRate: 0.065,
+    postLoginRedirect: null,
   },
   mutations: {
     ADD_TO_CART(state, { product, quantity }) {
@@ -56,6 +56,9 @@ export default {
         state.shippingInfo.currentShippingFee =
           state.shippingInfo.extendedShippingFee;
       }
+    },
+    SET_POST_LOGIN_REDIRECT(state, redirect) {
+      state.postLoginRedirect = redirect;
     },
   },
   actions: {

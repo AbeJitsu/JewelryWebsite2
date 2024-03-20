@@ -104,7 +104,6 @@ export default {
     enrichedCartItems() {
       return this.cartItems.map((item) => ({
         ...item,
-        // Set mainImage to the last item in the imageSrc array
         mainImage:
           item.mainImage ||
           item.product.imageSrc[item.product.imageSrc.length - 1],
@@ -122,7 +121,11 @@ export default {
     estimatedShippingFee() {
       return this.$store.state.cart.shippingInfo.currentShippingFee;
     },
+    isLoggedIn() {
+      return this.$store.getters["user/isLoggedIn"]; // Adjust based on your store's structure
+    },
   },
+
   methods: {
     getAdditionalImages(item) {
       return item.product.imageSrc.filter((image) => image !== item.mainImage);
@@ -137,8 +140,17 @@ export default {
       this.$store.dispatch("cart/updateQuantity", { productId, quantity });
     },
     proceedToCheckout() {
-      this.$router.push({ name: "CheckOut" });
+      if (!this.isLoggedIn) {
+        // Trigger the mutation to set the post-login redirect destination
+        this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", "CheckOut");
+        // Show the login modal since the user is not logged in
+        this.$bvModal.show("auth-modal");
+      } else {
+        // If the user is already logged in, proceed directly to the checkout page
+        this.$router.push({ name: "CheckOut" });
+      }
     },
+
     continueShopping() {
       this.$router.push("/jewelry-showcase");
     },

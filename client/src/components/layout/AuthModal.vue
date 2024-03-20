@@ -120,19 +120,28 @@ export default {
       this.isLogin = !this.isLogin;
       this.resetForm();
     },
+
     loginUser() {
       this.login(this.loginForm)
         .then(() => {
           this.$bvModal.hide("auth-modal");
-          this.resetForm();
-          if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-            this.$router.push("/jewelry-showcase");
+          // Correcting the path to access the namespaced state
+          const redirect = this.$store.state.cart.postLoginRedirect;
+          if (redirect) {
+            this.$router.push({ name: redirect });
+            // Correcting the namespaced mutation call
+            this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
+          } else {
+            if (this.$router.currentRoute.path !== "/jewelry-showcase") {
+              this.$router.push("/jewelry-showcase");
+            }
           }
         })
         .catch((error) => {
           console.error("Login error:", error);
         });
     },
+
     registerUser() {
       if (
         this.registerForm.password !== this.registerForm.passwordConfirmation

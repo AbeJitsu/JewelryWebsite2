@@ -29,19 +29,6 @@ export default new Vuex.Store({
       namespaced: true,
     },
   },
-  // Optional: Define global state, mutations, actions, getters here
-  state: {
-    // Your global state
-  },
-  mutations: {
-    // Your global mutations
-  },
-  actions: {
-    // Your global actions
-  },
-  getters: {
-    // Your global getters
-  },
 });
 
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/index.js
