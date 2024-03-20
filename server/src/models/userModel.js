@@ -1,8 +1,32 @@
-//Users/abiezerreyes/Projects/JewelryWebsite2/server/src/models/userModel.js
-
+// Importing necessary libraries
 const mongoose = require("mongoose");
-// const bcrypt = require("bcryptjs"); // Temporarily not needed for plaintext password
+const bcrypt = require("bcryptjs"); // bcryptjs is used for hashing passwords
 
+// Schema for address, defining the structure for user addresses
+const addressSchema = new mongoose.Schema({
+  street: {
+    type: String,
+    required: [true, "Street address is required"],
+    trim: true,
+  },
+  city: {
+    type: String,
+    required: [true, "City is required"],
+    trim: true,
+  },
+  state: {
+    type: String,
+    required: [true, "State is required"],
+    trim: true,
+  },
+  zip: {
+    type: String,
+    required: [true, "ZIP code is required"],
+    trim: true,
+  },
+});
+
+// User schema defining the structure for user data
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -26,22 +50,35 @@ const userSchema = new mongoose.Schema({
       "Preferred first name must be less than 20 characters long",
     ],
   },
+  billingAddress: addressSchema,
+  shippingAddress: addressSchema,
+  // Role field added to the user schema
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
 });
 
-// Comment out the pre-save hook to avoid hashing the password temporarily
-// userSchema.pre("save", async function (next) {
-//   if (this.isModified("password")) {
-//     this.password = await bcrypt.hash(this.password, 10);
-//   }
-//   next();
-// });
+// Pre-save hook to hash the password before saving it to the database
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Method to compare a candidate password with the user's stored password
-// This can also be commented out as it's not needed for plaintext comparison
-// userSchema.methods.comparePassword = function (candidatePassword) {
-//   return bcrypt.compare(candidatePassword, this.password);
-// };
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
+// Creating the User model from the userSchema
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
