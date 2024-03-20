@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isAdmin">
     <h1>Upload CSV File and Quantities</h1>
     <div class="uploader-container">
       <CSVUploader @file-selected="handleFileSelected" />
@@ -30,12 +30,17 @@
       </b-button>
     </div>
   </div>
+  <div v-else>
+    <h1>Unauthorized Access</h1>
+    <p>You do not have permission to view this page.</p>
+  </div>
 </template>
 
 <script>
 import CSVUploader from "@/components/products/CSVUploader.vue";
 import ProductQtyUpdater from "@/components/products/ProductQtyUpdater.vue";
 import axios from "axios";
+import store from "@/store"; // Ensure you're importing the Vuex store
 
 export default {
   components: {
@@ -53,6 +58,11 @@ export default {
       isFileSelected: false,
       areQuantitiesEntered: false,
     };
+  },
+  computed: {
+    isAdmin() {
+      return store.getters["user/isAdmin"]; // Ensure you have an isAdmin getter in your store
+    },
   },
   methods: {
     handleFileSelected(file) {

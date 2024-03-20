@@ -1,5 +1,7 @@
 // authMiddleware.js
 
+const User = require("../models/userModel"); // Adjust the path as necessary
+
 function authMiddleware(req, res, next) {
   if (req.session && req.session.userId) {
     next();
@@ -15,14 +17,21 @@ function roleMiddleware(roles) {
       return res.status(401).send({ message: "Unauthorized access" });
     }
 
-    const user = await User.findById(req.session.userId);
-    if (!roles.includes(user.role)) {
-      return res
-        .status(403)
-        .send({ message: "Forbidden access: Insufficient role" });
-    }
+    try {
+      const user = await User.findById(req.session.userId);
+      if (!user || !roles.includes(user.role)) {
+        return res
+          .status(403)
+          .send({ message: "Forbidden access: Insufficient role" });
+      }
 
-    next();
+      next();
+    } catch (error) {
+      console.error("Error verifying user role:", error);
+      res
+        .status(500)
+        .send({ message: "Internal server error during role verification" });
+    }
   };
 }
 

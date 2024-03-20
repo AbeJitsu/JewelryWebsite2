@@ -14,6 +14,7 @@ export default {
     isLoggedIn: (state) => !!state.user,
     authStatus: (state) => state.status,
     user: (state) => state.user,
+    isAdmin: (state) => state.user && state.user.role === "admin", // Check if the user is an admin
   },
 
   actions: {
