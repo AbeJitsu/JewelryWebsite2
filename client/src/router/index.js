@@ -54,7 +54,7 @@ const routes = [
   {
     path: "/checkout",
     name: "CheckOut",
-    component: () => import("../views/CheckOut.vue"),
+    component: () => import("../views/checkout/CheckOut.vue"),
     meta: { requiresCart: true },
   },
 ];
