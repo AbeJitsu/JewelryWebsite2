@@ -31,9 +31,9 @@
 
 <script>
 import AuthModal from "@/components/layout/AuthModal.vue";
-import ShippingInformation from "@/components/ShippingInformation.vue";
-import BillingInformation from "@/components/BillingInformation.vue";
-import PaymentDetails from "@/components/PaymentDetails.vue";
+import ShippingInformation from "./ShippingInformation.vue";
+import BillingInformation from "./BillingInformation.vue";
+import PaymentDetails from "./PaymentDetails.vue";
 
 export default {
   components: {
