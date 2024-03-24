@@ -19,11 +19,6 @@
 
         <!-- Include PaymentDetails component -->
         <payment-details @update-payment="handlePaymentUpdate" />
-
-        <!-- Proceed to Payment Button -->
-        <b-button class="proceed-payment-button" @click="submitCheckout">
-          Proceed to Payment
-        </b-button>
       </b-col>
     </b-row>
   </b-container>
@@ -103,7 +98,7 @@ export default {
   width: 100%;
   padding: 0.5rem;
   margin: 0.5rem 0;
-  border: 1px solid #ccc;
+  border: 1px solid #000000;
   border-radius: 0.25rem;
 }
 

@@ -4,8 +4,6 @@
     <b-form @submit.prevent="onSubmitPayment">
       <!-- Square Secure Input Fields will be inserted here -->
       <div id="card-number"></div>
-      <!-- <input type="text" />
-      <form action="">testing!</form> -->
       <div id="expiration-date"></div>
       <div id="cvv"></div>
 
@@ -14,9 +12,13 @@
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
       <!-- Submit Button -->
-      <b-button type="submit" variant="primary"
-        >Submit Payment Details</b-button
+      <b-button
+        :disabled="!isSdkLoaded || isLoading"
+        type="submit"
+        variant="primary"
       >
+        Submit Payment Details
+      </b-button>
     </b-form>
   </div>
 </template>
@@ -25,58 +27,95 @@
 export default {
   data() {
     return {
-      card: null, // This will hold the Square card object
+      cardInstance: null, // Storing the Square card object here
       isSdkLoaded: false, // Flag to check if the SDK is loaded
       isLoading: false, // Flag to indicate loading state
       errorMessage: "", // Error message to display if any
     };
   },
+
   mounted() {
-    this.loadSquareSdk();
+    console.log("Component mounted, loading Square SDK...");
+    this.loadSquareSDK();
   },
+
   methods: {
-    loadSquareSdk() {
-      if (typeof window.Square === "undefined") {
+    loadSquareSDK() {
+      console.log("Checking if Square SDK is already loaded...");
+      if (
+        document.querySelector(
+          'script[src="https://web.squarecdn.com/v2/square.js"]'
+        )
+      ) {
+        console.log("SDK already loaded, initializing payment form...");
+        this.isSdkLoaded = true;
+        this.waitForSDKThenInitialize();
+      } else {
+        console.log("SDK not found, creating script tag...");
         const script = document.createElement("script");
-        script.src = "https://web.squarecdn.com/v2/square.js";
-        script.async = true;
+        script.src = "https://web.squarecdn.com/v1/square.js";
         script.onload = () => {
+          console.log("Square SDK loaded successfully");
           this.isSdkLoaded = true;
-          this.initializePaymentForm();
+          this.waitForSDKThenInitialize();
+        };
+        script.onerror = (error) => {
+          console.error("Error loading Square SDK", error);
+          this.errorMessage =
+            "Failed to load the payment SDK. Please refresh the page.";
         };
         document.head.appendChild(script);
-      } else {
-        this.isSdkLoaded = true;
-        this.initializePaymentForm();
       }
     },
-    async initializePaymentForm() {
-      if (!this.isSdkLoaded) {
-        console.error("Square SDK is not loaded yet.");
-        return;
-      }
 
+    waitForSDKThenInitialize() {
+      if (typeof window.Square !== "undefined") {
+        console.log(
+          "Square object is now available. Initializing payment form..."
+        );
+        this.initializePaymentForm();
+      } else {
+        console.log("Waiting for Square object to be available...");
+        setTimeout(this.waitForSDKThenInitialize, 500);
+      }
+    },
+
+    async initializePaymentForm() {
+      console.log("Initializing payment form...");
       const payments = window.Square.payments(
         "sandbox-sq0idb-FRXLrzfLW3ZjvpivifCFSA",
         "L3NGRS9FGWMXR"
       );
-      this.card = await payments.card();
-      await this.card.attach("#card-number", "#expiration-date", "#cvv");
+      this.cardInstance = await payments.card();
+      await this.cardInstance.attach(
+        "#card-number",
+        "#expiration-date",
+        "#cvv"
+      );
+      console.log("Payment form initialized.");
     },
+
     async onSubmitPayment() {
+      console.log("Submitting payment...");
       this.isLoading = true;
       this.errorMessage = "";
       try {
-        const result = await this.card.tokenize();
+        const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {
+          console.log("Tokenization successful, emitting event.");
           this.$emit("payment-details-submitted", result.token);
         } else {
-          console.error("Tokenization failed:", result);
-          this.errorMessage = "Tokenization failed. Please try again.";
+          console.log("Tokenization failed.", result.errors);
+          this.errorMessage =
+            "Tokenization failed. " +
+            (result.errors
+              ? result.errors.map((e) => e.message).join(", ")
+              : "Please try again.");
         }
       } catch (error) {
         console.error("Tokenization error:", error);
-        this.errorMessage = "An error occurred. Please try again.";
+        this.errorMessage =
+          "An error occurred during tokenization. Please try again.";
       } finally {
         this.isLoading = false;
       }
