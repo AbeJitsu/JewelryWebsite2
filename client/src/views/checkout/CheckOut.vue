@@ -47,13 +47,13 @@ export default {
     handleAuthSuccess() {
       this.showModal = false;
     },
-    handleShippingUpdate(shippingData) {
+    handleShippingUpdate() {
       // Handle shipping data update
     },
-    handleBillingUpdate(billingData) {
+    handleBillingUpdate() {
       // Handle billing data update
     },
-    handlePaymentUpdate(paymentData) {
+    handlePaymentUpdate() {
       // Handle payment data update
     },
     submitCheckout() {
