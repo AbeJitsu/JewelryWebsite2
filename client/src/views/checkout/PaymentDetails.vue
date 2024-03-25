@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -96,14 +98,28 @@ export default {
     },
 
     async onSubmitPayment() {
-      console.log("Submitting payment...");
       this.isLoading = true;
       this.errorMessage = "";
       try {
         const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {
-          console.log("Tokenization successful, emitting event.");
+          console.log("Tokenization successful.");
+
+          // Emitting an event for parent components or other listeners
           this.$emit("payment-details-submitted", result.token);
+
+          // Sending the token to the backend
+          axios
+            .post("/api/payment", { token: result.token })
+            .then((response) => {
+              console.log("Backend response:", response.data);
+              // Handle success, navigate to confirmation page, etc.
+              this.$router.push({ name: "OrderConfirmation" });
+            })
+            .catch((error) => {
+              console.error("Backend error:", error);
+              this.errorMessage = "Error processing payment. Please try again.";
+            });
         } else {
           console.log("Tokenization failed.", result.errors);
           this.errorMessage =
