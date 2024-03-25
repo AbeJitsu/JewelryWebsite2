@@ -53,7 +53,7 @@ export default {
       } else {
         console.log("SDK not found, creating script tag...");
         const script = document.createElement("script");
-        script.src = "https://web.squarecdn.com/v1/square.js";
+        script.src = "https://sandbox.web.squarecdn.com/v1/square.js";
         script.onload = () => {
           console.log("Square SDK loaded successfully");
           this.isSdkLoaded = true;
@@ -126,8 +126,8 @@ export default {
 
 <style scoped>
 .section-title {
-  margin-bottom: 20px;
-  font-size: 24px;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
   color: #333;
   text-align: center;
 }
@@ -135,12 +135,18 @@ export default {
 .payment-info-container {
   max-width: 60%;
   margin: auto;
-  padding: 20px;
+  padding: 2rem;
   background: #f7f7f7;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.3s ease-in-out;
 }
 
+.payment-info-container:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.3s ease-in-out;
+  transform: scale(1.01);
+}
 b-form-group label {
   font-weight: bold;
   color: #555;
