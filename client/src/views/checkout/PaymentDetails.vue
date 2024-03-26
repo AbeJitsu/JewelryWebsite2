@@ -25,65 +25,58 @@
 
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
-      cardInstance: null, // Storing the Square card object here
-      isSdkLoaded: false, // Flag to check if the SDK is loaded
-      isLoading: false, // Flag to indicate loading state
-      errorMessage: "", // Error message to display if any
+      cardInstance: null,
+      isSdkLoaded: false,
+      isLoading: false,
+      errorMessage: "",
     };
   },
 
+  computed: {
+    ...mapGetters({
+      orderTotal: "cart/orderTotal",
+    }),
+  },
+
   mounted() {
-    console.log("Component mounted, loading Square SDK...");
     this.loadSquareSDK();
   },
 
   methods: {
     loadSquareSDK() {
-      console.log("Checking if Square SDK is already loaded...");
       if (
-        document.querySelector(
+        !document.querySelector(
           'script[src="https://web.squarecdn.com/v2/square.js"]'
         )
       ) {
-        console.log("SDK already loaded, initializing payment form...");
-        this.isSdkLoaded = true;
-        this.waitForSDKThenInitialize();
-      } else {
-        console.log("SDK not found, creating script tag...");
         const script = document.createElement("script");
         script.src = "https://sandbox.web.squarecdn.com/v1/square.js";
-        script.onload = () => {
-          console.log("Square SDK loaded successfully");
-          this.isSdkLoaded = true;
-          this.waitForSDKThenInitialize();
-        };
-        script.onerror = (error) => {
-          console.error("Error loading Square SDK", error);
+        script.onload = this.waitForSDKThenInitialize;
+        script.onerror = () => {
           this.errorMessage =
             "Failed to load the payment SDK. Please refresh the page.";
         };
         document.head.appendChild(script);
+      } else {
+        this.isSdkLoaded = true;
+        this.waitForSDKThenInitialize();
       }
     },
 
     waitForSDKThenInitialize() {
-      if (typeof window.Square !== "undefined") {
-        console.log(
-          "Square object is now available. Initializing payment form..."
-        );
+      if (window.Square) {
         this.initializePaymentForm();
       } else {
-        console.log("Waiting for Square object to be available...");
         setTimeout(this.waitForSDKThenInitialize, 500);
       }
     },
 
     async initializePaymentForm() {
-      console.log("Initializing payment form...");
       const payments = window.Square.payments(
         "sandbox-sq0idb-FRXLrzfLW3ZjvpivifCFSA",
         "L3NGRS9FGWMXR"
@@ -94,7 +87,7 @@ export default {
         "#expiration-date",
         "#cvv"
       );
-      console.log("Payment form initialized.");
+      this.isSdkLoaded = true;
     },
 
     async onSubmitPayment() {
@@ -104,40 +97,18 @@ export default {
       try {
         const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {
-          console.log("Tokenization successful.");
-
-          // Emitting an event for parent components or other listeners
-          this.$emit("payment-details-submitted", result.token);
-
-          // Retrieve the order total from the Vuex store
-          const orderTotal = this.$store.getters["cart/orderTotal"].total;
-
-          // Sending the token and order total to the backend
-          axios
-            .post("/api/payment", {
-              token: result.token,
-              amount: orderTotal, // Include the calculated order total
-              currency: "USD", // Assuming USD, adjust as necessary
-            })
-            .then((response) => {
-              console.log("Backend response:", response.data);
-              // Handle success, navigate to confirmation page, etc.
-              this.$router.push({ name: "OrderConfirmation" });
-            })
-            .catch((error) => {
-              console.error("Backend error:", error);
-              this.errorMessage = "Error processing payment. Please try again.";
-            });
+          await axios.post("/api/payment", {
+            token: result.token,
+            amount: this.orderTotal.total,
+            currency: "USD",
+          });
+          this.$router.push({ name: "OrderConfirmation" });
         } else {
-          console.log("Tokenization failed.", result.errors);
           this.errorMessage =
-            "Tokenization failed. " +
-            (result.errors
-              ? result.errors.map((e) => e.message).join(", ")
-              : "Please try again.");
+            "Tokenization failed: " +
+            result.errors.map((e) => e.message).join(", ");
         }
       } catch (error) {
-        console.error("Tokenization error:", error);
         this.errorMessage =
           "An error occurred during tokenization. Please try again.";
       } finally {
