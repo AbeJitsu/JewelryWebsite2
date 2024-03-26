@@ -16,6 +16,16 @@ function getNextWednesdayNoon() {
 }
 
 const cartController = {
+  convertGuestCartToUserCart: async (req, res) => {
+    try {
+      const { sessionToken, userId } = req.body;
+      await Cart.convertGuestCartToUserCart(sessionToken, userId);
+      res.status(200).send({ message: "Cart conversion successful" });
+    } catch (error) {
+      console.error("Error converting guest cart to user cart:", error);
+      res.status(500).send({ message: "Error converting cart" });
+    }
+  },
   getCartItems: async (req, res) => {
     try {
       // Find the cart based on session ID or user ID
