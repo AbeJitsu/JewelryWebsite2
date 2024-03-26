@@ -43,41 +43,61 @@ const cartSchema = new Schema(
   }
 );
 
-// Add an item to the cart
 cartSchema.methods.addItem = function (item) {
   const existingItemIndex = this.items.findIndex(
     (i) => i.product.toString() === item.product.toString()
   );
   if (existingItemIndex > -1) {
-    this.items[existingItemIndex].quantity += item.quantity;
+    this.items[existingItemIndex].quantity = Math.max(
+      this.items[existingItemIndex].quantity,
+      item.quantity
+    );
   } else {
     this.items.push(item);
   }
 };
 
-// Remove an item from the cart
 cartSchema.methods.removeItem = function (productId) {
   this.items = this.items.filter(
     (i) => i.product.toString() !== productId.toString()
   );
 };
 
-// Clear expired items from the cart
 cartSchema.methods.clearExpiredItems = function () {
   const now = new Date();
   this.items = this.items.filter((item) => item.reservedUntil > now);
 };
 
-// Convert a guest cart to a user cart
 cartSchema.statics.convertGuestCartToUserCart = async function (
   sessionToken,
   userId
 ) {
-  const cart = await this.findOne({ sessionToken: sessionToken });
-  if (cart) {
-    cart.user = userId;
-    cart.sessionToken = null; // Clear the session token since it's no longer a guest cart
-    await cart.save();
+  const guestCart = await this.findOne({ sessionToken: sessionToken });
+  const userCart = await this.findOne({ user: userId });
+
+  if (guestCart) {
+    if (userCart) {
+      guestCart.items.forEach((guestItem) => {
+        const existingItem = userCart.items.find(
+          (userItem) =>
+            userItem.product.toString() === guestItem.product.toString()
+        );
+        if (existingItem) {
+          existingItem.quantity = Math.max(
+            existingItem.quantity,
+            guestItem.quantity
+          );
+        } else {
+          userCart.items.push(guestItem);
+        }
+      });
+      await userCart.save();
+      await guestCart.remove();
+    } else {
+      guestCart.user = userId;
+      guestCart.sessionToken = null;
+      await guestCart.save();
+    }
   }
 };
 

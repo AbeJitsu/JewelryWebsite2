@@ -48,8 +48,8 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(401).send({ error: "User not found" });
     }
@@ -59,12 +59,20 @@ exports.login = async (req, res) => {
       return res.status(401).send({ error: "Invalid credentials" });
     }
 
-    req.session.regenerate((err) => {
+    req.session.regenerate(async (err) => {
       if (err) {
         console.error("Session regeneration error:", err);
         return res.status(500).send({ error: "Session regeneration failed" });
       }
+
       req.session.userId = user._id;
+
+      // Start the cart merge process in the background
+      Cart.convertGuestCartToUserCart(req.sessionID, user._id)
+        .then(() => console.log("Cart merge completed"))
+        .catch((error) => console.error("Cart merge error:", error));
+
+      // Respond to the client immediately without waiting for the cart merge
       res.send({
         message: "Login successful",
         userId: user._id,

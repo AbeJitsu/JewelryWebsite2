@@ -100,6 +100,7 @@ export default {
     async onSubmitPayment() {
       this.isLoading = true;
       this.errorMessage = "";
+
       try {
         const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {
@@ -108,9 +109,16 @@ export default {
           // Emitting an event for parent components or other listeners
           this.$emit("payment-details-submitted", result.token);
 
-          // Sending the token to the backend
+          // Retrieve the order total from the Vuex store
+          const orderTotal = this.$store.getters["cart/orderTotal"].total;
+
+          // Sending the token and order total to the backend
           axios
-            .post("/api/payment", { token: result.token })
+            .post("/api/payment", {
+              token: result.token,
+              amount: orderTotal, // Include the calculated order total
+              currency: "USD", // Assuming USD, adjust as necessary
+            })
             .then((response) => {
               console.log("Backend response:", response.data);
               // Handle success, navigate to confirmation page, etc.

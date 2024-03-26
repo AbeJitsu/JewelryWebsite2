@@ -1,7 +1,7 @@
 // Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/cartController.js
 
-const Cart = require("../models/Cart");
-const Product = require("../models/Product");
+const Cart = require("../models/CartModel");
+const Product = require("../models/ProductModel");
 const moment = require("moment-timezone");
 const cron = require("node-cron");
 
@@ -16,6 +16,23 @@ function getNextWednesdayNoon() {
 }
 
 const cartController = {
+  getCartItems: async (req, res) => {
+    try {
+      // Find the cart based on session ID or user ID
+      let cart = await Cart.findOne({
+        $or: [{ user: req.session.userId }, { sessionToken: req.sessionID }],
+      }).populate("items.product"); // Populate to get product details
+
+      if (!cart) {
+        return res.status(404).send({ message: "Cart not found" });
+      }
+
+      res.status(200).send(cart.items);
+    } catch (error) {
+      console.error("Error getting cart items:", error);
+      res.status(500).send({ message: "Error fetching cart items" });
+    }
+  },
   addItemToCart: async (req, res) => {
     try {
       const { productId, quantity } = req.body;
