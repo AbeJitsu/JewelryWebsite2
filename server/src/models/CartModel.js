@@ -72,10 +72,17 @@ cartSchema.statics.convertGuestCartToUserCart = async function (
   sessionToken,
   userId
 ) {
-  const guestCart = await this.findOne({ sessionToken: sessionToken });
+  const guestCart = await this.findOne({ sessionToken: sessionToken }).populate(
+    "items.product"
+  );
   const userCart = await this.findOne({ user: userId });
 
   if (guestCart) {
+    // Remove unavailable items from the guest cart before merging
+    guestCart.items = guestCart.items.filter(
+      (item) => item.product && item.product.status === "available"
+    );
+
     if (userCart) {
       guestCart.items.forEach((guestItem) => {
         const existingItem = userCart.items.find(
