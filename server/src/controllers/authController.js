@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const validator = require("validator");
+const Cart = require("../models/CartModel"); // Ensure Cart model is imported
 
 exports.register = async (req, res) => {
   try {
@@ -26,18 +27,9 @@ exports.register = async (req, res) => {
     });
 
     await user.save();
-
-    req.session.regenerate((err) => {
-      if (err) {
-        console.error("Session regeneration error:", err);
-        return res.status(500).send({ error: "Session regeneration failed" });
-      }
-      req.session.userId = user._id;
-      res.status(201).send({
-        message: "User registered successfully",
-        userId: user._id,
-        preferredFirstName: user.preferredFirstName,
-      });
+    // Responding with success message, removed setting session userId here
+    res.status(201).send({
+      message: "User registered successfully. Please log in.",
     });
   } catch (error) {
     console.error("Error registering user:", error);
@@ -67,12 +59,17 @@ exports.login = async (req, res) => {
 
       req.session.userId = user._id;
 
-      // Start the cart merge process in the background
-      Cart.convertGuestCartToUserCart(req.sessionID, user._id)
-        .then(() => console.log("Cart merge completed"))
-        .catch((error) => console.error("Cart merge error:", error));
+      // Check for the existence of a guest cart before initiating the merge
+      const guestCartExists = await Cart.findOne({
+        sessionToken: req.sessionID,
+      });
+      if (guestCartExists) {
+        Cart.convertGuestCartToUserCart(req.sessionID, user._id)
+          .then(() => console.log("Cart merge completed"))
+          .catch((error) => console.error("Cart merge error:", error)); // Error is logged silently
+      }
 
-      // Respond to the client immediately without waiting for the cart merge
+      // Respond to the client without waiting for the cart merge
       res.send({
         message: "Login successful",
         userId: user._id,
