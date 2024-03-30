@@ -1,18 +1,29 @@
 <template>
   <div>
     <!-- Shipping Information Section -->
-    <h2 class="section-title">Shipping Information</h2>
+    <h2 class="section-title">Shipping Info</h2>
     <div class="shipping-info-container">
       <b-form @submit.prevent="onSubmitShipping">
-        <!-- Shipping Name Input -->
-        <b-form-group label="Name" label-for="shipping-name">
+        <!-- First Name Input -->
+        <b-form-group label="First Name" label-for="first-name">
           <b-form-input
-            id="shipping-name"
-            v-model="shippingDetails.name"
+            id="first-name"
+            v-model="shippingDetails.firstName"
             required
-            placeholder="Enter your name"
+            placeholder="Enter your first name"
           ></b-form-input>
         </b-form-group>
+
+        <!-- Last Name Input -->
+        <b-form-group label="Last Name" label-for="last-name">
+          <b-form-input
+            id="last-name"
+            v-model="shippingDetails.lastName"
+            required
+            placeholder="Enter your last name"
+          ></b-form-input>
+        </b-form-group>
+
         <!-- Shipping Address Input -->
         <b-form-group label="Address" label-for="shipping-address">
           <b-form-input
@@ -23,8 +34,14 @@
           ></b-form-input>
         </b-form-group>
 
-        <!-- Shipping Apartment/Suite Input (Optional) -->
+        <!-- Checkbox for Apartment/Suite Information -->
+        <b-form-checkbox v-model="hasApartment">
+          I have an Apartment/Suite number
+        </b-form-checkbox>
+
+        <!-- Conditionally Render Apartment/Suite Input -->
         <b-form-group
+          v-if="hasApartment"
           label="Apartment/Suite (Optional)"
           label-for="shipping-apartment"
         >
@@ -64,29 +81,42 @@
             placeholder="Enter your ZIP code"
           ></b-form-input>
         </b-form-group>
+
+        <!-- Checkbox to indicate if billing address is the same as shipping -->
+        <b-form-checkbox v-model="billingSameAsShipping">
+          Billing address is the same as shipping address
+        </b-form-checkbox>
+
+        <!-- Checkbox to indicate if cardholder's name is the same as the shipping name -->
+        <b-form-checkbox v-model="cardholderNameSameAsShipping">
+          Cardholder's name is the same as shipping name
+        </b-form-checkbox>
       </b-form>
     </div>
 
-    <!-- Checkbox to indicate if billing address is the same as shipping -->
-    <b-form-checkbox v-model="billingSameAsShipping">
-      Billing address is the same as shipping address
-    </b-form-checkbox>
+    <!-- Billing Information Section, displayed regardless to allow cardholder's name entry -->
+    <h2 class="section-title">Billing Information</h2>
+    <div class="billing-info-container">
+      <b-form @submit.prevent="onSubmitBilling">
+        <!-- Cardholder's Name Input -->
+        <b-form-group label="Cardholder's Name" label-for="cardholder-name">
+          <b-form-input
+            id="cardholder-name"
+            v-model="billingDetails.cardholderName"
+            :disabled="cardholderNameSameAsShipping"
+            required
+            :placeholder="
+              cardholderNameSameAsShipping
+                ? `${shippingDetails.firstName} ${shippingDetails.lastName}`
+                : 'Enter cardholder\'s name'
+            "
+          ></b-form-input>
+        </b-form-group>
 
-    <!-- Billing Information Section -->
-    <div v-if="!billingSameAsShipping">
-      <h2 class="section-title">Billing Information</h2>
-      <div class="billing-info-container">
-        <b-form @submit.prevent="onSubmitBilling">
-          <!-- Billing Name Input -->
-          <b-form-group label="Name" label-for="billing-name">
-            <b-form-input
-              id="billing-name"
-              v-model="billingDetails.name"
-              required
-              placeholder="Cardholder's name"
-            ></b-form-input>
-          </b-form-group>
-          <!-- Billing Address Input -->
+        <!-- The rest of the billing address fields -->
+        <!-- Only shown when billing address is not the same as shipping -->
+        <template v-if="!billingSameAsShipping">
+          <!-- Billing Address Inputs -->
           <b-form-group label="Address" label-for="billing-address">
             <b-form-input
               id="billing-address"
@@ -137,8 +167,8 @@
               placeholder="Enter your ZIP code"
             ></b-form-input>
           </b-form-group>
-        </b-form>
-      </div>
+        </template>
+      </b-form>
     </div>
   </div>
 </template>
@@ -148,7 +178,11 @@ export default {
   data() {
     return {
       billingSameAsShipping: false,
+      cardholderNameSameAsShipping: false,
+      hasApartment: false,
       shippingDetails: {
+        firstName: "",
+        lastName: "",
         address: "",
         apartment: "",
         city: "",
@@ -156,6 +190,7 @@ export default {
         zip: "",
       },
       billingDetails: {
+        cardholderName: "",
         address: "",
         apartment: "",
         city: "",
@@ -166,10 +201,29 @@ export default {
   },
   methods: {
     onSubmitShipping() {
-      // Handle shipping form submission
+      this.$store.dispatch("updateShippingDetails", this.shippingDetails);
     },
     onSubmitBilling() {
-      // Handle billing form submission
+      if (this.billingSameAsShipping) {
+        this.billingDetails.address = this.shippingDetails.address;
+        this.billingDetails.apartment = this.shippingDetails.apartment;
+        this.billingDetails.city = this.shippingDetails.city;
+        this.billingDetails.state = this.shippingDetails.state;
+        this.billingDetails.zip = this.shippingDetails.zip;
+      }
+      if (this.cardholderNameSameAsShipping) {
+        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
+      }
+      this.$store.dispatch("updateBillingDetails", this.billingDetails);
+    },
+  },
+  watch: {
+    cardholderNameSameAsShipping(newVal) {
+      if (newVal) {
+        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
+      } else {
+        this.billingDetails.cardholderName = "";
+      }
     },
   },
 };
@@ -187,20 +241,23 @@ export default {
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 1rem;
   margin-bottom: 20px;
+
+  margin: auto; /* Center align the container */
 }
 
 b-form-group {
+  display: flex;
+  align-items: center;
   margin-bottom: 1rem;
 }
 
 b-form-group label {
   font-size: 1rem;
   color: #444;
-  margin-bottom: 0.5rem;
-  text-align: left; /* Align labels to the left */
-  display: block; /* Ensure labels take up the full width to align the input below */
+  margin-right: 10px; /* Add space between the label and the input */
+  width: 20%; /* Define a fixed width for the label */
 }
 
 b-form-input,
@@ -208,7 +265,7 @@ b-form-checkbox {
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 10px;
-  width: 100%;
+  flex-grow: 1; /* Input takes the remaining space */
 }
 
 b-button {

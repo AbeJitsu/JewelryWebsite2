@@ -1,10 +1,8 @@
-<template>
+<!-- <template>
   <div>
-    <!-- Shipping Information -->
     <h2 class="section-title">Shipping Information</h2>
     <div class="shipping-details-container">
       <b-form @submit.prevent="onSubmitShipping">
-        <!-- Address Input -->
         <b-form-group
           label="Address"
           label-for="shipping-address"
@@ -19,8 +17,6 @@
             placeholder="Enter your shipping address"
           ></b-form-input>
         </b-form-group>
-
-        <!-- Apartment/Suite Input (Optional) -->
         <b-form-group
           label="Apartment/Suite (Optional)"
           label-for="shipping-apartment"
@@ -31,8 +27,6 @@
             placeholder="Apartment, suite, etc. (Optional)"
           ></b-form-input>
         </b-form-group>
-
-        <!-- City Input -->
         <b-form-group
           label="City"
           label-for="shipping-city"
@@ -47,8 +41,6 @@
             placeholder="Enter your city"
           ></b-form-input>
         </b-form-group>
-
-        <!-- State Input -->
         <b-form-group
           label="State"
           label-for="shipping-state"
@@ -63,8 +55,6 @@
             placeholder="Enter your state"
           ></b-form-input>
         </b-form-group>
-
-        <!-- ZIP Code Input -->
         <b-form-group
           label="ZIP Code"
           label-for="shipping-zip"
@@ -107,7 +97,6 @@ export default {
       city: { required },
       state: { required },
       zip: { required },
-      // apartment is optional, so no validation rule
     },
   },
   methods: {
@@ -130,4 +119,4 @@ export default {
     },
   },
 };
-</script>
+</script> -->

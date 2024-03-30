@@ -7,11 +7,16 @@ export default {
     shippingDetails: {},
     billingDetails: {},
     paymentDetails: {},
+    isBillingSameAsShipping: false, // Track if billing is same as shipping
   },
 
   mutations: {
     updateShippingDetails(state, details) {
       state.shippingDetails = details;
+      // Synchronize billing details if necessary
+      if (state.isBillingSameAsShipping) {
+        state.billingDetails = { ...details };
+      }
     },
     updateBillingDetails(state, details) {
       state.billingDetails = details;
@@ -19,10 +24,15 @@ export default {
     updatePaymentDetails(state, details) {
       state.paymentDetails = details;
     },
+    setBillingSameAsShipping(state, isSame) {
+      state.isBillingSameAsShipping = isSame;
+      if (isSame) {
+        state.billingDetails = { ...state.shippingDetails };
+      }
+    },
   },
 
   actions: {
-    // You can also use actions to handle asynchronous operations or complex logic
     setShippingDetails({ commit }, details) {
       commit("updateShippingDetails", details);
     },
@@ -32,12 +42,15 @@ export default {
     setPaymentDetails({ commit }, details) {
       commit("updatePaymentDetails", details);
     },
+    toggleBillingSameAsShipping({ commit }, isSame) {
+      commit("setBillingSameAsShipping", isSame);
+    },
   },
 
   getters: {
-    // Getters to retrieve state data
     getShippingDetails: (state) => state.shippingDetails,
     getBillingDetails: (state) => state.billingDetails,
     getPaymentDetails: (state) => state.paymentDetails,
+    isBillingSameAsShipping: (state) => state.isBillingSameAsShipping,
   },
 };

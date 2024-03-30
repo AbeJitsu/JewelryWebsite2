@@ -51,7 +51,7 @@ export default {
     loadSquareSDK() {
       if (
         !document.querySelector(
-          'script[src="https://web.squarecdn.com/v2/square.js"]'
+          'script[src="https://sandbox.web.squarecdn.com/v2/square.js"]'
         )
       ) {
         const script = document.createElement("script");

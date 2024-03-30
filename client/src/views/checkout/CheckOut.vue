@@ -73,7 +73,8 @@ export default {
 .shipping-details-container,
 .billing-info-container,
 .payment-info-container {
-  margin-bottom: 20px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 1rem;
   padding: 1rem;
