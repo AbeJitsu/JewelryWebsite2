@@ -10,7 +10,7 @@ const {
   uploadCSV,
   buildSearchCriteria, // Assuming you have this function implemented
   // Assuming you'll implement searchProducts or adjust according to your actual function
-} = require("../productController");
+} = require("../controllers/productController");
 
 // Set up multer for file uploads, storing files in the 'uploads/' directory
 const upload = multer({ dest: "uploads/" });

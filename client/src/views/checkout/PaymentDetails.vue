@@ -94,6 +94,8 @@ export default {
       this.isLoading = true;
       this.errorMessage = "";
 
+      console.log("Submitting payment with total:", this.orderTotal.total);
+
       try {
         const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {

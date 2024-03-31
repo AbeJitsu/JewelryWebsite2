@@ -72,6 +72,8 @@ app.use("/api/cart", cartRoutes);
 app.post("/api/payment", async (req, res) => {
   const { token, amount, currency } = req.body;
 
+  console.log("Received payment request with:", { token, amount, currency });
+
   if (!token || !amount || !currency) {
     return res
       .status(400)
@@ -94,6 +96,8 @@ app.post("/api/payment", async (req, res) => {
       requestBody
     );
 
+    console.log("Payment API response:", result);
+
     if (result.payment) {
       res.json({ message: "Payment successful", data: result.payment });
     } else {
@@ -108,6 +112,7 @@ app.post("/api/payment", async (req, res) => {
       .json({ message: "Internal server error", error: error.message });
   }
 });
+
 
 // Error Handling Middleware for unexpected errors
 app.use((err, req, res, next) => {

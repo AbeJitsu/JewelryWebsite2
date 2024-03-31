@@ -166,7 +166,7 @@
         </b-form-group>
 
         <!-- The rest of the billing address fields, only shown when billing address is not the same as shipping -->
-        <span v-if="!billingSameAsShipping">
+        <template v-if="!billingSameAsShipping">
           <!-- Billing Address Input -->
           <b-form-group
             class="form-group"
@@ -263,128 +263,87 @@
               placeholder="Enter your ZIP code"
             ></b-form-input>
           </b-form-group>
-        </span>
+        </template>
       </b-form>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      billingSameAsShipping: false,
-      cardholderNameSameAsShipping: false,
-      hasApartment: false,
-      hasBillingApartment: false,
-      shippingDetails: {
-        firstName: "",
-        lastName: "",
-        address: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
-      billingDetails: {
-        cardholderName: "",
-        address: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
+import { mount } from "@vue/test-utils";
+import BillingInformation from "./BillingInformation.vue";
+
+describe("BillingInformation", () => {
+  it("submits shipping details when onSubmitShipping is called", () => {
+    const wrapper = mount(BillingInformation);
+    const shippingDetails = {
+      firstName: "John",
+      lastName: "Doe",
+      address: "123 Main St",
+      apartment: "Apt 4B",
+      city: "New York",
+      state: "NY",
+      zip: "10001",
     };
-  },
-  methods: {
-    onSubmitShipping() {
-      this.$store.dispatch("updateShippingDetails", this.shippingDetails);
-    },
-    onSubmitBilling() {
-      if (this.billingSameAsShipping) {
-        this.billingDetails.address = this.shippingDetails.address;
-        this.billingDetails.apartment = this.shippingDetails.apartment;
-        this.billingDetails.city = this.shippingDetails.city;
-        this.billingDetails.state = this.shippingDetails.state;
-        this.billingDetails.zip = this.shippingDetails.zip;
-      }
-      if (this.cardholderNameSameAsShipping) {
-        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
-      }
-      this.$store.dispatch("updateBillingDetails", this.billingDetails);
-    },
-  },
-  watch: {
-    cardholderNameSameAsShipping(newVal) {
-      if (newVal) {
-        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
-      } else {
-        this.billingDetails.cardholderName = "";
-      }
-    },
-  },
-};
+
+    wrapper.setData({ shippingDetails });
+    wrapper.vm.onSubmitShipping();
+
+    expect(wrapper.emitted().submitShipping[0][0]).toEqual(shippingDetails);
+  });
+
+  it("submits billing details when onSubmitBilling is called", () => {
+    const wrapper = mount(BillingInformation);
+    const billingDetails = {
+      cardholderName: "John Doe",
+      address: "456 Elm St",
+      apartment: "Suite 200",
+      city: "New York",
+      state: "NY",
+      zip: "10002",
+    };
+
+    wrapper.setData({ billingDetails });
+    wrapper.vm.onSubmitBilling();
+
+    expect(wrapper.emitted().submitBilling[0][0]).toEqual(billingDetails);
+  });
+
+  it("updates billing details with shipping details when billingSameAsShipping is true", () => {
+    const wrapper = mount(BillingInformation);
+    const shippingDetails = {
+      firstName: "John",
+      lastName: "Doe",
+      address: "123 Main St",
+      apartment: "Apt 4B",
+      city: "New York",
+      state: "NY",
+      zip: "10001",
+    };
+
+    wrapper.setData({ shippingDetails, billingSameAsShipping: true });
+    wrapper.vm.onSubmitBilling();
+
+    expect(wrapper.vm.billingDetails.address).toBe(shippingDetails.address);
+    expect(wrapper.vm.billingDetails.apartment).toBe(shippingDetails.apartment);
+    expect(wrapper.vm.billingDetails.city).toBe(shippingDetails.city);
+    expect(wrapper.vm.billingDetails.state).toBe(shippingDetails.state);
+    expect(wrapper.vm.billingDetails.zip).toBe(shippingDetails.zip);
+  });
+
+  it("updates billing details cardholderName with shipping details when cardholderNameSameAsShipping is true", () => {
+    const wrapper = mount(BillingInformation);
+    const shippingDetails = {
+      firstName: "John",
+      lastName: "Doe",
+    };
+
+    wrapper.setData({ shippingDetails, cardholderNameSameAsShipping: true });
+    wrapper.vm.onSubmitBilling();
+
+    expect(wrapper.vm.billingDetails.cardholderName).toBe(
+      `${shippingDetails.firstName} ${shippingDetails.lastName}`
+    );
+  });
+});
 </script>
-
-<style scoped>
-.section-title {
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #333;
-}
-
-.shipping-info-container,
-.billing-info-container {
-  background: #ffefef;
-  border-radius: 1rem;
-  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ccc;
-  padding: 1rem;
-  margin: 2rem;
-}
-
-.form-group {
-  display: flex;
-  /* justify-content: flex-start; */
-  align-items: center;
-  margin: 1rem;
-  white-space: nowrap;
-}
-
-.form-group label {
-  margin: 1rem;
-  white-space: nowrap;
-  text-align: right;
-  min-width: 20rem;
-}
-
-b-form-input {
-  /* border: 1px ridge #ccc;
-  border-radius: 4px;
-  padding: 10rem; */
-  flex-grow: 1;
-}
-
-b-form-checkbox {
-  margin: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  flex-grow: 1;
-}
-
-b-button {
-  background-color: #0056b3;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 10px;
-}
-
-b-button:hover {
-  background-color: #003974;
-}
-</style>

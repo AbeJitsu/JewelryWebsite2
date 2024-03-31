@@ -65,7 +65,8 @@ export default {
 
 <style scoped>
 .checkout-component {
-  max-width: 50%;
+  min-width: 40%;
+  max-width: 60%;
   margin-top: 2rem;
 }
 
@@ -97,8 +98,8 @@ export default {
 /* Styling for form inputs, aligning with your cart item styling */
 .input-field {
   width: 100%;
-  padding: 0.5rem;
-  margin: 0.5rem 0;
+  /* padding: 0.5rem; */
+  /* margin: 0.5rem 0; */
   border: 1px solid #000000;
   border-radius: 0.25rem;
 }
