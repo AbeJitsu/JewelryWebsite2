@@ -1,291 +1,107 @@
 <template>
   <div>
-    <!-- Shipping Information Section -->
-    <h2 class="section-title">Shipping Info</h2>
-    <div class="shipping-info-container">
-      <b-form @submit.prevent="onSubmitShipping">
-        <!-- First Name Input -->
-        <b-form-group
-          class="form-group"
-          label-for="first-name"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          label="First Name"
-        >
-          <b-form-input
-            id="first-name"
-            v-model="shippingDetails.firstName"
-            required
-            placeholder="Enter your first name"
-          ></b-form-input>
-        </b-form-group>
-
-        <!-- Last Name Input -->
-        <b-form-group
-          class="form-group"
-          label-for="last-name"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          label="Last Name"
-        >
-          <b-form-input
-            id="last-name"
-            v-model="shippingDetails.lastName"
-            required
-            placeholder="Enter your last name"
-          ></b-form-input>
-        </b-form-group>
-
-        <!-- Shipping Address Input -->
-        <b-form-group
-          class="form-group"
-          label-for="shipping-address"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          label="Address"
-        >
-          <b-form-input
-            id="shipping-address"
-            v-model="shippingDetails.address"
-            required
-            placeholder="Enter your shipping address"
-          ></b-form-input>
-        </b-form-group>
-
-        <!-- Checkbox for Apartment/Suite Information -->
-        <b-form-group
-          class="form-group"
-          label-for="has-apartment"
-          label-cols-sm="3"
-          content-cols-sm="9"
-        >
-          <b-form-checkbox id="has-apartment" v-model="hasApartment">
-            I have an Apt, Unit, or Suite number
-          </b-form-checkbox>
-        </b-form-group>
-
-        <!-- Conditionally Render Apartment/Suite Input -->
-        <b-form-group
-          label="Apt, Unit, or Suite"
-          class="form-group"
-          label-for="shipping-apartment"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          v-if="hasApartment"
-        >
-          <b-form-input
-            id="shipping-apartment"
-            v-model="shippingDetails.apartment"
-            placeholder="Apt, Unit, or Suite (Optional)"
-          ></b-form-input>
-        </b-form-group>
-
-        <!-- Shipping City Input -->
-        <b-form-group
-          class="form-group"
-          label-for="shipping-city"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          label="City"
-        >
-          <b-form-input
-            id="shipping-city"
-            v-model="shippingDetails.city"
-            required
-            placeholder="Enter your city"
-          ></b-form-input>
-        </b-form-group>
-
-        <!-- Shipping State Input -->
-        <b-form-group
-          class="form-group"
-          label-for="shipping-state"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          label="State"
-        >
-          <b-form-input
-            id="shipping-state"
-            v-model="shippingDetails.state"
-            required
-            placeholder="Enter your state"
-          ></b-form-input>
-        </b-form-group>
-
-        <!-- Shipping ZIP Code Input -->
-        <b-form-group
-          class="form-group"
-          label-for="shipping-zip"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          label="ZIP Code"
-        >
-          <b-form-input
-            id="shipping-zip"
-            v-model="shippingDetails.zip"
-            required
-            placeholder="Enter your ZIP code"
-          ></b-form-input>
-        </b-form-group>
-
-        <!-- Checkbox to indicate if billing address is the same as shipping -->
-        <b-form-checkbox v-model="billingSameAsShipping">
-          Billing address is the same as shipping address
-        </b-form-checkbox>
-
-        <!-- Checkbox to indicate if cardholder's name is the same as the shipping name -->
-        <b-form-checkbox v-model="cardholderNameSameAsShipping">
-          Cardholder's name is the same as shipping name
-        </b-form-checkbox>
-      </b-form>
-    </div>
-
     <!-- Billing Information Section -->
     <h2 class="section-title">Billing Information</h2>
-    <div class="billing-info-container" v-if="!billingSameAsShipping">
+    <div class="billing-info-container">
       <b-form @submit.prevent="onSubmitBilling">
-        <!-- Cardholder's Name Input -->
-        <b-form-group
-          class="form-group"
+        <!-- Checkbox for Cardholder Name Same as Shipping Name -->
+        <div class="checkbox-align">
+          <b-form-checkbox v-model="cardholderNameSameAsShipping">
+            Same name as shipping.
+          </b-form-checkbox>
+        </div>
+
+        <FormInput
+          label="Name on Card"
           label-for="cardholder-name"
-          label-cols-sm="3"
-          content-cols-sm="9"
-          label="Cardholder's Name"
-        >
-          <b-form-input
-            id="cardholder-name"
-            v-model="billingDetails.cardholderName"
-            :disabled="cardholderNameSameAsShipping"
-            required
-            :placeholder="
-              cardholderNameSameAsShipping
-                ? `${shippingDetails.firstName} ${shippingDetails.lastName}`
-                : 'Enter cardholder\'s name'
-            "
-          ></b-form-input>
-        </b-form-group>
+          placeholder="Enter cardholder's name"
+          v-model="billingDetails.cardholderName"
+          required
+          :disabled="cardholderNameSameAsShipping"
+        />
 
-        <!-- The rest of the billing address fields, only shown when billing address is not the same as shipping -->
-        <span v-if="!billingSameAsShipping">
-          <!-- Billing Address Input -->
-          <b-form-group
-            class="form-group"
-            label-for="billing-address"
-            label-cols-sm="3"
-            content-cols-sm="9"
+        <!-- Checkbox for Billing Address Same as Shipping Address -->
+        <div class="checkbox-align">
+          <b-form-checkbox v-model="billingSameAsShipping">
+            Billing = Shipping Address.
+          </b-form-checkbox>
+        </div>
+
+        <!-- Conditional rendering for billing address inputs -->
+        <template v-if="!billingSameAsShipping">
+          <!-- Address Input -->
+          <FormInput
             label="Address"
-          >
-            <b-form-input
-              id="billing-address"
-              v-model="billingDetails.address"
-              required
-              placeholder="Enter your billing address"
-            ></b-form-input>
-          </b-form-group>
+            label-for="billing-address"
+            placeholder="Enter your billing address"
+            v-model="billingDetails.address"
+            required
+          />
 
-          <!-- Checkbox for Billing Apartment/Suite Information -->
-          <!-- Checkbox for Billing Apartment/Suite Information -->
-          <b-form-group
-            class="form-group"
-            label-for="has-billing-apartment"
-            label-cols-sm="3"
-            content-cols-sm="9"
-          >
+          <!-- Checkbox for Apartment/Suite Information -->
+          <div class="checkbox-align">
             <b-form-checkbox
               id="has-billing-apartment"
               v-model="hasBillingApartment"
             >
-              I have an Apt, Unit, or Suite number
+              Includes Apt, Unit, Suite.
             </b-form-checkbox>
-          </b-form-group>
+          </div>
 
-          <!-- Conditionally Render Billing Apartment/Suite Input -->
-          <b-form-group
-            label="Apt, Unit, or Suite"
-            class="form-group"
-            label-for="billing-apartment"
-            label-cols-sm="3"
-            content-cols-sm="9"
-            v-if="hasBillingApartment"
-          >
-            <b-form-input
-              id="billing-apartment"
-              v-model="billingDetails.apartment"
+          <!-- Conditionally Render Apartment/Suite Input -->
+          <div v-if="hasBillingApartment">
+            <FormInput
+              label="Apt, Unit, or Suite"
+              label-for="billing-apartment"
               placeholder="Apt, Unit, or Suite (Optional)"
-            >
-            </b-form-input>
-          </b-form-group>
+              v-model="billingDetails.apartment"
+            />
+          </div>
 
-          <!-- Billing City Input -->
-          <b-form-group
-            class="form-group"
-            label-for="billing-city"
-            label-cols-sm="3"
-            content-cols-sm="9"
+          <!-- City Input -->
+          <FormInput
             label="City"
-          >
-            <b-form-input
-              id="billing-city"
-              v-model="billingDetails.city"
-              required
-              placeholder="Enter your city"
-            ></b-form-input>
-          </b-form-group>
+            label-for="billing-city"
+            placeholder="Enter your city"
+            v-model="billingDetails.city"
+            required
+          />
 
-          <!-- Billing State Input -->
-          <b-form-group
-            class="form-group"
-            label-for="billing-state"
-            label-cols-sm="3"
-            content-cols-sm="9"
+          <!-- State Input -->
+          <FormInput
             label="State"
-          >
-            <b-form-input
-              id="billing-state"
-              v-model="billingDetails.state"
-              required
-              placeholder="Enter your state"
-            ></b-form-input>
-          </b-form-group>
+            label-for="billing-state"
+            placeholder="Enter your state"
+            v-model="billingDetails.state"
+            required
+          />
 
-          <!-- Billing ZIP Code Input -->
-          <b-form-group
-            class="form-group"
-            label-for="billing-zip"
-            label-cols-sm="3"
-            content-cols-sm="9"
+          <!-- ZIP Code Input -->
+          <FormInput
             label="ZIP Code"
-          >
-            <b-form-input
-              id="billing-zip"
-              v-model="billingDetails.zip"
-              required
-              placeholder="Enter your ZIP code"
-            ></b-form-input>
-          </b-form-group>
-        </span>
+            label-for="billing-zip"
+            placeholder="Enter your ZIP code"
+            v-model="billingDetails.zip"
+            required
+          />
+        </template>
       </b-form>
     </div>
   </div>
 </template>
 
 <script>
+import FormInput from "@/components/form/FormInput.vue";
+
 export default {
+  components: {
+    FormInput,
+  },
   data() {
     return {
       billingSameAsShipping: false,
       cardholderNameSameAsShipping: false,
-      hasApartment: false,
       hasBillingApartment: false,
-      shippingDetails: {
-        firstName: "",
-        lastName: "",
-        address: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
       billingDetails: {
         cardholderName: "",
         address: "",
@@ -333,7 +149,7 @@ export default {
   color: #333;
 }
 
-.shipping-info-container,
+.shipping-details-container,
 .billing-info-container {
   background: #ffefef;
   border-radius: 1rem;
@@ -344,47 +160,11 @@ export default {
 }
 
 .form-group {
-  display: flex;
-  /* justify-content: flex-start; */
-  align-items: center;
   margin: 1rem;
   white-space: nowrap;
 }
 
-.form-group label {
-  margin: 1rem;
-  white-space: nowrap;
-  text-align: right;
-  min-width: 20rem;
-}
-
-b-form-input {
-  /* border: 1px ridge #ccc;
-  border-radius: 4px;
-  padding: 10rem; */
-  flex-grow: 1;
-}
-
-b-form-checkbox {
-  margin: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  flex-grow: 1;
-}
-
-b-button {
-  background-color: #0056b3;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 10px;
-}
-
-b-button:hover {
-  background-color: #003974;
+.checkbox-align {
+  margin-left: 33%; /* Adjust as needed for alignment */
 }
 </style>

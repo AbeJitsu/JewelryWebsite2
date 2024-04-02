@@ -37,8 +37,8 @@ body {
   font-family: "Arimo", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #371f2d;
+  text-align: justify;
+  /* color: #371f2d; */
 }
 
 .flex-grow-1 {

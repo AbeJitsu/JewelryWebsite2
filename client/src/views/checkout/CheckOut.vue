@@ -9,7 +9,10 @@
         ></auth-modal>
 
         <!-- Include ShippingInformation component -->
-        <shipping-information @update-shipping="handleShippingUpdate" />
+        <shipping-information
+          @update-shipping="handleShippingUpdate"
+          :isSameAsShipping="billingSameAsShipping"
+        />
 
         <!-- Include BillingInformation component -->
         <billing-information
@@ -47,17 +50,21 @@ export default {
     handleAuthSuccess() {
       this.showModal = false;
     },
-    handleShippingUpdate() {
-      // Handle shipping data update
+    handleShippingUpdate(shippingData) {
+      // Handle shipping data update. You might want to update Vuex store or component state here
+      console.log("Shipping data updated", shippingData);
     },
-    handleBillingUpdate() {
+    handleBillingUpdate(billingData) {
       // Handle billing data update
+      console.log("Billing data updated", billingData);
     },
-    handlePaymentUpdate() {
+    handlePaymentUpdate(paymentData) {
       // Handle payment data update
+      console.log("Payment data updated", paymentData);
     },
     submitCheckout() {
       // Logic to submit the checkout data
+      console.log("Submitting checkout data");
     },
   },
 };
@@ -136,4 +143,4 @@ export default {
 /* Additional styles for form elements like labels, select boxes, etc., can be added here */
 </style>
 
-./CheckOut.vue
+<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/CheckOut.vue -->

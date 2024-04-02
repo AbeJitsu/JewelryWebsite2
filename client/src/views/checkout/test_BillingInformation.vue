@@ -60,7 +60,7 @@
           content-cols-sm="9"
         >
           <b-form-checkbox id="has-apartment" v-model="hasApartment">
-            I have an Apt, Unit, or Suite number
+            I have an Apt, Unit, or Suite #
           </b-form-checkbox>
         </b-form-group>
 
@@ -195,7 +195,7 @@
               id="has-billing-apartment"
               v-model="hasBillingApartment"
             >
-              I have an Apt, Unit, or Suite number
+              I have an Apt, Unit, or Suite #
             </b-form-checkbox>
           </b-form-group>
 

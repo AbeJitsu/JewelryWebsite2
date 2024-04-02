@@ -11,7 +11,7 @@
     <b-col :sm="contentColsSm">
       <b-form-input
         :id="labelFor"
-        :value="inputValue"  
+        :value="inputValue"
         @input="updateValue"
         :placeholder="placeholder"
         :required="required"
@@ -51,7 +51,7 @@ export default {
     },
     labelAlignSm: {
       type: String,
-      default: "left",
+      default: "right",
     },
     labelSize: String,
     validState: {
@@ -67,15 +67,37 @@ export default {
         return this.modelValue;
       },
       set(value) {
-        this.$emit('update:modelValue', value);
+        this.$emit("update:modelValue", value);
       },
     },
   },
   methods: {
     updateValue(value) {
-      this.$emit('update:modelValue', value);
+      this.$emit("update:modelValue", value);
     },
   },
   emits: ["update:modelValue"],
 };
 </script>
+
+<style scoped>
+b-form-input {
+  border: 1px ridge #ccc;
+  border-radius: 4px;
+  padding: 10rem;
+  flex-grow: 1;
+}
+
+b-form-checkbox {
+  margin: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  flex-grow: 1;
+}
+
+.form-group {
+  margin: 1rem;
+  white-space: nowrap;
+}
+</style>
