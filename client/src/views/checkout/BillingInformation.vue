@@ -23,7 +23,7 @@
         <!-- Checkbox for Billing Address Same as Shipping Address -->
         <div class="checkbox-align">
           <b-form-checkbox v-model="billingSameAsShipping">
-            Billing = Shipping Address.
+            Billing = Shipping Address
           </b-form-checkbox>
         </div>
 
@@ -44,14 +44,14 @@
               id="has-billing-apartment"
               v-model="hasBillingApartment"
             >
-              Includes Apt, Unit, Suite.
+              Includes Apt, Unit, or Ste.
             </b-form-checkbox>
           </div>
 
           <!-- Conditionally Render Apartment/Suite Input -->
           <div v-if="hasBillingApartment">
             <FormInput
-              label="Apt, Unit, or Suite"
+              label="Apt, Unit, or Ste"
               label-for="billing-apartment"
               placeholder="Apt, Unit, or Suite (Optional)"
               v-model="billingDetails.apartment"

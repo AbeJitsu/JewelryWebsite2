@@ -1,25 +1,27 @@
 <template>
-  <div class="info-container">
+  <div>
     <h2 class="section-title">Payment Details</h2>
-    <b-form @submit.prevent="onSubmitPayment">
-      <!-- Square Secure Input Fields will be inserted here -->
-      <div id="card-number"></div>
-      <div id="expiration-date"></div>
-      <div id="cvv"></div>
+    <div class="info-container">
+      <b-form @submit.prevent="onSubmitPayment">
+        <!-- Square Secure Input Fields will be inserted here -->
+        <div id="card-number"></div>
+        <div id="expiration-date"></div>
+        <div id="cvv"></div>
 
-      <!-- Loading indicator and error messages -->
-      <div v-if="isLoading" class="loading-indicator">Processing...</div>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <!-- Loading indicator and error messages -->
+        <div v-if="isLoading" class="loading-indicator">Processing...</div>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
 
-      <!-- Submit Button -->
-      <b-button
-        :disabled="!isSdkLoaded || isLoading"
-        type="submit"
-        variant="primary"
-      >
-        Submit Payment Details
-      </b-button>
-    </b-form>
+        <!-- Submit Button -->
+        <b-button
+          :disabled="!isSdkLoaded || isLoading"
+          type="submit"
+          variant="primary"
+        >
+          Submit Payment Details
+        </b-button>
+      </b-form>
+    </div>
   </div>
 </template>
 
@@ -121,64 +123,4 @@ export default {
 };
 </script>
 
-<style scoped>
-/*  */
-
-.payment-info-container {
-  /* max-width: 100%; */
-  margin: auto;
-  padding: 2rem;
-  background: #f7f7f7;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-.payment-info-container:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: box-shadow 0.3s ease-in-out;
-  transform: scale(1.01);
-}
-b-form-group label {
-  font-weight: bold;
-  color: #555;
-}
-
-b-form-group {
-  margin-bottom: 15px;
-}
-
-.masked-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-b-button {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #007bff;
-  color: white;
-  border: none;
-}
-
-b-button:hover {
-  background-color: #0056b3;
-}
-
-.loading-indicator {
-  text-align: center;
-  margin: 15px 0;
-}
-
-.error-message {
-  color: #d9534f; /* Bootstrap's default danger color for better consistency */
-  margin-top: 10px;
-  text-align: center;
-}
-</style>
 /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/PaymentDetails.vue

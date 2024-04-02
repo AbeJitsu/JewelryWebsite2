@@ -40,7 +40,7 @@
             v-model="hasApartment"
             @change="updateLocalStorage"
           >
-            I have an Apt, Unit, or Suite #
+            Includes Apt, Unit, or Ste.
           </b-form-checkbox>
         </div>
 
