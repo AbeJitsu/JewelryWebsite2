@@ -2,7 +2,7 @@
   <div>
     <!-- Billing Information Section -->
     <h2 class="section-title">Billing Information</h2>
-    <div class="billing-info-container">
+    <div class="info-container">
       <b-form @submit.prevent="onSubmitBilling">
         <!-- Checkbox for Cardholder Name Same as Shipping Name -->
         <div class="checkbox-align">
@@ -143,11 +143,14 @@ export default {
 </script>
 
 <style scoped>
-.section-title {
+@import "@/assets/sharedStyles.css";
+
+/* .section-title {
   margin-bottom: 20px;
+  margin-left: 20%;
   font-size: 24px;
   color: #333;
-}
+} */
 
 .shipping-details-container,
 .billing-info-container {
@@ -168,3 +171,4 @@ export default {
   margin-left: 33%; /* Adjust as needed for alignment */
 }
 </style>
+/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/BillingInformation.vue

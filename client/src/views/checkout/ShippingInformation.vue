@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="section-title">Shipping Information</h2>
-    <div class="shipping-details-container">
+    <div class="info-container">
       <b-form @submit.prevent="onSubmitShipping">
         <!-- First Name Input -->
         <FormInput
@@ -135,11 +135,13 @@ export default {
 </script>
 
 <style scoped>
-.section-title {
+@import "@/assets/sharedStyles.css";
+/* .section-title {
   margin-bottom: 20px;
+  margin-left: 25%;
   font-size: 24px;
   color: #333;
-}
+} */
 
 .shipping-details-container,
 .billing-info-container {
@@ -165,11 +167,8 @@ export default {
   text-align: right;
   min-width: 20rem;
 }
-
+/* 
 b-form-input {
-  /* border: 1px ridge #ccc;
-  border-radius: 4px;
-  padding: 10rem; */
   flex-grow: 1;
 }
 
@@ -193,9 +192,10 @@ b-button {
 
 b-button:hover {
   background-color: #003974;
-}
+} */
 
 .checkbox-align {
   margin-left: 33%; /* Adjust as needed for alignment */
 }
 </style>
+/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/ShippingInformation.vue

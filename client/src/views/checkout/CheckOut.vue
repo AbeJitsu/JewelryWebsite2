@@ -73,7 +73,7 @@ export default {
 <style scoped>
 .checkout-component {
   min-width: 40%;
-  max-width: 60%;
+  max-width: 50%;
   margin-top: 2rem;
 }
 
@@ -86,7 +86,7 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 1rem;
   padding: 1rem;
-  background-color: #f8f9fa; /* Light grey background for each section for visual separation */
+  background-color: hsl(208, 100%, 97%);
 }
 
 .review-order-container:hover,
@@ -94,21 +94,6 @@ export default {
 .billing-info-container:hover,
 .payment-info-container:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.section-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 1rem; /* Space between title and content */
-}
-
-/* Styling for form inputs, aligning with your cart item styling */
-.input-field {
-  width: 100%;
-  /* padding: 0.5rem; */
-  /* margin: 0.5rem 0; */
-  border: 1px solid #000000;
-  border-radius: 0.25rem;
 }
 
 /* Reuse button styles from the cart, with adjustments for checkout context */

@@ -1,5 +1,5 @@
 <template>
-  <div class="payment-info-container">
+  <div class="info-container">
     <h2 class="section-title">Payment Details</h2>
     <b-form @submit.prevent="onSubmitPayment">
       <!-- Square Secure Input Fields will be inserted here -->
@@ -122,15 +122,10 @@ export default {
 </script>
 
 <style scoped>
-.section-title {
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  color: #333;
-  text-align: center;
-}
+/*  */
 
 .payment-info-container {
-  max-width: 60%;
+  /* max-width: 100%; */
   margin: auto;
   padding: 2rem;
   background: #f7f7f7;
@@ -186,3 +181,4 @@ b-button:hover {
   text-align: center;
 }
 </style>
+/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/PaymentDetails.vue
