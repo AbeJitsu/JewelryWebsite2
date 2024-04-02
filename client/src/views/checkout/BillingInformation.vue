@@ -110,7 +110,35 @@ export default {
         state: "",
         zip: "",
       },
+      shippingDetails: {
+        firstName: "",
+        lastName: "",
+        address: "",
+        apartment: "",
+        city: "",
+        state: "",
+        zip: "",
+      },
     };
+  },
+  watch: {
+    cardholderNameSameAsShipping(newValue) {
+      if (newValue) {
+        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
+      } else {
+        this.billingDetails.cardholderName = "";
+      }
+    },
+    "shippingDetails.firstName": function (newValue) {
+      if (this.cardholderNameSameAsShipping) {
+        this.billingDetails.cardholderName = `${newValue} ${this.shippingDetails.lastName}`;
+      }
+    },
+    "shippingDetails.lastName": function (newValue) {
+      if (this.cardholderNameSameAsShipping) {
+        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${newValue}`;
+      }
+    },
   },
   methods: {
     onSubmitShipping() {
@@ -128,15 +156,6 @@ export default {
         this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
       }
       this.$store.dispatch("updateBillingDetails", this.billingDetails);
-    },
-  },
-  watch: {
-    cardholderNameSameAsShipping(newVal) {
-      if (newVal) {
-        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
-      } else {
-        this.billingDetails.cardholderName = "";
-      }
     },
   },
 };
