@@ -5,29 +5,32 @@
     <div class="info-container">
       <b-form @submit.prevent="onSubmitBilling">
         <!-- Checkbox for Cardholder Name Same as Shipping Name -->
-        <div class="checkbox-align">
-          <b-form-checkbox v-model="cardholderNameSameAsShipping">
-            Same name as shipping.
-          </b-form-checkbox>
+        <div>
+          <div class="checkbox-align">
+            <b-form-checkbox v-model="cardholderNameSameAsShipping">
+              Same as shipping name
+            </b-form-checkbox>
+          </div>
+
+          <!-- Name on Card Input -->
+          <FormInput
+            label="Name on Card"
+            label-for="cardholder-name"
+            placeholder="Enter cardholder's name"
+            v-model="computedCardholderName"
+            required
+            :disabled="cardholderNameSameAsShipping"
+          />
         </div>
 
-        <FormInput
-          label="Name on Card"
-          label-for="cardholder-name"
-          placeholder="Enter cardholder's name"
-          v-model="billingDetails.cardholderName"
-          required
-          :disabled="cardholderNameSameAsShipping"
-        />
-
-        <!-- Checkbox for Billing Address Same as Shipping Address -->
+        <!-- Billing Address Same as Shipping Address Checkbox -->
         <div class="checkbox-align">
           <b-form-checkbox v-model="billingSameAsShipping">
-            Billing = Shipping Address
+            Both addresses are the same
           </b-form-checkbox>
         </div>
 
-        <!-- Conditional rendering for billing address inputs -->
+        <!-- Conditional Rendering for Billing Address Inputs -->
         <template v-if="!billingSameAsShipping">
           <!-- Address Input -->
           <FormInput
@@ -38,25 +41,14 @@
             required
           />
 
-          <!-- Checkbox for Apartment/Suite Information -->
-          <div class="checkbox-align">
-            <b-form-checkbox
-              id="has-billing-apartment"
-              v-model="hasBillingApartment"
-            >
-              Includes Apt, Unit, or Ste.
-            </b-form-checkbox>
-          </div>
-
-          <!-- Conditionally Render Apartment/Suite Input -->
-          <div v-if="hasBillingApartment">
-            <FormInput
-              label="Apt, Unit, or Ste"
-              label-for="billing-apartment"
-              placeholder="Apt, Unit, or Suite (Optional)"
-              v-model="billingDetails.apartment"
-            />
-          </div>
+          <!-- Apartment/Suite Input -->
+          <FormInput
+            v-if="hasBillingApartment"
+            label="Apartment/Suite"
+            label-for="billing-apartment"
+            placeholder="Apartment, suite, etc. (Optional)"
+            v-model="billingDetails.apartment"
+          />
 
           <!-- City Input -->
           <FormInput
@@ -110,52 +102,35 @@ export default {
         state: "",
         zip: "",
       },
-      shippingDetails: {
-        firstName: "",
-        lastName: "",
-        address: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
+      shippingDetails: this.$store.getters["checkout/getShippingDetails"],
     };
   },
+  computed: {
+    computedCardholderName() {
+      return this.cardholderNameSameAsShipping
+        ? `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`
+        : this.billingDetails.cardholderName;
+    },
+  },
   watch: {
+    billingSameAsShipping(newValue) {
+      this.$store.dispatch("checkout/toggleBillingSameAsShipping", newValue);
+      if (newValue) {
+        this.billingDetails = {
+          ...this.shippingDetails,
+          cardholderName: this.billingDetails.cardholderName,
+        };
+      }
+    },
     cardholderNameSameAsShipping(newValue) {
       if (newValue) {
         this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
-      } else {
-        this.billingDetails.cardholderName = "";
-      }
-    },
-    "shippingDetails.firstName": function (newValue) {
-      if (this.cardholderNameSameAsShipping) {
-        this.billingDetails.cardholderName = `${newValue} ${this.shippingDetails.lastName}`;
-      }
-    },
-    "shippingDetails.lastName": function (newValue) {
-      if (this.cardholderNameSameAsShipping) {
-        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${newValue}`;
       }
     },
   },
   methods: {
-    onSubmitShipping() {
-      this.$store.dispatch("updateShippingDetails", this.shippingDetails);
-    },
     onSubmitBilling() {
-      if (this.billingSameAsShipping) {
-        this.billingDetails.address = this.shippingDetails.address;
-        this.billingDetails.apartment = this.shippingDetails.apartment;
-        this.billingDetails.city = this.shippingDetails.city;
-        this.billingDetails.state = this.shippingDetails.state;
-        this.billingDetails.zip = this.shippingDetails.zip;
-      }
-      if (this.cardholderNameSameAsShipping) {
-        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
-      }
-      this.$store.dispatch("updateBillingDetails", this.billingDetails);
+      this.$store.dispatch("checkout/setBillingDetails", this.billingDetails);
     },
   },
 };

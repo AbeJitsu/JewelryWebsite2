@@ -3,25 +3,16 @@
     <b-row>
       <b-col>
         <!-- AuthModal controlled by showModal property -->
-        <auth-modal
-          v-model="showModal"
-          @auth-success="handleAuthSuccess"
-        ></auth-modal>
+        <auth-modal v-model="showModal" @auth-success="handleAuthSuccess" />
 
-        <!-- Include ShippingInformation component -->
-        <shipping-information
-          @update-shipping="handleShippingUpdate"
-          :isSameAsShipping="billingSameAsShipping"
-        />
+        <!-- Include ShippingInformation component without passing props directly -->
+        <shipping-information />
 
-        <!-- Include BillingInformation component -->
-        <billing-information
-          :isSameAsShipping="billingSameAsShipping"
-          @update-billing="handleBillingUpdate"
-        />
+        <!-- Include BillingInformation component without passing props directly -->
+        <billing-information />
 
         <!-- Include PaymentDetails component -->
-        <payment-details @update-payment="handlePaymentUpdate" />
+        <payment-details />
       </b-col>
     </b-row>
   </b-container>
@@ -32,6 +23,7 @@ import AuthModal from "@/components/layout/AuthModal.vue";
 import ShippingInformation from "./ShippingInformation.vue";
 import BillingInformation from "./BillingInformation.vue";
 import PaymentDetails from "./PaymentDetails.vue";
+import { mapState } from "vuex";
 
 export default {
   components: {
@@ -40,31 +32,16 @@ export default {
     BillingInformation,
     PaymentDetails,
   },
-  data() {
-    return {
-      showModal: false,
-      billingSameAsShipping: false,
-    };
+  computed: {
+    ...mapState({
+      showModal: (state) => state.checkout.showModal,
+      billingSameAsShipping: (state) => state.checkout.billingSameAsShipping,
+    }),
   },
   methods: {
     handleAuthSuccess() {
-      this.showModal = false;
-    },
-    handleShippingUpdate(shippingData) {
-      // Handle shipping data update. You might want to update Vuex store or component state here
-      console.log("Shipping data updated", shippingData);
-    },
-    handleBillingUpdate(billingData) {
-      // Handle billing data update
-      console.log("Billing data updated", billingData);
-    },
-    handlePaymentUpdate(paymentData) {
-      // Handle payment data update
-      console.log("Payment data updated", paymentData);
-    },
-    submitCheckout() {
-      // Logic to submit the checkout data
-      console.log("Submitting checkout data");
+      // Possibly update Vuex state to reflect auth success
+      this.$store.dispatch("checkout/authSuccess");
     },
   },
 };

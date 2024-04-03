@@ -11,8 +11,7 @@
     <b-col :sm="contentColsSm">
       <b-form-input
         :id="labelFor"
-        :value="inputValue"
-        @input="updateValue"
+        v-model="inputValue"
         :placeholder="placeholder"
         :required="required"
         :type="type"
@@ -27,56 +26,45 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 export default {
   props: {
     label: String,
     labelFor: String,
-    modelValue: {
-      type: [String, Number],
-      default: "",
-    },
     placeholder: String,
     required: Boolean,
-    type: {
-      type: String,
-      default: "text",
-    },
-    labelColsSm: {
-      type: [String, Number],
-      default: 3,
-    },
-    contentColsSm: {
-      type: [String, Number],
-      default: 9,
-    },
-    labelAlignSm: {
-      type: String,
-      default: "right",
-    },
+    type: { type: String, default: "text" },
+    labelColsSm: { type: [String, Number], default: 3 },
+    contentColsSm: { type: [String, Number], default: 9 },
+    labelAlignSm: { type: String, default: "right" },
     labelSize: String,
-    validState: {
-      type: Boolean,
-      default: null,
-    },
+    validState: { type: Boolean, default: null },
     feedback: String,
     disabled: Boolean,
+    value: [String, Number], // The value prop replaces modelValue
+    fieldKey: String, // Identifies the field in the Vuex store
+    module: String, // Identifies the Vuex module
   },
   computed: {
     inputValue: {
       get() {
-        return this.modelValue;
+        return this.value; // Directly bind to the value prop
       },
       set(value) {
-        this.$emit("update:modelValue", value);
+        this.updateInput({
+          module: this.module,
+          fieldKey: this.fieldKey,
+          value,
+        });
       },
     },
   },
   methods: {
-    updateValue(value) {
-      this.$emit("update:modelValue", value);
-    },
+    ...mapMutations({
+      updateInput: "updateField", // Assumes 'updateField' is a global mutation
+    }),
   },
-  emits: ["update:modelValue"],
 };
 </script>
 

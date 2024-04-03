@@ -3,14 +3,14 @@
     <h2 class="section-title">Shipping Information</h2>
     <div class="info-container">
       <b-form @submit.prevent="onSubmitShipping">
+        <!-- Bind each FormInput directly to the Vuex store's state -->
         <!-- First Name Input -->
         <FormInput
           label="First Name"
           label-for="first-name"
           placeholder="Enter your first name"
-          v-model="shippingDetails.firstName"
+          v-model="$store.state.checkout.shippingDetails.firstName"
           required
-          @input="updateLocalStorage"
         />
 
         <!-- Last Name Input -->
@@ -18,9 +18,8 @@
           label="Last Name"
           label-for="last-name"
           placeholder="Enter your last name"
-          v-model="shippingDetails.lastName"
+          v-model="$store.state.checkout.shippingDetails.lastName"
           required
-          @input="updateLocalStorage"
         />
 
         <!-- Address Input -->
@@ -28,30 +27,27 @@
           label="Address"
           label-for="shipping-address"
           placeholder="Enter your shipping address"
-          v-model="shippingDetails.address"
+          v-model="$store.state.checkout.shippingDetails.address"
           required
-          @input="updateLocalStorage"
         />
 
         <!-- Checkbox for Apartment/Suite Information -->
         <div class="checkbox-align">
           <b-form-checkbox
             id="has-apartment"
-            v-model="hasApartment"
-            @change="updateLocalStorage"
+            v-model="$store.state.checkout.shippingDetails.hasApartment"
           >
             Includes Apt, Unit, or Ste.
           </b-form-checkbox>
         </div>
 
         <!-- Conditionally Render Apartment/Suite Input -->
-        <div v-if="hasApartment">
+        <div v-if="$store.state.checkout.shippingDetails.hasApartment">
           <FormInput
             label="Apt, Unit, or Suite"
             label-for="shipping-apartment"
             placeholder="Apt, Unit, or Suite (Optional)"
-            v-model="shippingDetails.apartment"
-            @input="updateLocalStorage"
+            v-model="$store.state.checkout.shippingDetails.apartment"
           />
         </div>
 
@@ -60,9 +56,8 @@
           label="City"
           label-for="shipping-city"
           placeholder="Enter your city"
-          v-model="shippingDetails.city"
+          v-model="$store.state.checkout.shippingDetails.city"
           required
-          @input="updateLocalStorage"
         />
 
         <!-- State Input -->
@@ -70,9 +65,8 @@
           label="State"
           label-for="shipping-state"
           placeholder="Enter your state"
-          v-model="shippingDetails.state"
+          v-model="$store.state.checkout.shippingDetails.state"
           required
-          @input="updateLocalStorage"
         />
 
         <!-- ZIP Code Input -->
@@ -80,9 +74,8 @@
           label="ZIP Code"
           label-for="shipping-zip"
           placeholder="Enter your ZIP code"
-          v-model="shippingDetails.zip"
+          v-model="$store.state.checkout.shippingDetails.zip"
           required
-          @input="updateLocalStorage"
         />
       </b-form>
     </div>
@@ -91,45 +84,24 @@
 
 <script>
 import FormInput from "@/components/form/FormInput.vue";
+import { mapActions } from "vuex";
 
 export default {
   components: {
     FormInput,
   },
-  data() {
-    return {
-      hasApartment: false,
-      shippingDetails: {
-        firstName: "",
-        lastName: "",
-        address: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
-    };
-  },
-  mounted() {
-    this.loadFromLocalStorage();
-  },
   methods: {
-    updateLocalStorage() {
-      localStorage.setItem(
-        "shippingDetails",
-        JSON.stringify(this.shippingDetails)
-      );
-    },
-    loadFromLocalStorage() {
-      const storedData = localStorage.getItem("shippingDetails");
-      if (storedData) {
-        this.shippingDetails = JSON.parse(storedData);
-      }
-    },
+    ...mapActions("checkout", ["setShippingDetails"]),
     onSubmitShipping() {
-      this.$emit("updateShippingDetails", this.shippingDetails);
-      // Additional logic for form submission
+      // Directly update Vuex store on submission
+      this.setShippingDetails(this.$store.state.checkout.shippingDetails);
     },
+  },
+  created() {
+    const storedData = localStorage.getItem("shippingDetails");
+    if (storedData) {
+      this.setShippingDetails(JSON.parse(storedData));
+    }
   },
 };
 </script>

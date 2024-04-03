@@ -160,7 +160,7 @@ export default {
 
 <style scoped>
 .cart-component {
-  max-width: 70%;
+  max-width: 55%;
   margin-top: 2rem;
 }
 
