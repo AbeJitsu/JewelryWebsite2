@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Billing Information Section -->
     <h2 class="section-title">Billing Information</h2>
     <div class="info-container">
       <b-form @submit.prevent="onSubmitBilling">
@@ -32,7 +31,7 @@
 
         <!-- Conditional Rendering for Billing Address Inputs -->
         <template v-if="!billingSameAsShipping">
-          <!-- Address Input -->
+          <!-- Dynamically bind each input to the Vuex store -->
           <FormInput
             label="Address"
             label-for="billing-address"
@@ -40,8 +39,6 @@
             v-model="billingDetails.address"
             required
           />
-
-          <!-- Apartment/Suite Input -->
           <FormInput
             v-if="hasBillingApartment"
             label="Apartment/Suite"
@@ -49,8 +46,6 @@
             placeholder="Apartment, suite, etc. (Optional)"
             v-model="billingDetails.apartment"
           />
-
-          <!-- City Input -->
           <FormInput
             label="City"
             label-for="billing-city"
@@ -58,8 +53,6 @@
             v-model="billingDetails.city"
             required
           />
-
-          <!-- State Input -->
           <FormInput
             label="State"
             label-for="billing-state"
@@ -67,8 +60,6 @@
             v-model="billingDetails.state"
             required
           />
-
-          <!-- ZIP Code Input -->
           <FormInput
             label="ZIP Code"
             label-for="billing-zip"
@@ -84,6 +75,7 @@
 
 <script>
 import FormInput from "@/components/form/FormInput.vue";
+import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
@@ -91,46 +83,48 @@ export default {
   },
   data() {
     return {
-      billingSameAsShipping: false,
       cardholderNameSameAsShipping: false,
-      hasBillingApartment: false,
-      billingDetails: {
-        cardholderName: "",
-        address: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zip: "",
-      },
-      shippingDetails: this.$store.getters["checkout/getShippingDetails"],
     };
   },
   computed: {
-    computedCardholderName() {
-      return this.cardholderNameSameAsShipping
-        ? `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`
-        : this.billingDetails.cardholderName;
+    ...mapState("checkout", ["billingDetails", "shippingDetails"]),
+    computedCardholderName: {
+      get() {
+        return this.cardholderNameSameAsShipping
+          ? `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`
+          : this.billingDetails.cardholderName;
+      },
+      set(value) {
+        if (!this.cardholderNameSameAsShipping) {
+          this.$store.dispatch("checkout/updateBillingDetails", {
+            cardholderName: value,
+          });
+        }
+      },
     },
-  },
-  watch: {
-    billingSameAsShipping(newValue) {
-      this.$store.dispatch("checkout/toggleBillingSameAsShipping", newValue);
-      if (newValue) {
-        this.billingDetails = {
-          ...this.shippingDetails,
-          cardholderName: this.billingDetails.cardholderName,
-        };
-      }
-    },
-    cardholderNameSameAsShipping(newValue) {
-      if (newValue) {
-        this.billingDetails.cardholderName = `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`;
-      }
+    billingSameAsShipping: {
+      get() {
+        return this.$store.state.checkout.isBillingSameAsShipping;
+      },
+      set(value) {
+        this.$store.dispatch("checkout/toggleBillingSameAsShipping", value);
+      },
     },
   },
   methods: {
+    ...mapActions("checkout", ["setBillingDetails"]),
     onSubmitBilling() {
-      this.$store.dispatch("checkout/setBillingDetails", this.billingDetails);
+      this.setBillingDetails(this.billingDetails);
+    },
+  },
+  watch: {
+    cardholderNameSameAsShipping(newValue) {
+      if (newValue) {
+        this.setBillingDetails({
+          ...this.billingDetails,
+          cardholderName: `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`,
+        });
+      }
     },
   },
 };

@@ -25,42 +25,104 @@ export default {
   },
 
   mutations: {
-    // General mutation to update any field in the state
-    updateField(state, { path, value }) {
-      const fields = path.split(".");
-      const lastField = fields.pop();
-      const lastState = fields.reduce(
-        (currentState, field) => currentState[field],
-        state
-      );
-      lastState[lastField] = value;
+    // Mutations for shipping details
+    setShippingFirstName(state, firstName) {
+      state.shippingDetails.firstName = firstName;
+    },
+    setShippingLastName(state, lastName) {
+      state.shippingDetails.lastName = lastName;
+    },
+    setShippingAddress(state, address) {
+      state.shippingDetails.address = address;
+    },
+    setShippingApartment(state, apartment) {
+      state.shippingDetails.apartment = apartment;
+    },
+    setShippingCity(state, city) {
+      state.shippingDetails.city = city;
+    },
+    setShippingState(state, stateName) {
+      state.shippingDetails.state = stateName;
+    },
+    setShippingZip(state, zip) {
+      state.shippingDetails.zip = zip;
+    },
+
+    // Mutations for billing details
+    setBillingCardholderName(state, name) {
+      state.billingDetails.cardholderName = name;
+    },
+    setBillingAddress(state, address) {
+      state.billingDetails.address = address;
+    },
+    setBillingApartment(state, apartment) {
+      state.billingDetails.apartment = apartment;
+    },
+    setBillingCity(state, city) {
+      state.billingDetails.city = city;
+    },
+    setBillingState(state, stateName) {
+      state.billingDetails.state = stateName;
+    },
+    setBillingZip(state, zip) {
+      state.billingDetails.zip = zip;
+    },
+
+    // Mutation to link billing and shipping
+    linkBillingToShipping(state, link) {
+      state.isBillingSameAsShipping = link;
+      if (link) {
+        state.billingDetails = { ...state.shippingDetails };
+      }
     },
   },
 
   actions: {
-    // General action to commit updates to any field
-    updateField({ commit }, payload) {
-      commit("updateField", payload);
+    // Actions for shipping details
+    updateShippingFirstName({ commit }, firstName) {
+      commit("checkout/setShippingFirstName", firstName);
+    },
+    updateShippingLastName({ commit }, lastName) {
+      commit("checkout/setShippingLastName", lastName);
+    },
+    updateShippingAddress({ commit }, address) {
+      commit("checkout/setShippingAddress", address);
+    },
+    updateShippingApartment({ commit }, apartment) {
+      commit("checkout/setShippingApartment", apartment);
+    },
+    updateShippingCity({ commit }, city) {
+      commit("checkout/setShippingCity", city);
+    },
+    updateShippingState({ commit }, state) {
+      commit("checkout/setShippingState", state);
+    },
+    updateShippingZip({ commit }, zip) {
+      commit("checkout/setShippingZip", zip);
     },
 
-    // Specific actions can still be maintained for complex logic
-    toggleBillingSameAsShipping({ commit, state }, isSame) {
-      commit("updateField", { path: "isBillingSameAsShipping", value: isSame });
-      if (isSame) {
-        for (const key in state.shippingDetails) {
-          commit("updateField", {
-            path: `billingDetails.${key}`,
-            value: state.shippingDetails[key],
-          });
-        }
-        // Maintain the cardholder name if it was already set
-        commit("updateField", {
-          path: "billingDetails.cardholderName",
-          value:
-            state.billingDetails.cardholderName ||
-            `${state.shippingDetails.firstName} ${state.shippingDetails.lastName}`,
-        });
-      }
+    // Actions for billing details
+    updateBillingCardholderName({ commit }, name) {
+      commit("checkout/setBillingCardholderName", name);
+    },
+    updateBillingAddress({ commit }, address) {
+      commit("checkout/setBillingAddress", address);
+    },
+    updateBillingApartment({ commit }, apartment) {
+      commit("checkout/setBillingApartment", apartment);
+    },
+    updateBillingCity({ commit }, city) {
+      commit("checkout/setBillingCity", city);
+    },
+    updateBillingState({ commit }, state) {
+      commit("checkout/setBillingState", state);
+    },
+    updateBillingZip({ commit }, zip) {
+      commit("checkout/setBillingZip", zip);
+    },
+
+    linkBillingToShipping({ commit }, link) {
+      commit("checkout/linkBillingToShipping", link);
     },
   },
 

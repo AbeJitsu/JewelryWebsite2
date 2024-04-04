@@ -3,14 +3,14 @@
     <h2 class="section-title">Shipping Information</h2>
     <div class="info-container">
       <b-form @submit.prevent="onSubmitShipping">
-        <!-- Bind each FormInput directly to the Vuex store's state -->
         <!-- First Name Input -->
         <FormInput
           label="First Name"
           label-for="first-name"
           placeholder="Enter your first name"
-          v-model="$store.state.checkout.shippingDetails.firstName"
+          v-model="shippingDetails.firstName"
           required
+          @input="updateShippingDetail('firstName', shippingDetails.firstName)"
         />
 
         <!-- Last Name Input -->
@@ -18,8 +18,9 @@
           label="Last Name"
           label-for="last-name"
           placeholder="Enter your last name"
-          v-model="$store.state.checkout.shippingDetails.lastName"
+          v-model="shippingDetails.lastName"
           required
+          @input="updateShippingDetail('lastName', shippingDetails.lastName)"
         />
 
         <!-- Address Input -->
@@ -27,27 +28,34 @@
           label="Address"
           label-for="shipping-address"
           placeholder="Enter your shipping address"
-          v-model="$store.state.checkout.shippingDetails.address"
+          v-model="shippingDetails.address"
           required
+          @input="updateShippingDetail('address', shippingDetails.address)"
         />
 
         <!-- Checkbox for Apartment/Suite Information -->
         <div class="checkbox-align">
           <b-form-checkbox
             id="has-apartment"
-            v-model="$store.state.checkout.shippingDetails.hasApartment"
+            v-model="shippingDetails.hasApartment"
+            @change="
+              updateShippingDetail('hasApartment', shippingDetails.hasApartment)
+            "
           >
             Includes Apt, Unit, or Ste.
           </b-form-checkbox>
         </div>
 
         <!-- Conditionally Render Apartment/Suite Input -->
-        <div v-if="$store.state.checkout.shippingDetails.hasApartment">
+        <div v-if="shippingDetails.hasApartment">
           <FormInput
             label="Apt, Unit, or Suite"
             label-for="shipping-apartment"
             placeholder="Apt, Unit, or Suite (Optional)"
-            v-model="$store.state.checkout.shippingDetails.apartment"
+            v-model="shippingDetails.apartment"
+            @input="
+              updateShippingDetail('apartment', shippingDetails.apartment)
+            "
           />
         </div>
 
@@ -56,8 +64,9 @@
           label="City"
           label-for="shipping-city"
           placeholder="Enter your city"
-          v-model="$store.state.checkout.shippingDetails.city"
+          v-model="shippingDetails.city"
           required
+          @input="updateShippingDetail('city', shippingDetails.city)"
         />
 
         <!-- State Input -->
@@ -65,8 +74,9 @@
           label="State"
           label-for="shipping-state"
           placeholder="Enter your state"
-          v-model="$store.state.checkout.shippingDetails.state"
+          v-model="shippingDetails.state"
           required
+          @input="updateShippingDetail('state', shippingDetails.state)"
         />
 
         <!-- ZIP Code Input -->
@@ -74,8 +84,9 @@
           label="ZIP Code"
           label-for="shipping-zip"
           placeholder="Enter your ZIP code"
-          v-model="$store.state.checkout.shippingDetails.zip"
+          v-model="shippingDetails.zip"
           required
+          @input="updateShippingDetail('zip', shippingDetails.zip)"
         />
       </b-form>
     </div>
@@ -84,23 +95,52 @@
 
 <script>
 import FormInput from "@/components/form/FormInput.vue";
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
     FormInput,
   },
+  computed: {
+    ...mapState("checkout", ["shippingDetails"]),
+  },
   methods: {
-    ...mapActions("checkout", ["setShippingDetails"]),
+    ...mapActions("checkout", [
+      "updateShippingFirstName",
+      "updateShippingLastName",
+      "updateShippingAddress",
+      "updateShippingApartment",
+      "updateShippingCity",
+      "updateShippingState",
+      "updateShippingZip",
+    ]),
+    updateShippingDetail(field, value) {
+      // Dynamically call the respective Vuex action based on the field being updated
+      const actionMap = {
+        firstName: "updateShippingFirstName",
+        lastName: "updateShippingLastName",
+        address: "updateShippingAddress",
+        apartment: "updateShippingApartment",
+        city: "updateShippingCity",
+        state: "updateShippingState",
+        zip: "updateShippingZip",
+      };
+      this[actionMap[field]](value);
+    },
     onSubmitShipping() {
-      // Directly update Vuex store on submission
-      this.setShippingDetails(this.$store.state.checkout.shippingDetails);
+      console.log(
+        "Form submitted with current shipping details:",
+        this.shippingDetails
+      );
     },
   },
   created() {
     const storedData = localStorage.getItem("shippingDetails");
     if (storedData) {
-      this.setShippingDetails(JSON.parse(storedData));
+      this.$store.commit(
+        "checkout/updateShippingDetails",
+        JSON.parse(storedData)
+      );
     }
   },
 };
