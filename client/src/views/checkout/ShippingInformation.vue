@@ -148,12 +148,6 @@ export default {
 
 <style scoped>
 @import "@/assets/sharedStyles.css";
-/* .section-title {
-  margin-bottom: 20px;
-  margin-left: 25%;
-  font-size: 24px;
-  color: #333;
-} */
 
 .shipping-details-container,
 .billing-info-container {

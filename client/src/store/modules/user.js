@@ -125,6 +125,10 @@ export default {
     logout(state) {
       state.status = "";
       state.user = null;
+      state.shippingInfo = null;
+      state.billingInfo = null;
+      state.paymentInfo = null;
+      // Reset any other user-related state here
     },
     setUser(state, user) {
       state.user = user;
