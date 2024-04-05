@@ -5,13 +5,10 @@
         <!-- AuthModal controlled by showModal property -->
         <auth-modal v-model="showModal" @auth-success="handleAuthSuccess" />
 
-        <!-- Include ShippingInformation component without passing props directly -->
         <shipping-information />
 
-        <!-- Include BillingInformation component without passing props directly -->
         <billing-information />
 
-        <!-- Include PaymentDetails component -->
         <payment-details />
       </b-col>
     </b-row>
@@ -24,6 +21,7 @@ import ShippingInformation from "./ShippingInformation.vue";
 import BillingInformation from "./BillingInformation.vue";
 import PaymentDetails from "./PaymentDetails.vue";
 import { mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -37,13 +35,19 @@ export default {
       showModal: (state) => state.checkout.showModal,
       billingSameAsShipping: (state) => state.checkout.billingSameAsShipping,
     }),
-  },
-  methods: {
-    handleAuthSuccess() {
-      // Possibly update Vuex state to reflect auth success
-      this.$store.dispatch("checkout/authSuccess");
+    ...mapGetters({
+      isLoggedIn: "user/isLoggedIn",
+    }),
+    showAuthModal() {
+      return !this.isLoggedIn && this.showModal;
     },
   },
+  // methods: {
+  //   handleAuthSuccess() {
+  //     // Possibly update Vuex state to reflect auth success
+  //     this.$store.dispatch("checkout/authSuccess");
+  //   },
+  // },
 };
 </script>
 

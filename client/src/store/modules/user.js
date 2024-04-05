@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "@/router";
 
 export default {
   namespaced: true,
@@ -59,6 +60,11 @@ export default {
       try {
         await axios.post("/api/auth/logout", {}, { withCredentials: true });
         commit("logout");
+
+        // Check if the current route is restricted and redirect if necessary
+        if (router.currentRoute.meta.requiresAuth) {
+          router.push({ name: "jewelry-showcase" });
+        }
       } catch (err) {
         console.error("Logout error:", err);
       }
