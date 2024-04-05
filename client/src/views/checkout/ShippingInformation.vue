@@ -146,4 +146,8 @@ export default {
 };
 </script>
 
+<style scoped>
+@import "@/assets/sharedStyles.css";
+</style>
+
 <!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/ShippingInformation.vue -->

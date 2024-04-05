@@ -132,31 +132,5 @@ export default {
 
 <style scoped>
 @import "@/assets/sharedStyles.css";
-
-/* .section-title {
-  margin-bottom: 20px;
-  margin-left: 20%;
-  font-size: 24px;
-  color: #333;
-} */
-
-.shipping-details-container,
-.billing-info-container {
-  background: #ffefef;
-  border-radius: 1rem;
-  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ccc;
-  padding: 1rem;
-  margin: 2rem;
-}
-
-.form-group {
-  margin: 1rem;
-  white-space: nowrap;
-}
-
-.checkbox-align {
-  margin-left: 33%; /* Adjust as needed for alignment */
-}
 </style>
-/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/BillingInformation.vue
+<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/BillingInformation.vue -->
