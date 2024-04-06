@@ -69,21 +69,6 @@ export default {
 </script>
 
 <style scoped>
-b-form-input {
-  border: 1px ridge #ccc;
-  border-radius: 4px;
-  padding: 10rem;
-  flex-grow: 1;
-}
-
-b-form-checkbox {
-  margin: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  flex-grow: 1;
-}
-
 .form-group {
   margin: 1rem;
   white-space: nowrap;
