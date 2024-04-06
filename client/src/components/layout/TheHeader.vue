@@ -42,7 +42,7 @@
             </b-nav-item>
 
             <b-nav-item v-else @click="performLogout">
-              <b-icon icon="box-arrow-right"></b-icon> Shine Out
+              <b-icon icon="box-arrow-right"></b-icon> Hi, welcome!
             </b-nav-item>
             <b-nav-item @click="goToAccount">
               <b-icon icon="person-circle"></b-icon> Account & Orders
