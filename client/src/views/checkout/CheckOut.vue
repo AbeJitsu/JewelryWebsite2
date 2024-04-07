@@ -5,11 +5,11 @@
         <!-- AuthModal controlled by showModal property -->
         <auth-modal v-model="showModal" @auth-success="handleAuthSuccess" />
 
-        <shipping-information />
+        <shipping-information v-if="!isLoggedIn || !showModal" />
 
-        <billing-information />
+        <billing-information v-if="!isLoggedIn || !showModal" />
 
-        <payment-details />
+        <payment-details v-if="!isLoggedIn || !showModal" />
       </b-col>
     </b-row>
   </b-container>
@@ -20,8 +20,7 @@ import AuthModal from "@/components/layout/AuthModal.vue";
 import ShippingInformation from "./ShippingInformation.vue";
 import BillingInformation from "./BillingInformation.vue";
 import PaymentDetails from "./PaymentDetails.vue";
-import { mapState } from "vuex";
-import { mapGetters } from "vuex";
+import { mapState, mapGetters } from "vuex";
 
 export default {
   components: {
@@ -33,7 +32,6 @@ export default {
   computed: {
     ...mapState({
       showModal: (state) => state.checkout.showModal,
-      billingSameAsShipping: (state) => state.checkout.billingSameAsShipping,
     }),
     ...mapGetters({
       isLoggedIn: "user/isLoggedIn",
@@ -42,12 +40,12 @@ export default {
       return !this.isLoggedIn && this.showModal;
     },
   },
-  // methods: {
-  //   handleAuthSuccess() {
-  //     // Possibly update Vuex state to reflect auth success
-  //     this.$store.dispatch("checkout/authSuccess");
-  //   },
-  // },
+  methods: {
+    handleAuthSuccess() {
+      // Handle what happens after a successful authentication
+      this.$store.dispatch("checkout/handleAuthSuccess");
+    },
+  },
 };
 </script>
 

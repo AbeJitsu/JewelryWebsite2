@@ -8,9 +8,9 @@
           label="First Name"
           label-for="first-name"
           placeholder="Enter your first name"
-          v-model="shippingDetails.firstName"
+          detailType="shipping"
+          fieldKey="firstName"
           required
-          @input="updateShippingDetail('firstName', shippingDetails.firstName)"
         />
 
         <!-- Last Name Input -->
@@ -18,9 +18,9 @@
           label="Last Name"
           label-for="last-name"
           placeholder="Enter your last name"
-          v-model="shippingDetails.lastName"
+          detailType="shipping"
+          fieldKey="lastName"
           required
-          @input="updateShippingDetail('lastName', shippingDetails.lastName)"
         />
 
         <!-- Address Input -->
@@ -28,9 +28,9 @@
           label="Address"
           label-for="shipping-address"
           placeholder="Enter your shipping address"
-          v-model="shippingDetails.address"
+          detailType="shipping"
+          fieldKey="address"
           required
-          @input="updateShippingDetail('address', shippingDetails.address)"
         />
 
         <!-- Checkbox for Apartment/Suite Information -->
@@ -38,9 +38,6 @@
           <b-form-checkbox
             id="has-apartment"
             v-model="shippingDetails.hasApartment"
-            @change="
-              updateShippingDetail('hasApartment', shippingDetails.hasApartment)
-            "
           >
             Includes Apt, Unit, or Ste.
           </b-form-checkbox>
@@ -52,10 +49,8 @@
             label="Apt, Unit, or Suite"
             label-for="shipping-apartment"
             placeholder="Apt, Unit, or Suite (Optional)"
-            v-model="shippingDetails.apartment"
-            @input="
-              updateShippingDetail('apartment', shippingDetails.apartment)
-            "
+            detailType="shipping"
+            fieldKey="apartment"
           />
         </div>
 
@@ -64,9 +59,9 @@
           label="City"
           label-for="shipping-city"
           placeholder="Enter your city"
-          v-model="shippingDetails.city"
+          detailType="shipping"
+          fieldKey="city"
           required
-          @input="updateShippingDetail('city', shippingDetails.city)"
         />
 
         <!-- State Input -->
@@ -74,9 +69,9 @@
           label="State"
           label-for="shipping-state"
           placeholder="Enter your state"
-          v-model="shippingDetails.state"
+          detailType="shipping"
+          fieldKey="state"
           required
-          @input="updateShippingDetail('state', shippingDetails.state)"
         />
 
         <!-- ZIP Code Input -->
@@ -84,9 +79,9 @@
           label="ZIP Code"
           label-for="shipping-zip"
           placeholder="Enter your ZIP code"
-          v-model="shippingDetails.zip"
+          detailType="shipping"
+          fieldKey="zip"
           required
-          @input="updateShippingDetail('zip', shippingDetails.zip)"
         />
       </b-form>
     </div>
@@ -95,7 +90,7 @@
 
 <script>
 import FormInput from "@/components/form/FormInput.vue";
-import { mapState, mapActions } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   components: {
@@ -105,43 +100,16 @@ export default {
     ...mapState("checkout", ["shippingDetails"]),
   },
   methods: {
-    ...mapActions("checkout", [
-      "updateShippingFirstName",
-      "updateShippingLastName",
-      "updateShippingAddress",
-      "updateShippingApartment",
-      "updateShippingCity",
-      "updateShippingState",
-      "updateShippingZip",
-    ]),
-    updateShippingDetail(field, value) {
-      // Dynamically call the respective Vuex action based on the field being updated
-      const actionMap = {
-        firstName: "updateShippingFirstName",
-        lastName: "updateShippingLastName",
-        address: "updateShippingAddress",
-        apartment: "updateShippingApartment",
-        city: "updateShippingCity",
-        state: "updateShippingState",
-        zip: "updateShippingZip",
-      };
-      this[actionMap[field]](value);
-    },
     onSubmitShipping() {
       console.log(
         "Form submitted with current shipping details:",
         this.shippingDetails
       );
+      // Additional logic for form submission can be added here
     },
   },
   created() {
-    const storedData = localStorage.getItem("shippingDetails");
-    if (storedData) {
-      this.$store.commit(
-        "checkout/updateShippingDetails",
-        JSON.parse(storedData)
-      );
-    }
+    // Initialize form with data from localStorage or Vuex store
   },
 };
 </script>
@@ -149,5 +117,3 @@ export default {
 <style scoped>
 @import "@/assets/sharedStyles.css";
 </style>
-
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/ShippingInformation.vue -->

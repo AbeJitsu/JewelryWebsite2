@@ -4,22 +4,19 @@
     <div class="info-container">
       <b-form @submit.prevent="onSubmitBilling">
         <!-- Checkbox for Cardholder Name Same as Shipping Name -->
-        <div>
-          <div class="checkbox-align">
-            <b-form-checkbox v-model="cardholderNameSameAsShipping">
-              Same as shipping name
-            </b-form-checkbox>
-          </div>
-
-          <!-- Name on Card Input -->
-          <FormInput
-            label="Name on Card"
-            label-for="cardholder-name"
-            placeholder="Enter cardholder's name"
-            v-model="computedCardholderName"
-            required
-            :disabled="cardholderNameSameAsShipping"
-          />
+        <!-- Name on Card Input -->
+        <FormInput
+          label="Name on Card"
+          label-for="cardholder-name"
+          placeholder="Enter cardholder's name"
+          v-model="computedCardholderName"
+          required
+          :disabled="cardholderNameSameAsShipping"
+        />
+        <div class="checkbox-align">
+          <b-form-checkbox v-model="cardholderNameSameAsShipping">
+            Same as shipping name
+          </b-form-checkbox>
         </div>
 
         <!-- Billing Address Same as Shipping Address Checkbox -->
@@ -31,41 +28,62 @@
 
         <!-- Conditional Rendering for Billing Address Inputs -->
         <template v-if="!billingSameAsShipping">
-          <!-- Dynamically bind each input to the Vuex store -->
           <FormInput
             label="Address"
             label-for="billing-address"
             placeholder="Enter your billing address"
-            v-model="billingDetails.address"
+            detailType="billing"
+            fieldKey="address"
             required
           />
-          <FormInput
-            v-if="hasBillingApartment"
-            label="Apartment/Suite"
-            label-for="billing-apartment"
-            placeholder="Apartment, suite, etc. (Optional)"
-            v-model="billingDetails.apartment"
-          />
+          <!-- Checkbox for Apartment/Suite Information in Billing -->
+          <div class="checkbox-align">
+            <b-form-checkbox v-model="hasBillingApartment">
+              Includes Apt, Unit, or Ste.
+            </b-form-checkbox>
+          </div>
+          <!-- Apartment/Suite Input in Billing -->
+          <div v-if="hasBillingApartment">
+            <FormInput
+              label="Apartment/Suite"
+              label-for="billing-apartment"
+              placeholder="Apartment, suite, etc. (Optional)"
+              detailType="billing"
+              fieldKey="apartment"
+            />
+          </div>
           <FormInput
             label="City"
             label-for="billing-city"
             placeholder="Enter your city"
-            v-model="billingDetails.city"
+            detailType="billing"
+            fieldKey="city"
             required
           />
           <FormInput
             label="State"
             label-for="billing-state"
             placeholder="Enter your state"
-            v-model="billingDetails.state"
+            detailType="billing"
+            fieldKey="state"
             required
           />
           <FormInput
             label="ZIP Code"
             label-for="billing-zip"
             placeholder="Enter your ZIP code"
-            v-model="billingDetails.zip"
+            detailType="billing"
+            fieldKey="zip"
             required
+          />
+          <!-- Name on Card Input -->
+          <FormInput
+            label="Name on Card"
+            label-for="cardholder-name"
+            placeholder="Enter cardholder's name"
+            v-model="computedCardholderName"
+            required
+            :disabled="cardholderNameSameAsShipping"
           />
         </template>
       </b-form>
@@ -84,6 +102,7 @@ export default {
   data() {
     return {
       cardholderNameSameAsShipping: false,
+      hasBillingApartment: false, // To control the apartment/suite field in billing
     };
   },
   computed: {
@@ -92,39 +111,23 @@ export default {
       get() {
         return this.cardholderNameSameAsShipping
           ? `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`
-          : this.billingDetails.cardholderName;
+          : this.billingDetails.cardholderName || "";
       },
       set(value) {
         if (!this.cardholderNameSameAsShipping) {
-          this.$store.dispatch("checkout/updateBillingDetails", {
-            cardholderName: value,
+          this.$store.dispatch("checkout/updateDetail", {
+            detailType: "billing",
+            field: "cardholderName",
+            value,
           });
         }
       },
     },
-    billingSameAsShipping: {
-      get() {
-        return this.$store.state.checkout.isBillingSameAsShipping;
-      },
-      set(value) {
-        this.$store.dispatch("checkout/toggleBillingSameAsShipping", value);
-      },
-    },
   },
   methods: {
-    ...mapActions("checkout", ["setBillingDetails"]),
+    ...mapActions("checkout", ["updateDetail", "linkBillingToShipping"]),
     onSubmitBilling() {
-      this.setBillingDetails(this.billingDetails);
-    },
-  },
-  watch: {
-    cardholderNameSameAsShipping(newValue) {
-      if (newValue) {
-        this.setBillingDetails({
-          ...this.billingDetails,
-          cardholderName: `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`,
-        });
-      }
+      console.log("Billing information submitted", this.billingDetails);
     },
   },
 };
@@ -133,4 +136,3 @@ export default {
 <style scoped>
 @import "@/assets/sharedStyles.css";
 </style>
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/BillingInformation.vue -->

@@ -96,14 +96,17 @@ export default {
       this.isLoading = true;
       this.errorMessage = "";
 
-      console.log("Submitting payment with total:", this.orderTotal.total);
+      console.log(
+        "Submitting payment with total:",
+        this.orderTotal.total.total
+      );
 
       try {
         const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {
           await axios.post("/api/payment", {
             token: result.token,
-            amount: this.orderTotal.total,
+            amount: this.orderTotal.total.total, // Using total from orderTotal getter
             currency: "USD",
           });
           this.$router.push({ name: "OrderConfirmation" });
@@ -122,5 +125,3 @@ export default {
   },
 };
 </script>
-
-/Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/PaymentDetails.vue

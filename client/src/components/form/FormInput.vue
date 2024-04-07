@@ -1,5 +1,4 @@
 <!-- >Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/form/FormInput.vue -->
-
 <template>
   <b-form-group
     :label="label"
@@ -26,8 +25,6 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-
 export default {
   props: {
     label: String,
@@ -42,35 +39,26 @@ export default {
     validState: { type: Boolean, default: null },
     feedback: String,
     disabled: Boolean,
-    value: [String, Number], // The value prop replaces modelValue
-    fieldKey: String, // Identifies the field in the Vuex store
-    module: String, // Identifies the Vuex module
+    detailType: String, // 'shipping' or 'billing'
+    fieldKey: String,
   },
   computed: {
     inputValue: {
       get() {
-        return this.value; // Directly bind to the value prop
+        // Directly access the state based on the detailType and fieldKey
+        return this.$store.state.checkout[this.detailType + "Details"][
+          this.fieldKey
+        ];
       },
       set(value) {
-        this.updateInput({
-          module: this.module,
-          fieldKey: this.fieldKey,
-          value,
+        // Dispatch the generic updateDetail action to update the Vuex state
+        this.$store.dispatch("checkout/updateDetail", {
+          detailType: this.detailType,
+          field: this.fieldKey,
+          value: value,
         });
       },
     },
   },
-  methods: {
-    ...mapMutations({
-      updateInput: "updateField", // Assumes 'updateField' is a global mutation
-    }),
-  },
 };
 </script>
-
-<style scoped>
-.form-group {
-  margin: 1rem;
-  white-space: nowrap;
-}
-</style>
