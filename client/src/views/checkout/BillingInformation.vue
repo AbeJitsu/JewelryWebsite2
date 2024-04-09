@@ -4,30 +4,32 @@
     <div class="info-container">
       <b-form @submit.prevent="onSubmitBilling">
         <!-- Checkbox for Cardholder Name Same as Shipping Name -->
+        <div class="checkbox-align">
+          <b-form-checkbox v-model="cardholderNameSameAsShipping">
+            Card name same as above
+          </b-form-checkbox>
+        </div>
         <!-- Name on Card Input -->
         <FormInput
           label="Name on Card"
           label-for="cardholder-name"
-          placeholder="Enter cardholder's name"
+          placeholder="Enter name on card"
+          detailType="billing"
+          fieldKey="cardholderName"
           v-model="computedCardholderName"
           required
           :disabled="cardholderNameSameAsShipping"
         />
-        <div class="checkbox-align">
-          <b-form-checkbox v-model="cardholderNameSameAsShipping">
-            Same as shipping name
-          </b-form-checkbox>
-        </div>
 
         <!-- Billing Address Same as Shipping Address Checkbox -->
         <div class="checkbox-align">
-          <b-form-checkbox v-model="billingSameAsShipping">
-            Both addresses are the same
+          <b-form-checkbox v-model="isBillingSameAsShipping">
+            Same as shipping address
           </b-form-checkbox>
         </div>
 
         <!-- Conditional Rendering for Billing Address Inputs -->
-        <template v-if="!billingSameAsShipping">
+        <template v-if="!isBillingSameAsShipping">
           <FormInput
             label="Address"
             label-for="billing-address"
@@ -36,12 +38,14 @@
             fieldKey="address"
             required
           />
+
           <!-- Checkbox for Apartment/Suite Information in Billing -->
           <div class="checkbox-align">
             <b-form-checkbox v-model="hasBillingApartment">
               Includes Apt, Unit, or Ste.
             </b-form-checkbox>
           </div>
+
           <!-- Apartment/Suite Input in Billing -->
           <div v-if="hasBillingApartment">
             <FormInput
@@ -52,6 +56,7 @@
               fieldKey="apartment"
             />
           </div>
+
           <FormInput
             label="City"
             label-for="billing-city"
@@ -60,6 +65,7 @@
             fieldKey="city"
             required
           />
+
           <FormInput
             label="State"
             label-for="billing-state"
@@ -68,6 +74,7 @@
             fieldKey="state"
             required
           />
+
           <FormInput
             label="ZIP Code"
             label-for="billing-zip"
@@ -75,15 +82,6 @@
             detailType="billing"
             fieldKey="zip"
             required
-          />
-          <!-- Name on Card Input -->
-          <FormInput
-            label="Name on Card"
-            label-for="cardholder-name"
-            placeholder="Enter cardholder's name"
-            v-model="computedCardholderName"
-            required
-            :disabled="cardholderNameSameAsShipping"
           />
         </template>
       </b-form>
@@ -102,11 +100,15 @@ export default {
   data() {
     return {
       cardholderNameSameAsShipping: false,
-      hasBillingApartment: false, // To control the apartment/suite field in billing
+      hasBillingApartment: false,
     };
   },
   computed: {
-    ...mapState("checkout", ["billingDetails", "shippingDetails"]),
+    ...mapState("checkout", [
+      "billingDetails",
+      "shippingDetails",
+      "isBillingSameAsShipping",
+    ]),
     computedCardholderName: {
       get() {
         return this.cardholderNameSameAsShipping
@@ -117,7 +119,7 @@ export default {
         if (!this.cardholderNameSameAsShipping) {
           this.$store.dispatch("checkout/updateDetail", {
             detailType: "billing",
-            field: "cardholderName",
+            fieldKey: "cardholderName",
             value,
           });
         }
@@ -128,6 +130,14 @@ export default {
     ...mapActions("checkout", ["updateDetail", "linkBillingToShipping"]),
     onSubmitBilling() {
       console.log("Billing information submitted", this.billingDetails);
+    },
+  },
+  watch: {
+    isBillingSameAsShipping(newValue) {
+      this.linkBillingToShipping(newValue);
+      if (newValue) {
+        this.cardholderNameSameAsShipping = true;
+      }
     },
   },
 };

@@ -45,3 +45,5 @@ body {
   flex-grow: 1;
 }
 </style>
+
+<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/App.vue -->
