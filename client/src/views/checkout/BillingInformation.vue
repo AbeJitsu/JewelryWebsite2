@@ -39,17 +39,17 @@
             required
           />
 
-          <!-- Checkbox for Apartment/Suite Information in Billing -->
+          <!-- Checkbox for Apt, Unit, or Suite Information in Billing -->
           <div class="checkbox-align">
             <b-form-checkbox v-model="hasBillingApartment">
               Includes Apt, Unit, or Ste.
             </b-form-checkbox>
           </div>
 
-          <!-- Apartment/Suite Input in Billing -->
+          <!-- Apt, Unit, or Suite Input in Billing -->
           <div v-if="hasBillingApartment">
             <FormInput
-              label="Apartment/Suite"
+              label="Apt, Unit, or Suite"
               label-for="billing-apartment"
               placeholder="Apartment, suite, etc. (Optional)"
               detailType="billing"

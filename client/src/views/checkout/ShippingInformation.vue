@@ -33,7 +33,7 @@
           required
         />
 
-        <!-- Checkbox for Apartment/Suite Information -->
+        <!-- Checkbox for Apt, Unit, or Suite Information -->
         <div class="checkbox-align">
           <b-form-checkbox
             id="has-apartment"
@@ -43,7 +43,7 @@
           </b-form-checkbox>
         </div>
 
-        <!-- Conditionally Render Apartment/Suite Input -->
+        <!-- Conditionally Render Apt, Unit, or Suite Input -->
         <div v-if="shippingDetails.hasApartment">
           <FormInput
             label="Apt, Unit, or Suite"
