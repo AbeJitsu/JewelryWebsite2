@@ -7,9 +7,6 @@ export default {
   state: {
     status: "",
     user: null,
-    shippingInfo: null,
-    billingInfo: null,
-    paymentInfo: null,
   },
 
   getters: {
@@ -17,9 +14,6 @@ export default {
     authStatus: (state) => state.status,
     user: (state) => state.user,
     isAdmin: (state) => state.user && state.user.role === "admin",
-    shippingInfo: (state) => state.shippingInfo,
-    billingInfo: (state) => state.billingInfo,
-    paymentInfo: (state) => state.paymentInfo,
   },
 
   actions: {
@@ -61,7 +55,6 @@ export default {
         await axios.post("/api/auth/logout", {}, { withCredentials: true });
         commit("logout");
 
-        // Check if the current route is restricted and redirect if necessary
         if (router.currentRoute.meta.requiresAuth) {
           router.push({ name: "jewelry-showcase" });
         }
@@ -80,34 +73,6 @@ export default {
         console.error("Error fetching user profile:", error);
       }
     },
-
-    // New actions for updating shipping, billing, and payment info
-    async updateShippingInfo({ commit }, shippingInfo) {
-      commit("setShippingInfo", shippingInfo);
-      // Update the backend with the new shipping info
-      // Replace '/api/user/updateShippingInfo' with your actual API endpoint
-      await axios.post("/api/user/updateShippingInfo", shippingInfo, {
-        withCredentials: true,
-      });
-    },
-
-    async updateBillingInfo({ commit }, billingInfo) {
-      commit("setBillingInfo", billingInfo);
-      // Update the backend with the new billing info
-      // Replace '/api/user/updateBillingInfo' with your actual API endpoint
-      await axios.post("/api/user/updateBillingInfo", billingInfo, {
-        withCredentials: true,
-      });
-    },
-
-    async updatePaymentInfo({ commit }, paymentInfo) {
-      commit("setPaymentInfo", paymentInfo);
-      // Update the backend with the new payment info
-      // Replace '/api/user/updatePaymentInfo' with your actual API endpoint
-      await axios.post("/api/user/updatePaymentInfo", paymentInfo, {
-        withCredentials: true,
-      });
-    },
   },
 
   mutations: {
@@ -125,23 +90,9 @@ export default {
     logout(state) {
       state.status = "";
       state.user = null;
-      state.shippingInfo = null;
-      state.billingInfo = null;
-      state.paymentInfo = null;
-      // Reset any other user-related state here
     },
     setUser(state, user) {
       state.user = user;
-    },
-    // New mutations for shipping, billing, and payment info
-    setShippingInfo(state, info) {
-      state.shippingInfo = info;
-    },
-    setBillingInfo(state, info) {
-      state.billingInfo = info;
-    },
-    setPaymentInfo(state, info) {
-      state.paymentInfo = info;
     },
   },
 };
