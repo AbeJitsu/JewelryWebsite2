@@ -7,6 +7,18 @@ export default {
   state: {
     status: "",
     user: null,
+    showModal: false,
+    isLogin: true,
+    loginForm: {
+      email: "",
+      password: "",
+    },
+    registerForm: {
+      preferredFirstName: "",
+      email: "",
+      password: "",
+      passwordConfirmation: "",
+    },
   },
 
   getters: {
@@ -14,6 +26,7 @@ export default {
     authStatus: (state) => state.status,
     user: (state) => state.user,
     isAdmin: (state) => state.user && state.user.role === "admin",
+    preferredFirstName: (state) => state.registerForm.preferredFirstName,
   },
 
   actions: {
@@ -73,6 +86,18 @@ export default {
         console.error("Error fetching user profile:", error);
       }
     },
+    toggleModal({ commit }) {
+      commit("TOGGLE_MODAL");
+    },
+    toggleLogin({ commit }) {
+      commit("TOGGLE_LOGIN");
+    },
+    updateLoginForm({ commit }, payload) {
+      commit("UPDATE_LOGIN_FORM", payload);
+    },
+    updateRegisterForm({ commit }, payload) {
+      commit("UPDATE_REGISTER_FORM", payload);
+    },
   },
 
   mutations: {
@@ -93,6 +118,18 @@ export default {
     },
     setUser(state, user) {
       state.user = user;
+    },
+    TOGGLE_MODAL(state) {
+      state.showModal = !state.showModal;
+    },
+    TOGGLE_LOGIN(state) {
+      state.isLogin = !state.isLogin;
+    },
+    UPDATE_LOGIN_FORM(state, { field, value }) {
+      state.loginForm[field] = value;
+    },
+    UPDATE_REGISTER_FORM(state, { field, value }) {
+      state.registerForm[field] = value;
     },
   },
 };

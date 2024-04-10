@@ -42,7 +42,8 @@
             </b-nav-item>
 
             <b-nav-item v-else @click="performLogout">
-              <b-icon icon="box-arrow-right"></b-icon> Hi, welcome!
+              <b-icon icon="box-arrow-right"></b-icon> Welcome,
+              {{ userPreferredName }}!
             </b-nav-item>
             <b-nav-item @click="goToAccount">
               <b-icon icon="person-circle"></b-icon> Account & Orders
@@ -76,7 +77,12 @@ export default {
     AuthModal,
   },
   computed: {
-    ...mapGetters("user", ["isLoggedIn"]),
+    ...mapGetters("user", ["isLoggedIn", "user"]),
+    userPreferredName() {
+      return this.user && this.user.preferredFirstName
+        ? this.user.preferredFirstName
+        : "";
+    },
     ...mapGetters("cart", ["itemCount"]),
   },
   methods: {
