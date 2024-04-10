@@ -84,18 +84,19 @@ export default {
   margin: 1em auto;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  min-width: 60%;
+  max-width: 90%;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .product-card:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+  transition: color 0.3s ease, transform 0.3s ease-in-out;
 }
 
 .product-image-container {
-  width: 100%;
-  padding-top: 100%; /* Maintain aspect ratio */
+  min-width: 100%;
+  padding-top: 100%;
   position: relative;
   margin-bottom: 2rem;
 }
@@ -121,13 +122,13 @@ export default {
   flex-direction: column;
   align-items: center;
   cursor: pointer;
-  transition: color 0.3s ease, transform 0.3s ease; /* Apply transition here */
+  transition: color 0.3s ease, transform 0.3s ease;
   white-space: nowrap; /* Ensure text doesn't wrap */
 }
 
 .icon-container i,
 .icon-container span {
-  transition: color 0.3s ease, transform 0.3s ease; /* Ensure transition applies to icon and text */
+  transition: color 0.3s ease, transform 0.3s ease-in-out;
 }
 
 .icon-container:hover i,

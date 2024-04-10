@@ -1,7 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import JewelryShowcase from "../views/JewelryShowcase.vue";
-import store from "@/store"; // Import Vuex store
+import store from "@/store";
 
 Vue.use(VueRouter);
 
@@ -71,7 +71,6 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isLoggedIn) {
-      // Trigger the auth modal instead of redirecting to a login page
       store.dispatch("triggerAuthModal");
       next(false); // halt the navigation
     } else {

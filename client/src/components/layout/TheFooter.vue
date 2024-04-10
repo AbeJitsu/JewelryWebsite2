@@ -3,7 +3,6 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-4">
-          <!-- <h5>About Us</h5> -->
           <router-link to="/about" class="link-pink"
             >Learn More About Us</router-link
           >
@@ -12,8 +11,6 @@
           <router-link to="/contact" class="link-pink">Contact Us</router-link>
         </div>
         <div class="col-sm-4">
-          <!-- <h5>Follow Us</h5> -->
-          <!-- Flex container for social links -->
           <div class="social-links">
             <a
               href="https://www.facebook.com/EscapeRelaxBeJeweled/"
@@ -44,11 +41,8 @@
 </template>
 
 <script>
-// Importing Vue and use Vue Router might be necessary if this component is standalone or in a setup that doesn't globally import Vue Router
 export default {
   name: "TheFooter",
-  // If you are using font-awesome-icons globally, you might not need to import it here.
-  // But, ensure that your main.js or equivalent setup file imports and uses FontAwesomeIcon component globally.
 };
 </script>
 
