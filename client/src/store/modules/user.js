@@ -5,8 +5,6 @@ export default {
   namespaced: true,
 
   state: {
-    status: "",
-    user: null,
     showModal: false,
     isLogin: true,
     loginForm: {
@@ -19,6 +17,8 @@ export default {
       password: "",
       passwordConfirmation: "",
     },
+    status: "",
+    user: null,
   },
 
   getters: {
