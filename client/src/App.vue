@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="d-flex flex-column min-vh-100">
+  <div id="app">
     <TheHeader />
     <div class="flex-grow-1">
       <router-view />
