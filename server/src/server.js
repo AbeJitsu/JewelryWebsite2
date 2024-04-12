@@ -1,4 +1,6 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js
+// Load environment variables from .env file
+require("dotenv").config();
+
 const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
@@ -12,9 +14,6 @@ const { Client, Environment } = require("square");
 // // Temporary secret generation
 // const secret = crypto.randomBytes(64).toString('hex');
 // console.log("Generated session secret:", secret);
-
-// Load environment variables from .env file
-require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -113,7 +112,6 @@ app.post("/api/payment", async (req, res) => {
   }
 });
 
-
 // Error Handling Middleware for unexpected errors
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -131,3 +129,4 @@ if (require.main === module) {
 }
 
 module.exports = app;
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js
