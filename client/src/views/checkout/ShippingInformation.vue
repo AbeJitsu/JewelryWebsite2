@@ -1,3 +1,29 @@
+<script>
+import FormInput from "@/components/form/FormInput.vue";
+import { mapState } from "vuex";
+
+export default {
+  components: {
+    FormInput,
+  },
+  computed: {
+    ...mapState("checkout", ["shippingDetails"]),
+  },
+  methods: {
+    onSubmitShipping() {
+      console.log(
+        "Form submitted with current shipping details:",
+        this.shippingDetails
+      );
+      // Additional logic for form submission can be added here
+    },
+  },
+  created() {
+    // Initialize form with data from localStorage or Vuex store
+  },
+};
+</script>
+
 <template>
   <div>
     <h2 class="section-title">Shipping Information</h2>
@@ -87,32 +113,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import FormInput from "@/components/form/FormInput.vue";
-import { mapState } from "vuex";
-
-export default {
-  components: {
-    FormInput,
-  },
-  computed: {
-    ...mapState("checkout", ["shippingDetails"]),
-  },
-  methods: {
-    onSubmitShipping() {
-      console.log(
-        "Form submitted with current shipping details:",
-        this.shippingDetails
-      );
-      // Additional logic for form submission can be added here
-    },
-  },
-  created() {
-    // Initialize form with data from localStorage or Vuex store
-  },
-};
-</script>
 
 <style scoped>
 @import "@/assets/sharedStyles.css";

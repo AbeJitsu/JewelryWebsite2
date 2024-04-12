@@ -1,4 +1,3 @@
-// Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/product.js
 import axios from "axios";
 
 export default {
@@ -101,3 +100,5 @@ export default {
       ),
   },
 };
+
+// Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/product.js
