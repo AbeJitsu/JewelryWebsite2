@@ -31,33 +31,33 @@ export default {
 
   actions: {
     async register({ commit }, userData) {
-      commit("auth_request");
+      commit("setAuthRequest");
       try {
         const response = await axios.post("/api/auth/register", userData, {
           withCredentials: true,
         });
-        commit("auth_success", response.data);
+        commit("setAuthSuccess", response.data);
       } catch (err) {
-        commit("auth_error");
+        commit("setAuthError", err);
         console.error("Registration error:", err);
         throw err;
       }
     },
 
     async login({ commit }, userCredentials) {
-      commit("auth_request");
+      commit("setAuthRequest");
       try {
         const response = await axios.post("/api/auth/login", userCredentials, {
           withCredentials: true,
         });
         if (response.data.message === "Login successful") {
-          commit("auth_success", response.data);
+          commit("setAuthSuccess", response.data);
         } else {
-          commit("auth_error");
+          commit("setAuthError", response.data.error);
           console.error("Login error:", response.data.error);
         }
       } catch (err) {
-        commit("auth_error");
+        commit("setAuthError", err);
         console.error("Login error:", err);
         throw err;
       }
@@ -66,8 +66,7 @@ export default {
     async logout({ commit }) {
       try {
         await axios.post("/api/auth/logout", {}, { withCredentials: true });
-        commit("logout");
-
+        commit("clearUserData");
         if (router.currentRoute.meta.requiresAuth) {
           router.push({ name: "jewelry-showcase" });
         }
@@ -86,49 +85,69 @@ export default {
         console.error("Error fetching user profile:", error);
       }
     },
+
     toggleModal({ commit }) {
-      commit("TOGGLE_MODAL");
+      commit("toggleModal");
     },
+
     toggleLogin({ commit }) {
-      commit("TOGGLE_LOGIN");
+      commit("toggleLogin");
     },
+
     updateLoginForm({ commit }, payload) {
-      commit("UPDATE_LOGIN_FORM", payload);
+      commit("updateLoginForm", payload);
     },
+
     updateRegisterForm({ commit }, payload) {
-      commit("UPDATE_REGISTER_FORM", payload);
+      commit("updateRegisterForm", payload);
+    },
+
+    // Auto login action
+    tryAutoLogin({ commit }) {
+      const user = localStorage.getItem("user");
+      if (user) {
+        const userData = JSON.parse(user);
+        commit("setUser", userData);
+      }
     },
   },
 
   mutations: {
-    auth_request(state) {
+    setAuthRequest(state) {
       state.status = "loading";
     },
-    auth_success(state, userData) {
+    setAuthSuccess(state, userData) {
       state.status = "success";
       state.user = userData;
+      localStorage.setItem("user", JSON.stringify(userData));
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${userData.token}`;
     },
-    auth_error(state) {
+    setAuthError(state, error) {
       state.status = "error";
       state.user = null;
+      console.error("Auth error:", error);
     },
-    logout(state) {
+    clearUserData(state) {
       state.status = "";
       state.user = null;
+      localStorage.removeItem("user");
+      delete axios.defaults.headers.common["Authorization"];
     },
     setUser(state, user) {
       state.user = user;
     },
-    TOGGLE_MODAL(state) {
+    toggleModal(state) {
       state.showModal = !state.showModal;
     },
-    TOGGLE_LOGIN(state) {
+    toggleLogin(state) {
       state.isLogin = !state.isLogin;
     },
-    UPDATE_LOGIN_FORM(state, { field, value }) {
+    updateLoginForm(state, { field, value }) {
       state.loginForm[field] = value;
     },
-    UPDATE_REGISTER_FORM(state, { field, value }) {
+    updateRegisterForm(state, { field, value }) {
       state.registerForm[field] = value;
     },
   },
