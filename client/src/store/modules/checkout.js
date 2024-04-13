@@ -31,30 +31,28 @@ export default {
         state[`${detailType}Details`][field] = value;
       }
     },
-
     LINK_BILLING_TO_SHIPPING(state, link) {
       state.isBillingSameAsShipping = link;
       if (link) {
+        // Copy shipping details to billing details
         state.billingDetails = { ...state.shippingDetails };
+        // Additional field if needed
         state.billingDetails.cardholderName = `${state.shippingDetails.firstName} ${state.shippingDetails.lastName}`;
       }
     },
   },
-
   actions: {
     updateDetail({ commit }, payload) {
       commit("UPDATE_DETAIL", payload);
     },
-
     linkBillingToShipping({ commit }, link) {
+      // Removed 'state' since it is not used
       commit("LINK_BILLING_TO_SHIPPING", link);
     },
   },
-
   getters: {
     getShippingDetails: (state) => state.shippingDetails,
     getBillingDetails: (state) => state.billingDetails,
-    getPaymentDetails: (state) => state.paymentDetails,
     isBillingSameAsShipping: (state) => state.isBillingSameAsShipping,
   },
 };
