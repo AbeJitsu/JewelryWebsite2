@@ -1,6 +1,18 @@
 import axios from "axios";
 import router from "@/router";
 
+// Centralized function for setting token and user data
+function setAuthData(userData) {
+  localStorage.setItem("user", JSON.stringify(userData));
+  axios.defaults.headers.common["Authorization"] = `Bearer ${userData.token}`;
+}
+
+// Centralized function for clearing token and user data
+function clearAuthData() {
+  localStorage.removeItem("user");
+  delete axios.defaults.headers.common["Authorization"];
+}
+
 export default {
   namespaced: true,
 
@@ -36,11 +48,11 @@ export default {
         const response = await axios.post("/api/auth/register", userData, {
           withCredentials: true,
         });
+        setAuthData(response.data); // Save auth data on successful register
         commit("setAuthSuccess", response.data);
       } catch (err) {
         commit("setAuthError", err);
         console.error("Registration error:", err);
-        throw err;
       }
     },
 
@@ -51,28 +63,25 @@ export default {
           withCredentials: true,
         });
         if (response.data.message === "Login successful") {
+          setAuthData(response.data); // Save auth data on successful login
           commit("setAuthSuccess", response.data);
         } else {
           commit("setAuthError", response.data.error);
-          console.error("Login error:", response.data.error);
         }
       } catch (err) {
         commit("setAuthError", err);
         console.error("Login error:", err);
-        throw err;
       }
     },
 
-    async logout({ commit }) {
-      try {
-        await axios.post("/api/auth/logout", {}, { withCredentials: true });
-        commit("clearUserData");
-        if (router.currentRoute.meta.requiresAuth) {
+    logout({ commit }) {
+      axios
+        .post("/api/auth/logout", {}, { withCredentials: true })
+        .finally(() => {
+          clearAuthData(); // Clear auth data on logout
+          commit("clearUserData");
           router.push({ name: "jewelry-showcase" });
-        }
-      } catch (err) {
-        console.error("Logout error:", err);
-      }
+        });
     },
 
     async fetchUserProfile({ commit }) {
@@ -102,12 +111,10 @@ export default {
       commit("updateRegisterForm", payload);
     },
 
-    // Auto login action
     tryAutoLogin({ commit }) {
       const user = localStorage.getItem("user");
       if (user) {
-        const userData = JSON.parse(user);
-        commit("setUser", userData);
+        commit("setUser", JSON.parse(user));
       }
     },
   },
@@ -118,11 +125,7 @@ export default {
     },
     setAuthSuccess(state, userData) {
       state.status = "success";
-      state.user = userData;
-      localStorage.setItem("user", JSON.stringify(userData));
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${userData.token}`;
+      state.user = userData; // Ensure userData is used to update state
     },
     setAuthError(state, error) {
       state.status = "error";
@@ -132,8 +135,6 @@ export default {
     clearUserData(state) {
       state.status = "";
       state.user = null;
-      localStorage.removeItem("user");
-      delete axios.defaults.headers.common["Authorization"];
     },
     setUser(state, user) {
       state.user = user;
