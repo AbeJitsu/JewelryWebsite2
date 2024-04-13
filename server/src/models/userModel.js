@@ -9,6 +9,11 @@ const addressSchema = new mongoose.Schema({
     required: [true, "Street address is required"],
     trim: true,
   },
+  apartment: {
+    type: String,
+    required: false,
+    trim: true,
+  },
   city: {
     type: String,
     required: [true, "City is required"],
@@ -52,11 +57,15 @@ const userSchema = new mongoose.Schema({
   },
   billingAddress: addressSchema,
   shippingAddress: addressSchema,
-  // Role field added to the user schema
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin", "vip"], // Updated to include 'vip' role
     default: "user",
+  },
+  isVIP: {
+    // Adding VIP status
+    type: Boolean,
+    default: false,
   },
 });
 
