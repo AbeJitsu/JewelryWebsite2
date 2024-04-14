@@ -11,7 +11,7 @@ const addressSchema = new mongoose.Schema({
   },
   apartment: {
     type: String,
-    required: false,
+    required: false, // Not required, can be empty
     trim: true,
   },
   city: {
@@ -59,28 +59,26 @@ const userSchema = new mongoose.Schema({
   shippingAddress: addressSchema,
   role: {
     type: String,
-    enum: ["user", "admin", "vip"], // Updated to include 'vip' role
+    enum: ["user", "admin", "vip"], // Specify allowable roles
     default: "user",
-  },
-  isVIP: {
-    // Adding VIP status
-    type: Boolean,
-    default: false,
   },
 });
 
 // Pre-save hook to hash the password before saving it to the database
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
+  if (this.isModified("password")) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+      next();
+    } catch (error) {
+      next(error); // Properly pass the error on to the next middleware
+    }
+  } else {
+    next(); // Ensure that next() is called when the password hasn't been modified
   }
 });
+
 
 // Method to compare a candidate password with the user's stored password
 userSchema.methods.comparePassword = async function (candidatePassword) {
