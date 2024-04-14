@@ -10,10 +10,7 @@ const bodyParser = require("body-parser");
 const MongoStore = require("connect-mongo");
 const crypto = require("crypto");
 const { Client, Environment } = require("square");
-
-// // Temporary secret generation
-// const secret = crypto.randomBytes(64).toString('hex');
-// console.log("Generated session secret:", secret);
+const User = require("./models/userModel");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -52,10 +49,37 @@ app.use(
     store: MongoStore.create({ mongoUrl: mongoURI }),
     cookie: {
       secure: process.env.NODE_ENV === "production", // Set to true in production
-      maxAge: 168 * 60 * 60 * 1000, // 24 hours
     },
   })
 );
+
+// Dynamic session expiration middleware
+app.use(async (req, res, next) => {
+  if (req.session.userId) {
+    const user = await User.findById(req.session.userId);
+    if (user && user.isVIP) {
+      req.session.cookie.maxAge = computeVIPExpiration(); // For VIP users, align expiration with Wednesday morning
+    } else {
+      req.session.cookie.maxAge = 48 * 60 * 60 * 1000; // 48 hours for regular users
+    }
+  }
+  next();
+});
+
+// Function to calculate the next Wednesday at 6 AM EST
+function computeVIPExpiration() {
+  let now = new Date();
+  let nextWednesday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + ((3 - now.getDay() + 7) % 7 || 7),
+    6
+  );
+  if (now > nextWednesday) {
+    nextWednesday.setDate(nextWednesday.getDate() + 7);
+  }
+  return nextWednesday - now; // returns the milliseconds until next Wednesday at 6 AM
+}
 
 // API Route definitions
 const productRoutes = require("./routes/productRoutes");
@@ -70,8 +94,6 @@ app.use("/api/cart", cartRoutes);
 // Payment processing route
 app.post("/api/payment", async (req, res) => {
   const { token, amount, currency } = req.body;
-
-  console.log("Received payment request with:", { token, amount, currency });
 
   if (!token || !amount || !currency) {
     return res
@@ -94,8 +116,6 @@ app.post("/api/payment", async (req, res) => {
     const { result, ...httpResponse } = await paymentsApi.createPayment(
       requestBody
     );
-
-    console.log("Payment API response:", result);
 
     if (result.payment) {
       res.json({ message: "Payment successful", data: result.payment });

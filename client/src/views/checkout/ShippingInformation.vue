@@ -19,7 +19,16 @@ export default {
     },
   },
   created() {
-    // Initialize form with data from localStorage or Vuex store
+    // Example: Initialize data from localStorage if it exists
+    const localShippingDetails = localStorage.getItem("shippingDetails");
+    if (localShippingDetails) {
+      const details = JSON.parse(localShippingDetails);
+      this.$store.commit("checkout/UPDATE_DETAIL", {
+        detailType: "shipping",
+        field: "all",
+        value: details,
+      });
+    }
   },
 };
 </script>
