@@ -1,5 +1,4 @@
-// main.js
-
+// Vue and third-party imports
 import Vue from "vue";
 import axios from "axios";
 import BootstrapVue, { IconsPlugin } from "bootstrap-vue";
@@ -17,24 +16,28 @@ import {
 } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import VueSlickCarousel from "vue-slick-carousel";
-import "vue-slick-carousel/dist/vue-slick-carousel.css";
-import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
+
+// Style imports
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+import "vue-slick-carousel/dist/vue-slick-carousel.css";
+import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./assets/custom.scss"; // This will override the above styles if there are conflicts
+import "./assets/custom.scss"; // Custom overrides
 
+// Local imports
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import TheHeader from "@/components/layout/TheHeader.vue";
 import TheFooter from "@/components/layout/TheFooter.vue";
 
+// Axios configuration
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
-// Adding both solid and brand icons to the library
+// Font Awesome icons
 library.add(
   faEye,
   faShoppingCart,
@@ -44,19 +47,21 @@ library.add(
   faYoutube
 );
 
-// Registering components globally
+// Global component registration
 Vue.component("font-awesome-icon", FontAwesomeIcon);
 Vue.component("TheHeader", TheHeader);
 Vue.component("TheFooter", TheFooter);
 Vue.component("VueSlickCarousel", VueSlickCarousel);
 
-// Using plugins
+// Vue plugin usage
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 Vue.use(PortalVue);
 
+// Prevent the production tip on startup in a production environment
 Vue.config.productionTip = false;
 
+// Initialize Vue instance
 new Vue({
   router,
   store,
