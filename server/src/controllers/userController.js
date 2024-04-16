@@ -2,12 +2,16 @@
 
 const User = require("../models/userModel");
 
-// Method to update user's address information
+// Update user's address information
 exports.updateAddress = async (req, res) => {
-  try {
-    const userId = req.user.id; // Assuming you have user id from session or JWT token
-    const { billingAddress, shippingAddress } = req.body;
+  const { userId } = req.session; // Use session to fetch user ID
+  const { billingAddress, shippingAddress } = req.body;
 
+  if (!userId) {
+    return res.status(403).json({ message: "No user session found" });
+  }
+
+  try {
     const user = await User.findByIdAndUpdate(
       userId,
       { $set: { billingAddress, shippingAddress } },
@@ -15,35 +19,50 @@ exports.updateAddress = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({
       message: "Address updated successfully",
-      user,
+      data: {
+        billingAddress: user.billingAddress,
+        shippingAddress: user.shippingAddress,
+      },
     });
   } catch (error) {
-    res.status(500).send({ message: "Error updating address", error });
+    console.error("Error updating user address:", error);
+    res
+      .status(500)
+      .json({ message: "Error updating address", error: error.toString() });
   }
 };
 
-// Method to retrieve user's address information
+// Retrieve user's address information
 exports.getAddress = async (req, res) => {
-  try {
-    const userId = req.user.id; // Assuming you have user id from session or JWT token
+  const { userId } = req.session; // Use session to fetch user ID
 
+  if (!userId) {
+    return res.status(403).json({ message: "No user session found" });
+  }
+
+  try {
     const user = await User.findById(userId, "billingAddress shippingAddress");
 
     if (!user) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.status(200).json({
       message: "Address retrieved successfully",
-      billingAddress: user.billingAddress,
-      shippingAddress: user.shippingAddress,
+      data: {
+        billingAddress: user.billingAddress,
+        shippingAddress: user.shippingAddress,
+      },
     });
   } catch (error) {
-    res.status(500).send({ message: "Error retrieving address", error });
+    console.error("Error retrieving user address:", error);
+    res
+      .status(500)
+      .json({ message: "Error retrieving address", error: error.toString() });
   }
 };

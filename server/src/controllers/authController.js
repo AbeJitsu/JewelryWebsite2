@@ -2,40 +2,32 @@
 
 const User = require("../models/userModel");
 const validator = require("validator");
-const Cart = require("../models/CartModel"); // Ensure Cart model is imported
+const Cart = require("../models/CartModel");
 
 exports.register = async (req, res) => {
+  const { email, password, preferredFirstName } = req.body;
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: "Invalid email format" });
+  }
+  if (!password || password.length < 8) {
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 8 characters long" });
+  }
+
   try {
-    const { email, password, preferredFirstName } = req.body;
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).send({ error: "Invalid email format" });
-    }
-    if (!password || password.length < 8) {
-      return res
-        .status(400)
-        .send({ error: "Password must be at least 8 characters long" });
-    }
-
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).send({ error: "User already exists" });
+      return res.status(409).json({ error: "Email already in use" });
     }
-
-    const user = new User({
-      email,
-      password,
-      preferredFirstName,
-    });
-
+    const user = new User({ email, password, preferredFirstName });
     await user.save();
-    // Responding with success message, removed setting session userId here
-    res.status(201).send({
-      message: "User registered successfully. Please log in.",
-    });
+    res
+      .status(201)
+      .json({ message: "Registration successful, please log in." });
   } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).send({ error: "An error occurred during registration" });
+    console.error("Registration error:", error);
+    res.status(500).json({ error: "An error occurred during registration" });
   }
 };
 
@@ -43,7 +35,6 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(401).send({ error: "User not found" });
     }
@@ -61,25 +52,53 @@ exports.login = async (req, res) => {
 
       req.session.userId = user._id;
 
-      // Check for the existence of a guest cart before initiating the merge
-      const guestCartExists = await Cart.findOne({
-        sessionToken: req.sessionID,
-      });
-      if (guestCartExists) {
-        Cart.convertGuestCartToUserCart(req.sessionID, user._id)
-          .then(() => console.log("Cart merge completed"))
-          .catch((error) => console.error("Cart merge error:", error)); // Error is logged silently
-      }
+      try {
+        const userCart = await Cart.findOne({ user: user._id });
+        const guestCart = await Cart.findOne({ sessionToken: req.sessionID });
 
-      // Respond to the client without waiting for the cart merge
-      res.send({
-        message: "Login successful",
-        userId: user._id,
-        preferredFirstName: user.preferredFirstName,
-      });
+        if (guestCart) {
+          if (userCart) {
+            // Merge items from guest cart into user cart
+            userCart.items = [...userCart.items, ...guestCart.items]; // Adjust based on your item schema
+            await userCart.save();
+            await guestCart.remove(); // Remove guest cart after merging
+          } else {
+            // Assign guest cart to user if no user cart exists
+            guestCart.user = user._id;
+            guestCart.sessionToken = null;
+            await guestCart.save();
+          }
+        }
+
+        res.send({
+          message: "Login successful",
+          userId: user._id,
+          preferredFirstName: user.preferredFirstName,
+          cart: userCart ? userCart : guestCart, // Send back the appropriate cart
+        });
+      } catch (cartError) {
+        console.error("Cart handling error:", cartError);
+        res.status(500).send({ error: "Error processing cart information" });
+      }
     });
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).send({ error: "An internal error occurred during login" });
   }
 };
+
+// Optional: Definition of the Cart conversion function, if applicable
+async function convertGuestCartToUserCart(sessionID, userID) {
+  const guestCart = await Cart.findOne({ sessionToken: sessionID });
+  if (guestCart) {
+    try {
+      // Convert or merge guest cart to user cart logic
+      guestCart.user = userID;
+      guestCart.sessionToken = null;
+      await guestCart.save();
+      console.log("Cart merge completed");
+    } catch (error) {
+      console.error("Cart merge error:", error);
+    }
+  }
+}

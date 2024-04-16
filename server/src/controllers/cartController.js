@@ -28,10 +28,30 @@ const cartController = {
   },
   getCartItems: async (req, res) => {
     try {
-      // Find the cart based on session ID or user ID
-      let cart = await Cart.findOne({
-        $or: [{ user: req.session.userId }, { sessionToken: req.sessionID }],
-      }).populate("items.product"); // Populate to get product details
+      let cart = null;
+      // Prioritize user-linked cart if user is logged in
+      if (req.session.userId) {
+        cart = await Cart.findOne({ user: req.session.userId }).populate(
+          "items.product"
+        );
+        if (!cart && req.session.sessionToken) {
+          // Check if there was a guest cart to potentially merge/convert
+          cart = await Cart.findOne({
+            sessionToken: req.session.sessionToken,
+          }).populate("items.product");
+          if (cart) {
+            // Convert session cart to user cart
+            cart.user = req.session.userId;
+            cart.sessionToken = null;
+            await cart.save();
+          }
+        }
+      } else if (req.session.sessionToken) {
+        // Handle guest cart for users not logged in
+        cart = await Cart.findOne({
+          sessionToken: req.session.sessionToken,
+        }).populate("items.product");
+      }
 
       if (!cart) {
         return res.status(404).send({ message: "Cart not found" });
@@ -43,6 +63,7 @@ const cartController = {
       res.status(500).send({ message: "Error fetching cart items" });
     }
   },
+
   addItemToCart: async (req, res) => {
     try {
       const { productId, quantity } = req.body;
