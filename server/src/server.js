@@ -45,15 +45,16 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true, // Ensure sessions are always saved, important during development
     store: MongoStore.create({
       mongoUrl: mongoURI,
-      mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true }, // Ensuring the use of new MongoDB driver options
+      mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
     }),
     cookie: {
       secure: process.env.NODE_ENV === "production", // Use secure cookies in production only
-      httpOnly: true, // Ensuring the cookie is sent only over HTTP(S), not client JavaScript, enhancing security against cross-site scripting attacks
-      sameSite: "lax", // This setting can help prevent CSRF attacks and is good for cookies that can be sent in third-party contexts
+      httpOnly: true, // Ensuring the cookie is sent only over HTTP(S), not client JavaScript
+      sameSite: "lax", // This setting can help prevent CSRF attacks
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
 );
