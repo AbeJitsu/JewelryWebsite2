@@ -42,10 +42,10 @@ const productSchema = new mongoose.Schema({
 });
 
 productSchema.pre("save", function (next) {
-  if (this.variantPrice === 25) {
+  if (this.variantPrice == 25) {
     this.type = "zi";
   } else if (
-    this.variantPrice === 20 ||
+    this.variantPrice == 20 ||
     this.bodyHtml.toLowerCase().includes("fashion-fix")
   ) {
     this.type = "fashion-fix";
@@ -56,7 +56,7 @@ productSchema.pre("save", function (next) {
 });
 
 productSchema.methods.reserve = function () {
-  if (this.quantity > 0 && this.status === "available") {
+  if (this.quantity > 0 && this.status == "available") {
     this.status = "in cart";
     this.reservationDeadline = moment()
       .tz("America/New_York")

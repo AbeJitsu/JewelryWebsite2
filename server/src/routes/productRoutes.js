@@ -8,7 +8,7 @@ const {
   deleteProduct,
   getProductById,
   uploadCSV,
-  buildSearchCriteria, // Assuming you have this function implemented
+  buildSearchCriteria, // This function is not implemented
   // Assuming you'll implement searchProducts or adjust according to your actual function
 } = require("../controllers/productController");
 

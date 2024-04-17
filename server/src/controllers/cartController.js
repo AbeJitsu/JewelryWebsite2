@@ -16,42 +16,32 @@ function getNextWednesdayNoon() {
 }
 
 const cartController = {
-  convertGuestCartToUserCart: async (req, res) => {
+  async convertGuestCartToUserCart(req, res) {
+    const { sessionToken, userId } = req.body;
     try {
-      const { sessionToken, userId } = req.body;
-      await Cart.convertGuestCartToUserCart(sessionToken, userId);
-      res.status(200).send({ message: "Cart conversion successful" });
+      const result = await Cart.convertGuestCartToUserCart(
+        sessionToken,
+        userId
+      );
+      res
+        .status(200)
+        .send({ message: "Cart conversion successful", cart: result });
     } catch (error) {
       console.error("Error converting guest cart to user cart:", error);
-      res.status(500).send({ message: "Error converting cart" });
+      res
+        .status(500)
+        .send({ message: "Error converting cart", error: error.message });
     }
   },
-  getCartItems: async (req, res) => {
+
+  async getCartItems(req, res) {
+    const userId = req.session?.userId;
+    const sessionToken = req.session?.sessionToken;
+
     try {
-      let cart = null;
-      // Prioritize user-linked cart if user is logged in
-      if (req.session.userId) {
-        cart = await Cart.findOne({ user: req.session.userId }).populate(
-          "items.product"
-        );
-        if (!cart && req.session.sessionToken) {
-          // Check if there was a guest cart to potentially merge/convert
-          cart = await Cart.findOne({
-            sessionToken: req.session.sessionToken,
-          }).populate("items.product");
-          if (cart) {
-            // Convert session cart to user cart
-            cart.user = req.session.userId;
-            cart.sessionToken = null;
-            await cart.save();
-          }
-        }
-      } else if (req.session.sessionToken) {
-        // Handle guest cart for users not logged in
-        cart = await Cart.findOne({
-          sessionToken: req.session.sessionToken,
-        }).populate("items.product");
-      }
+      const cart = await Cart.findOne({
+        $or: [{ user: userId }, { sessionToken: sessionToken }],
+      }).populate("items.product");
 
       if (!cart) {
         return res.status(404).send({ message: "Cart not found" });
@@ -60,66 +50,50 @@ const cartController = {
       res.status(200).send(cart.items);
     } catch (error) {
       console.error("Error getting cart items:", error);
-      res.status(500).send({ message: "Error fetching cart items" });
+      res
+        .status(500)
+        .send({ message: "Error fetching cart items", error: error.message });
     }
   },
 
-  addItemToCart: async (req, res) => {
-    try {
-      const { productId, quantity } = req.body;
-      const userId = req.session.userId || null;
-      const sessionToken = req.sessionID;
+  async addItemToCart(req, res) {
+    const { productId, quantity } = req.body;
+    const userId = req.session?.userId;
+    const sessionToken = req.sessionID;
 
+    try {
       const product = await Product.findById(productId);
       if (!product || product.status !== "available") {
         return res.status(400).send({ message: "Product not available" });
       }
 
-      // Update product status
       product.status = "in cart";
       await product.save();
 
-      let cart = await Cart.findOne({
-        $or: [{ user: userId }, { sessionToken: sessionToken }],
-      });
-
-      if (!cart) {
-        cart = new Cart({
-          user: userId,
-          sessionToken: sessionToken,
-          items: [
-            {
+      const cart = await Cart.findOneAndUpdate(
+        { $or: [{ user: userId }, { sessionToken: sessionToken }] },
+        {
+          $push: {
+            items: {
               product: productId,
-              quantity: quantity,
+              quantity,
               reservedUntil: getNextWednesdayNoon(),
             },
-          ],
-        });
-      } else {
-        const itemIndex = cart.items.findIndex(
-          (item) => item.product.toString() === productId
-        );
-        if (itemIndex > -1) {
-          cart.items[itemIndex].quantity = quantity;
-          cart.items[itemIndex].reservedUntil = getNextWednesdayNoon();
-        } else {
-          cart.items.push({
-            product: productId,
-            quantity: quantity,
-            reservedUntil: getNextWednesdayNoon(),
-          });
-        }
-      }
+          },
+        },
+        { upsert: true, new: true }
+      );
 
-      await cart.save();
       res.status(200).send({ message: "Item added to cart", cart });
     } catch (error) {
       console.error("Add item to cart error:", error);
-      res.status(500).send({ message: "Error adding item to cart" });
+      res
+        .status(500)
+        .send({ message: "Error adding item to cart", error: error.message });
     }
   },
 
-  updateCartItem: async (req, res) => {
+  async updateCartItem(req, res) {
     const { itemId } = req.params;
     const { quantity } = req.body;
 
@@ -130,7 +104,7 @@ const cartController = {
     try {
       const cart = await Cart.findOneAndUpdate(
         { "items._id": itemId },
-        { $set: { "items.$.quantity": quantity } },
+        { "items.$.quantity": quantity },
         { new: true }
       );
 
@@ -141,11 +115,13 @@ const cartController = {
       res.status(200).send({ message: "Cart item updated", cart });
     } catch (error) {
       console.error("Update cart item error:", error);
-      res.status(500).send({ message: "Error updating cart item" });
+      res
+        .status(500)
+        .send({ message: "Error updating cart item", error: error.message });
     }
   },
 
-  removeItemFromCart: async (req, res) => {
+  async removeItemFromCart(req, res) {
     const { itemId } = req.params;
 
     try {
@@ -162,35 +138,27 @@ const cartController = {
       res.status(200).send({ message: "Cart item removed", cart });
     } catch (error) {
       console.error("Remove cart item error:", error);
-      res.status(500).send({ message: "Error removing cart item" });
+      res
+        .status(500)
+        .send({ message: "Error removing cart item", error: error.message });
     }
   },
 
-  scheduleCartClearance: () => {
+  scheduleCartClearance() {
     cron.schedule(
       "0 12 * * 3",
       async () => {
         console.log("Running task to clear expired carts");
-        const deadline = getNextWednesdayNoon();
-        const carts = await Cart.find({
-          "items.reservedUntil": { $lt: deadline },
-        });
-
-        for (let cart of carts) {
-          for (let item of cart.items) {
-            if (item.reservedUntil < deadline) {
-              const product = await Product.findById(item.product);
-              product.status = "available";
-              await product.save();
-            }
-          }
-          cart.items = cart.items.filter(
-            (item) => item.reservedUntil >= deadline
+        try {
+          const deadline = getNextWednesdayNoon();
+          const carts = await Cart.updateMany(
+            { "items.reservedUntil": { $lt: deadline } },
+            { $pull: { items: { reservedUntil: { $lt: deadline } } } }
           );
-          await cart.save();
+          console.log("Expired carts cleared", carts);
+        } catch (error) {
+          console.error("Failed to clear expired carts:", error);
         }
-
-        console.log("Expired carts cleared");
       },
       {
         scheduled: true,
@@ -198,25 +166,38 @@ const cartController = {
       }
     );
   },
-
-  clearExpiredCarts: async () => {
-    const deadline = getNextWednesdayNoon();
-    const carts = await Cart.find({ "items.reservedUntil": { $lt: deadline } });
-
-    for (let cart of carts) {
-      for (let item of cart.items) {
-        if (item.reservedUntil < deadline) {
-          const product = await Product.findById(item.product);
-          product.status = "available";
-          await product.save();
+  async clearExpiredCarts() {
+        const deadline = getNextWednesdayNoon();
+        try {
+            const carts = await Cart.find({ "items.reservedUntil": { $lt: deadline } });
+            for (let cart of carts) {
+                for (let item of cart.items) {
+                    if (item.reservedUntil < deadline) {
+                        const product = await Product.findById(item.product);
+                        if (product) {
+                            product.status = "available";
+                            await product.save();
+                        }
+                    }
+                }
+                cart.items = cart.items.filter(item => item.reservedUntil >= deadline);
+                await cart.save();
+            }
+            console.log("Expired carts cleared");
+        } catch (error) {
+            console.error("Failed to clear expired carts:", error);
         }
-      }
-      cart.items = cart.items.filter((item) => item.reservedUntil >= deadline);
-      await cart.save();
-    }
-  },
-};
+    },
 
-cartController.scheduleCartClearance();
+    scheduleCartClearance() {
+        cron.schedule("0 12 * * 3", async () => {
+            console.log("Scheduled task to clear expired carts running");
+            await this.clearExpiredCarts();
+        }, {
+            scheduled: true,
+            timezone: "America/New_York"
+        });
+    }
+};
 
 module.exports = cartController;
