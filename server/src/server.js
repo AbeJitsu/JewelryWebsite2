@@ -14,8 +14,7 @@ const User = require("./models/userModel");
 
 const app = express();
 const port = process.env.PORT || 3000;
-const mongoURI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/jewelryStoreDB";
+const mongoURI = process.env.MONGODB_URI  || "mongodb://localhost:27017/jewelryStoreDB";
 
 // Square Client Configuration
 const squareClient = new Client({
