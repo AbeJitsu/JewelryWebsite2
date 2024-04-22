@@ -11,7 +11,6 @@ const bodyParser = require("body-parser");
 const MongoStore = require("connect-mongo");
 const crypto = require("crypto");
 const { Client, Environment } = require("square");
-const User = require("./models/userModel");
 
 // Initialize Express application
 const app = express();
@@ -47,11 +46,8 @@ app.use(
   session({
     secret: process.env.SESSION_SECRET, // Secret key for signing the session ID
     resave: false,
-    saveUninitialized: true, // Ensure sessions are always saved, important during development
-    store: MongoStore.create({
-      mongoUrl: mongoURI,
-      mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
-    }),
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: mongoURI }),
     cookie: {
       secure: process.env.NODE_ENV === "production", // Use secure cookies in production only
       httpOnly: true, // Ensuring the cookie is sent only over HTTP(S), not client JavaScript
@@ -61,35 +57,7 @@ app.use(
   })
 );
 
-// Middleware to set session expiration based on user status
-app.use(async (req, res, next) => {
-  if (req.session.userId) {
-    const user = await User.findById(req.session.userId);
-    if (user && user.isVIP) {
-      req.session.cookie.maxAge = computeVIPExpiration(); // Extend session for VIPs
-    } else {
-      req.session.cookie.maxAge = 48 * 60 * 60 * 1000; // 48 hours for regular users
-    }
-  }
-  next();
-});
-
-// Calculate next Wednesday at 6 AM EST - used for session management for VIPs
-function computeVIPExpiration() {
-  let now = new Date();
-  let nextWednesday = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + ((3 - now.getDay() + 7) % 7 || 7),
-    6
-  );
-  if (now > nextWednesday) {
-    nextWednesday.setDate(nextWednesday.getDate() + 7);
-  }
-  return nextWednesday - now;
-}
-
-// Define API routes
+// API Route definitions
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
@@ -99,9 +67,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/cart", cartRoutes);
 
-// Define route for processing payments
+// Payment processing route
 app.post("/api/payment", async (req, res) => {
   const { token, amount, currency } = req.body;
+  console.log("Received payment request with:", { token, amount, currency });
 
   if (!token || !amount || !currency) {
     return res
@@ -115,7 +84,7 @@ app.post("/api/payment", async (req, res) => {
     const requestBody = {
       sourceId: token,
       amountMoney: {
-        amount: Math.round(amount * 100),
+        amount: Math.round(amount * 100), // Convert to cents
         currency,
       },
       idempotencyKey,
@@ -124,6 +93,7 @@ app.post("/api/payment", async (req, res) => {
     const { result, ...httpResponse } = await paymentsApi.createPayment(
       requestBody
     );
+    console.log("Payment API response:", result);
 
     if (result.payment) {
       res.json({ message: "Payment successful", data: result.payment });
@@ -140,7 +110,7 @@ app.post("/api/payment", async (req, res) => {
   }
 });
 
-// Error handling middleware for unexpected errors
+// Error Handling Middleware for unexpected errors
 app.use((err, req, res, next) => {
   console.error(err.stack);
   const statusCode = err.statusCode || 500;
