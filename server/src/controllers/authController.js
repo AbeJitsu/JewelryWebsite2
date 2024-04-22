@@ -3,6 +3,11 @@
 const User = require("../models/userModel");
 const validator = require("validator");
 const Cart = require("../models/CartModel");
+const {
+  handleCartOnLogin,
+  handleError,
+  convertGuestCartToUserCart,
+} = require("../util/authHelpers");
 
 exports.register = async (req, res) => {
   const { email, password, preferredFirstName } = req.body;
@@ -22,12 +27,13 @@ exports.register = async (req, res) => {
     }
     const user = new User({ email, password, preferredFirstName });
     await user.save();
+    // Optionally, convert guest cart to user cart on registration
+    await convertGuestCartToUserCart(req.sessionID, user._id);
     res
       .status(201)
       .json({ message: "Registration successful, please log in." });
   } catch (error) {
-    console.error("Registration error:", error);
-    res.status(500).json({ error: "An error occurred during registration" });
+    handleError(res, error, "Registration error");
   }
 };
 
@@ -46,59 +52,14 @@ exports.login = async (req, res) => {
 
     req.session.regenerate(async (err) => {
       if (err) {
-        console.error("Session regeneration error:", err);
-        return res.status(500).send({ error: "Session regeneration failed" });
+        handleError(res, err, "Session regeneration failed");
+        return;
       }
 
       req.session.userId = user._id;
-
-      try {
-        const userCart = await Cart.findOne({ user: user._id });
-        const guestCart = await Cart.findOne({ sessionToken: req.sessionID });
-
-        if (guestCart) {
-          if (userCart) {
-            // Merge items from guest cart into user cart
-            userCart.items = [...userCart.items, ...guestCart.items]; // Adjust based on your item schema
-            await userCart.save();
-            await guestCart.remove(); // Remove guest cart after merging
-          } else {
-            // Assign guest cart to user if no user cart exists
-            guestCart.user = user._id;
-            guestCart.sessionToken = null;
-            await guestCart.save();
-          }
-        }
-
-        res.send({
-          message: "Login successful",
-          userId: user._id,
-          preferredFirstName: user.preferredFirstName,
-          cart: userCart ? userCart : guestCart, // Send back the appropriate cart
-        });
-      } catch (cartError) {
-        console.error("Cart handling error:", cartError);
-        res.status(500).send({ error: "Error processing cart information" });
-      }
+      handleCartOnLogin(req, res, user._id);
     });
   } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).send({ error: "An internal error occurred during login" });
+    handleError(res, error, "Error during login");
   }
 };
-
-// Optional: Definition of the Cart conversion function, if applicable
-async function convertGuestCartToUserCart(sessionID, userID) {
-  const guestCart = await Cart.findOne({ sessionToken: sessionID });
-  if (guestCart) {
-    try {
-      // Convert or merge guest cart to user cart logic
-      guestCart.user = userID;
-      guestCart.sessionToken = null;
-      await guestCart.save();
-      console.log("Cart merge completed");
-    } catch (error) {
-      console.error("Cart merge error:", error);
-    }
-  }
-}
