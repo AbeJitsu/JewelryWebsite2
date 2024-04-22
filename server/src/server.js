@@ -3,14 +3,15 @@ require("dotenv").config();
 
 // Import necessary modules
 const express = require("express");
-const session = require("express-session");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const MongoStore = require("connect-mongo");
 const crypto = require("crypto");
 const { Client, Environment } = require("square");
+
+// Import session configuration
+const createSessionConfig = require("./config/session");
 
 // Initialize Express application
 const app = express();
@@ -41,21 +42,8 @@ mongoose
   .then(() => console.log("Successfully connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB", err));
 
-// Configure session with MongoDB store
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET, // Secret key for signing the session ID
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: mongoURI }),
-    cookie: {
-      secure: process.env.NODE_ENV === "production", // Use secure cookies in production only
-      httpOnly: true, // Ensuring the cookie is sent only over HTTP(S), not client JavaScript
-      sameSite: "lax", // This setting can help prevent CSRF attacks
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    },
-  })
-);
+// Set up session with the configuration from session.js
+app.use(require("express-session")(createSessionConfig()));
 
 // API Route definitions
 const productRoutes = require("./routes/productRoutes");
