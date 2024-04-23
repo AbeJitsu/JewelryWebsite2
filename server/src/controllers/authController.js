@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/authController.js
+//Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/authController.js
 
 const User = require("../models/userModel");
 const validator = require("validator");

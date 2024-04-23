@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/util/authHelpers.js
+//Users/abiezerreyes/Projects/JewelryWebsite2/server/src/util/authHelpers.js
 
 const Cart = require("../models/CartModel");
 
