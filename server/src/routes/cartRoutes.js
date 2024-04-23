@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const Cart = require("../models/CartModel"); // Make sure to include the Cart model
-const Product = require("../models/ProductModel"); // And the Product model
-
-// Import the cartController
+const Cart = require("../models/CartModel");
+const Product = require("../models/ProductModel");
 const cartController = require("../controllers/cartController");
 
 // Route to add an item to the cart
@@ -21,13 +19,13 @@ router.get("/", cartController.getCartItems);
 // Additional route to handle cart conversion for guests becoming registered users
 router.post("/convert", cartController.convertGuestCartToUserCart);
 
-// Test route for adding an item to the cart
-router.post("/test-add-cart", async (req, res) => {
-  const { productId, quantity } = req.body; // Assume these are passed correctly
-  const sessionToken = "test-session-token"; // Use a fixed or generated session token for testing
+// Test route for adding an item to the cart to validate functionality
+router.post("/test-add", async (req, res) => {
+  const { productId, quantity } = req.body;
+  const sessionToken = "test-session-token"; // Static token for testing
 
   try {
-    let cart = await Cart.findOne({ sessionToken: sessionToken });
+    let cart = await Cart.findOne({ sessionToken });
     if (!cart) {
       cart = new Cart({
         sessionToken,
@@ -40,7 +38,6 @@ router.post("/test-add-cart", async (req, res) => {
       return res.status(404).send("Product not found");
     }
 
-    // Add or update the product in the cart
     const itemIndex = cart.items.findIndex(
       (item) => item.product.toString() === productId
     );

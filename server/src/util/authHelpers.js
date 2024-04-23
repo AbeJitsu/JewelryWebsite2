@@ -3,9 +3,13 @@
 const Cart = require("../models/CartModel");
 
 exports.handleCartOnLogin = async (req, res, userId) => {
-  // This method might already include merging the cart.
-  await convertGuestCartToUserCart(req.sessionID, userId);
-  // Proceed with other login logic...
+  try {
+    // Assuming convertGuestCartToUserCart is defined in this file or properly imported
+    await exports.convertGuestCartToUserCart(req.sessionID, userId);
+    // Proceed with other login logic...
+  } catch (error) {
+    exports.handleError(res, error, "Failed to handle cart on login");
+  }
 };
 
 exports.convertGuestCartToUserCart = async (sessionID, userID) => {
@@ -18,6 +22,7 @@ exports.convertGuestCartToUserCart = async (sessionID, userID) => {
       console.log("Cart merge completed");
     } catch (error) {
       console.error("Cart merge error:", error);
+      throw error; // Rethrow to be caught by the calling function
     }
   }
 };

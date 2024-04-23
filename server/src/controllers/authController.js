@@ -2,7 +2,6 @@
 
 const User = require("../models/userModel");
 const validator = require("validator");
-const Cart = require("../models/CartModel");
 const {
   handleCartOnLogin,
   handleError,
@@ -11,9 +10,12 @@ const {
 
 exports.register = async (req, res) => {
   const { email, password, preferredFirstName } = req.body;
+
+  // Validate email format
   if (!validator.isEmail(email)) {
     return res.status(400).json({ error: "Invalid email format" });
   }
+  // Ensure password meets length requirements
   if (!password || password.length < 8) {
     return res
       .status(400)
@@ -25,9 +27,10 @@ exports.register = async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ error: "Email already in use" });
     }
+
     const user = new User({ email, password, preferredFirstName });
     await user.save();
-    // Optionally, convert guest cart to user cart on registration
+    // Convert guest cart to user cart upon successful registration
     await convertGuestCartToUserCart(req.sessionID, user._id);
     res
       .status(201)
@@ -41,6 +44,7 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+
     if (!user) {
       return res.status(401).send({ error: "User not found" });
     }
@@ -50,6 +54,7 @@ exports.login = async (req, res) => {
       return res.status(401).send({ error: "Invalid credentials" });
     }
 
+    // Handle session regeneration and cart handling
     req.session.regenerate(async (err) => {
       if (err) {
         handleError(res, err, "Session regeneration failed");
@@ -57,9 +62,30 @@ exports.login = async (req, res) => {
       }
 
       req.session.userId = user._id;
-      handleCartOnLogin(req, res, user._id);
+      // Handle any login cart operations
+      await handleCartOnLogin(req, res, user._id);
     });
   } catch (error) {
     handleError(res, error, "Error during login");
+  }
+};
+
+exports.logout = async (req, res) => {
+  try {
+    // Ensure session is destroyed and cookie is cleared
+    req.session.destroy((err) => {
+      if (err) {
+        handleError(res, err, "Failed to destroy session during logout");
+        return;
+      }
+      res.clearCookie("connect.sid", {
+        path: "/",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+      });
+      res.status(200).send({ message: "Logged out successfully" });
+    });
+  } catch (error) {
+    handleError(res, error, "Logout failed");
   }
 };

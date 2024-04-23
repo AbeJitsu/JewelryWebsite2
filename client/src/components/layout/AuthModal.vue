@@ -1,95 +1,59 @@
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/AuthModal.vue -->
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/AuthModal.vue -->
 
 <template>
   <div>
-    <!-- Authentication Modal -->
     <b-modal v-model="showModal" @hide="resetForm" id="auth-modal">
       <template #modal-title>{{ isLogin ? "Login" : "Register" }}</template>
-
-      <!-- Login Form -->
-      <b-form v-if="isLogin" @submit.prevent="loginUser">
-        <!-- Email Input -->
-        <b-form-group label="Email" label-for="login-email">
+      <b-form @submit.prevent="isLogin ? loginUser() : registerUser()">
+        <b-form-group
+          :label="isLogin ? 'Email' : 'Preferred First Name'"
+          :label-for="isLogin ? 'login-email' : 'register-first-name'"
+        >
           <b-form-input
-            id="login-email"
-            v-model="loginForm.email"
-            type="email"
+            :id="isLogin ? 'login-email' : 'register-first-name'"
+            v-model="form.email"
+            :type="isLogin ? 'email' : 'text'"
             required
-            placeholder="Enter email"
+            :placeholder="isLogin ? 'Enter email' : 'Preferred first name'"
           ></b-form-input>
         </b-form-group>
-        <!-- Password Input -->
+
         <b-form-group label="Password" label-for="login-password">
           <b-form-input
             id="login-password"
-            v-model="loginForm.password"
+            v-model="form.password"
             type="password"
             required
             placeholder="Password"
             autocomplete="current-password"
           ></b-form-input>
         </b-form-group>
-        <b-button type="submit" variant="primary">Login</b-button>
 
-        <!-- Toggle to Registration Form -->
-        <b-button variant="link" @click="toggleForm"
-          >Don't have an account? Register</b-button
-        >
-      </b-form>
+        <div v-if="!isLogin">
+          <b-form-group
+            label="Confirm Password"
+            label-for="register-password-confirmation"
+          >
+            <b-form-input
+              id="register-password-confirmation"
+              v-model="form.passwordConfirmation"
+              type="password"
+              required
+              placeholder="Confirm Password"
+            ></b-form-input>
+          </b-form-group>
+        </div>
 
-      <!-- Registration Form -->
-      <b-form v-else @submit.prevent="registerUser">
-        <!-- Name Input -->
-        <b-form-group
-          label="Preferred First Name"
-          label-for="register-first-name"
-        >
-          <b-form-input
-            id="register-first-name"
-            v-model="registerForm.preferredFirstName"
-            required
-            placeholder="Preferred first name"
-          ></b-form-input>
-        </b-form-group>
-        <!-- Email Input -->
-        <b-form-group label="Email" label-for="register-email">
-          <b-form-input
-            id="register-email"
-            v-model="registerForm.email"
-            type="email"
-            required
-            placeholder="Enter email"
-          ></b-form-input>
-        </b-form-group>
-        <!-- Password Input -->
-        <b-form-group label="Password" label-for="register-password">
-          <b-form-input
-            id="register-password"
-            v-model="registerForm.password"
-            type="password"
-            required
-            placeholder="Password"
-          ></b-form-input>
-        </b-form-group>
-        <!-- Confirm Password Input -->
-        <b-form-group
-          label="Confirm Password"
-          label-for="register-password-confirmation"
-        >
-          <b-form-input
-            id="register-password-confirmation"
-            v-model="registerForm.passwordConfirmation"
-            type="password"
-            required
-            placeholder="Confirm Password"
-          ></b-form-input>
-        </b-form-group>
-        <!-- Register Button -->
-        <b-button type="submit" variant="primary">Register</b-button>
-        <!-- Toggle to Login Form -->
-        <b-button variant="link" @click="toggleForm"
-          >Already have an account? Login</b-button
-        >
+        <b-button type="submit" variant="primary">{{
+          isLogin ? "Login" : "Register"
+        }}</b-button>
+        <b-button variant="link" @click="toggleForm">
+          {{
+            isLogin
+              ? "Don't have an account? Register"
+              : "Already have an account? Login"
+          }}
+        </b-button>
       </b-form>
     </b-modal>
   </div>
@@ -103,15 +67,10 @@ export default {
     return {
       showModal: false,
       isLogin: true,
-      loginForm: {
+      form: {
         email: "",
         password: "",
-      },
-      registerForm: {
-        preferredFirstName: "",
-        email: "",
-        password: "",
-        passwordConfirmation: "",
+        passwordConfirmation: "", // Only used for registration
       },
     };
   },
@@ -121,56 +80,41 @@ export default {
       this.isLogin = !this.isLogin;
       this.resetForm();
     },
-
     loginUser() {
-      this.login(this.loginForm)
+      this.login(this.form)
         .then(() => {
           this.$bvModal.hide("auth-modal");
-          // Correcting the path to access the namespaced state
-          const redirect = this.$store.state.cart.postLoginRedirect;
-          if (redirect) {
-            this.$router.push({ name: redirect });
-            // Correcting the namespaced mutation call
-            this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
-          } else {
-            if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-              this.$router.push("/jewelry-showcase");
-            }
-          }
+          this.redirectAfterLogin();
         })
         .catch((error) => {
           console.error("Login error:", error);
         });
     },
-
     registerUser() {
-      if (
-        this.registerForm.password !== this.registerForm.passwordConfirmation
-      ) {
+      if (this.form.password !== this.form.passwordConfirmation) {
         alert("Passwords do not match.");
         return;
       }
-      this.register(this.registerForm)
+      this.register(this.form)
         .then(() => {
           this.$bvModal.hide("auth-modal");
           this.resetForm();
-          if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-            this.$router.push("/jewelry-showcase");
-          }
+          this.redirectAfterLogin();
         })
         .catch((error) => {
           console.error("Registration error:", error);
         });
     },
-
     resetForm() {
-      this.loginForm = { email: "", password: "" };
-      this.registerForm = {
-        preferredFirstName: "",
-        email: "",
-        password: "",
-        passwordConfirmation: "",
-      };
+      this.form.email = "";
+      this.form.password = "";
+      this.form.passwordConfirmation = "";
+    },
+    redirectAfterLogin() {
+      const redirect =
+        this.$store.state.cart.postLoginRedirect || "/jewelry-showcase";
+      this.$router.push({ name: redirect });
+      this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
     },
   },
 };

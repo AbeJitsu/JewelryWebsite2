@@ -1,26 +1,19 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/routes/authRoutes.js
 const express = require("express");
 const router = express.Router();
-// Import the authController
 const authController = require("../controllers/authController");
+const { asyncHandler } = require("../util/errorHandlers");
 
-// Use the controller's register function for the /register route
-router.post("/register", authController.register);
+router.post("/register", asyncHandler(authController.register));
+router.post("/login", asyncHandler(authController.login));
 
-// Use the controller's login function for the /login route
-router.post("/login", authController.login);
-
-router.post("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Logout error:", err);
-      return res
-        .status(500)
-        .send({ message: "Could not log out, please try again" });
-    }
-    res.clearCookie("connect.sid"); // Clear session cookie
+router.post(
+  "/logout",
+  asyncHandler(async (req, res) => {
+    await req.session.destroy();
+    res.clearCookie("connect.sid", { path: "/", httpOnly: true, secure: true }); // Align cookie clearing with security settings
     res.status(200).send({ message: "Logged out successfully" });
-  });
-});
+  })
+);
 
 module.exports = router;

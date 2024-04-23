@@ -1,5 +1,3 @@
-// Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/cartController.js
-
 const Cart = require("../models/CartModel");
 const Product = require("../models/ProductModel");
 const moment = require("moment-timezone");
@@ -67,9 +65,6 @@ const cartController = {
         return res.status(400).send({ message: "Product not available" });
       }
 
-      product.status = "in cart";
-      await product.save();
-
       const cart = await Cart.findOneAndUpdate(
         { $or: [{ user: userId }, { sessionToken: sessionToken }] },
         {
@@ -96,10 +91,6 @@ const cartController = {
   async updateCartItem(req, res) {
     const { itemId } = req.params;
     const { quantity } = req.body;
-
-    if (!quantity || quantity < 1) {
-      return res.status(400).send({ message: "Invalid quantity" });
-    }
 
     try {
       const cart = await Cart.findOneAndUpdate(
@@ -144,21 +135,39 @@ const cartController = {
     }
   },
 
+  async clearExpiredCarts() {
+    const deadline = getNextWednesdayNoon();
+    try {
+      const carts = await Cart.find({
+        "items.reservedUntil": { $lt: deadline },
+      });
+      for (let cart of carts) {
+        for (let item of cart.items) {
+          if (item.reservedUntil < deadline) {
+            const product = await Product.findById(item.product);
+            if (product) {
+              product.status = "available";
+              await product.save();
+            }
+          }
+        }
+        cart.items = cart.items.filter(
+          (item) => item.reservedUntil >= deadline
+        );
+        await cart.save();
+      }
+      console.log("Expired carts cleared");
+    } catch (error) {
+      console.error("Failed to clear expired carts:", error);
+    }
+  },
+
   scheduleCartClearance() {
     cron.schedule(
       "0 12 * * 3",
       async () => {
-        console.log("Running task to clear expired carts");
-        try {
-          const deadline = getNextWednesdayNoon();
-          const carts = await Cart.updateMany(
-            { "items.reservedUntil": { $lt: deadline } },
-            { $pull: { items: { reservedUntil: { $lt: deadline } } } }
-          );
-          console.log("Expired carts cleared", carts);
-        } catch (error) {
-          console.error("Failed to clear expired carts:", error);
-        }
+        console.log("Scheduled task to clear expired carts running");
+        await this.clearExpiredCarts();
       },
       {
         scheduled: true,
@@ -166,38 +175,6 @@ const cartController = {
       }
     );
   },
-  async clearExpiredCarts() {
-        const deadline = getNextWednesdayNoon();
-        try {
-            const carts = await Cart.find({ "items.reservedUntil": { $lt: deadline } });
-            for (let cart of carts) {
-                for (let item of cart.items) {
-                    if (item.reservedUntil < deadline) {
-                        const product = await Product.findById(item.product);
-                        if (product) {
-                            product.status = "available";
-                            await product.save();
-                        }
-                    }
-                }
-                cart.items = cart.items.filter(item => item.reservedUntil >= deadline);
-                await cart.save();
-            }
-            console.log("Expired carts cleared");
-        } catch (error) {
-            console.error("Failed to clear expired carts:", error);
-        }
-    },
-
-    scheduleCartClearance() {
-        cron.schedule("0 12 * * 3", async () => {
-            console.log("Scheduled task to clear expired carts running");
-            await this.clearExpiredCarts();
-        }, {
-            scheduled: true,
-            timezone: "America/New_York"
-        });
-    }
 };
 
 module.exports = cartController;

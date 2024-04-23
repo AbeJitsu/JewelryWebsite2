@@ -1,18 +1,15 @@
 <template>
-  <b-container class="checkout-component">
+  <b-container class="checkout-component" v-if="isLoggedIn && hasItems">
+    <!-- Display checkout information if logged in and cart has items -->
     <b-row>
       <b-col>
-        <!-- AuthModal controlled by showModal property -->
-        <auth-modal v-model="showModal" @auth-success="handleAuthSuccess" />
-
-        <shipping-information v-if="!isLoggedIn || !showModal" />
-
-        <billing-information v-if="!isLoggedIn || !showModal" />
-
-        <payment-details v-if="!isLoggedIn || !showModal" />
+        <shipping-information />
+        <billing-information />
+        <payment-details />
       </b-col>
     </b-row>
   </b-container>
+  <auth-modal v-else v-model="showModal" @auth-success="handleAuthSuccess" />
 </template>
 
 <script>
@@ -20,7 +17,7 @@ import AuthModal from "@/components/layout/AuthModal.vue";
 import ShippingInformation from "./ShippingInformation.vue";
 import BillingInformation from "./BillingInformation.vue";
 import PaymentDetails from "./PaymentDetails.vue";
-import { mapState, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -30,19 +27,16 @@ export default {
     PaymentDetails,
   },
   computed: {
-    ...mapState({
-      showModal: (state) => state.checkout.showModal,
-    }),
     ...mapGetters({
       isLoggedIn: "user/isLoggedIn",
+      hasItems: "cart/hasItems", // Ensure this getter is implemented
     }),
-    showAuthModal() {
-      return !this.isLoggedIn && this.showModal;
+    showModal() {
+      return !this.isLoggedIn || !this.hasItems;
     },
   },
   methods: {
     handleAuthSuccess() {
-      // Handle what happens after a successful authentication
       this.$store.dispatch("checkout/handleAuthSuccess");
     },
   },
@@ -56,5 +50,3 @@ export default {
   margin-top: 2rem;
 }
 </style>
-
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/CheckOut.vue -->
