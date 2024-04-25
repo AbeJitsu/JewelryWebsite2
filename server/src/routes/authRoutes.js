@@ -2,7 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
-const { asyncHandler } = require("../utilities/errorHandlers");
+const { errorMiddleware, asyncHandler, handleError } = require("../middleware/errorHandling");
+
 
 router.post("/register", asyncHandler(authController.register));
 router.post("/login", asyncHandler(authController.login));

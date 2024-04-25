@@ -6,7 +6,7 @@ const session = require("express-session");
 const createSessionConfig = require("./config/session");
 const connectDB = require("./config/db");
 const routes = require("./routes");
-const errorHandler = require("./middleware/errorHandling");
+const { errorMiddleware } = require("./middleware/errorHandling");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,7 +29,7 @@ app.use(session(createSessionConfig()));
 
 app.use("/api", routes);
 
-app.use(errorHandler);
+app.use(errorMiddleware);
 
 if (require.main === module) {
   app.listen(port, () => console.log(`Server listening on port ${port}`));
