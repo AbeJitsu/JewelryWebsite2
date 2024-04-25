@@ -2,7 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const authController = require("../controllers/authController");
-const { asyncHandler } = require("../util/errorHandlers");
+const { asyncHandler } = require("../utilities/errorHandlers");
 
 router.post("/register", asyncHandler(authController.register));
 router.post("/login", asyncHandler(authController.login));

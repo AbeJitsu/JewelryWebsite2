@@ -6,7 +6,7 @@ const {
   handleCartOnLogin,
   handleError,
   convertGuestCartToUserCart,
-} = require("../util/authHelpers");
+} = require("../utilities/authHelpers");
 
 exports.register = async (req, res) => {
   const { email, password, preferredFirstName } = req.body;
