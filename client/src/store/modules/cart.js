@@ -25,13 +25,11 @@ export default {
       } else {
         state.cartItems.push({ product, quantity });
       }
-      this.commit("cart/CALCULATE_SHIPPING_FEE");
     },
     REMOVE_FROM_CART(state, productId) {
       state.cartItems = state.cartItems.filter(
         (item) => item.product._id !== productId
       );
-      this.commit("cart/CALCULATE_SHIPPING_FEE");
     },
     UPDATE_QUANTITY(state, { productId, quantity }) {
       const item = state.cartItems.find(
@@ -39,24 +37,6 @@ export default {
       );
       if (item) {
         item.quantity = quantity;
-      }
-      this.commit("cart/CALCULATE_SHIPPING_FEE");
-    },
-    CALCULATE_SHIPPING_FEE(state) {
-      const totalQuantity = state.cartItems.reduce((total, item) => {
-        const itemQuantity =
-          item.product.variantPrice === 20 ? item.quantity * 4 : item.quantity;
-        return total + itemQuantity;
-      }, 0);
-
-      if (totalQuantity >= 20) {
-        state.shippingInfo.currentShippingFee = 0;
-      } else if (totalQuantity <= 10) {
-        state.shippingInfo.currentShippingFee =
-          state.shippingInfo.baseShippingFee;
-      } else {
-        state.shippingInfo.currentShippingFee =
-          state.shippingInfo.extendedShippingFee;
       }
     },
     SET_POST_LOGIN_REDIRECT(state, redirect) {
@@ -81,7 +61,7 @@ export default {
         await axios.post("/api/cart/sync", { cartItems: state.cartItems });
       } catch (error) {
         console.error("Failed to sync cart with server:", error);
-        // Handle the error appropriately in your application context
+        alert("Failed to sync cart: " + error.message); // Display or log more detailed error information
       }
     },
   },
@@ -101,17 +81,31 @@ export default {
         0
       );
     },
-    orderTotal: (state) => {
-      const productsTotal = state.cartItems.reduce(
-        (total, item) =>
-          total + item.product.variantPrice * parseInt(item.quantity, 10),
-        0
-      );
-      const tax = productsTotal * state.taxRate;
+    currentShippingFee: (state, getters) => {
+      const productsTotal = getters.cartTotal;
+      if (productsTotal >= 100) {
+        return 0;
+      } else if (productsTotal > 50 && productsTotal < 100) {
+        return state.shippingInfo.extendedShippingFee;
+      } else {
+        return state.shippingInfo.baseShippingFee;
+      }
+    },
+    orderTotal: (state, getters) => {
+      const productsTotal = getters.cartTotal;
+      const rawTax = productsTotal * state.taxRate;
+      // Multiply by 100, use Math.ceil, then divide by 100 to keep two decimal places
+      const tax = Math.round(rawTax * 100) / 100;
+      const shippingFee = getters.currentShippingFee;
+      const total = productsTotal + tax + shippingFee;
+
+      // Use Math.ceil for the final total as well
+      const roundedTotal = Math.round(total * 100) / 100;
+
       return {
-        productsTotal,
+        productsTotal: Math.round(productsTotal * 100) / 100, // Still rounding normally for total product cost
         tax,
-        total: productsTotal + tax + state.shippingInfo.currentShippingFee,
+        total: roundedTotal,
       };
     },
   },
