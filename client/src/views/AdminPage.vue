@@ -40,7 +40,7 @@
 <script>
 import CSVUploader from "@/components/admin/CSVUploader.vue";
 
-import ProductQtyUpdater from "@/components/products/ProductQtyUpdater.vue";
+import ProductQtyUpdater from "@/components/admin/ProductQtyUpdater.vue";
 import axios from "axios";
 import store from "@/store"; // Ensure you're importing the Vuex store
 
