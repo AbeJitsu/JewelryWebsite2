@@ -1,3 +1,4 @@
+<!-- // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/admin/CSVUploader.vue -->
 <template>
   <div v-if="isAdmin">
     <h1>Upload CSV File and Quantities</h1>
@@ -37,7 +38,8 @@
 </template>
 
 <script>
-import CSVUploader from "@/components/products/CSVUploader.vue";
+import CSVUploader from "@/components/admin/CSVUploader.vue";
+
 import ProductQtyUpdater from "@/components/products/ProductQtyUpdater.vue";
 import axios from "axios";
 import store from "@/store"; // Ensure you're importing the Vuex store

@@ -1,3 +1,5 @@
+// Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js
+
 import Vue from "vue";
 import VueRouter from "vue-router";
 import JewelryShowcase from "../views/JewelryShowcase.vue";

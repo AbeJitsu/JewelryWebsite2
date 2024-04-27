@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../server"); // Adjust the path according to your project structure
+const app = require("../../server"); // Adjust the path according to your project structure
 
 describe("Authentication Routes", () => {
   describe("POST /register", () => {

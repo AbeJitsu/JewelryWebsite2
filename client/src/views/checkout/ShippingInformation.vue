@@ -19,7 +19,16 @@ export default {
     },
   },
   created() {
-    // Initialize form with data from localStorage or Vuex store
+    // Example: Initialize data from localStorage if it exists
+    const localShippingDetails = localStorage.getItem("shippingDetails");
+    if (localShippingDetails) {
+      const details = JSON.parse(localShippingDetails);
+      this.$store.commit("checkout/UPDATE_DETAIL", {
+        detailType: "shipping",
+        field: "all",
+        value: details,
+      });
+    }
   },
 };
 </script>
@@ -65,16 +74,16 @@ export default {
             id="has-apartment"
             v-model="shippingDetails.hasApartment"
           >
-            Includes Apt, Unit, or Ste.
+            Includes an Apt or Suite
           </b-form-checkbox>
         </div>
 
         <!-- Conditionally Render Apt, Unit, or Suite Input -->
         <div v-if="shippingDetails.hasApartment">
           <FormInput
-            label="Apt, Unit, or Suite"
+            label="Apt or Suite"
             label-for="shipping-apartment"
-            placeholder="Apt, Unit, or Suite (Optional)"
+            placeholder="Apt or Suite (Optional)"
             detailType="shipping"
             fieldKey="apartment"
           />

@@ -1,4 +1,6 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
+import axios from "axios";
+
 export default {
   namespaced: true,
   state: {
@@ -62,14 +64,25 @@ export default {
     },
   },
   actions: {
-    addToCart({ commit }, { product, quantity }) {
+    async addToCart({ commit, dispatch }, { product, quantity }) {
       commit("ADD_TO_CART", { product, quantity });
+      await dispatch("syncCart");
     },
-    removeFromCart({ commit }, productId) {
+    async removeFromCart({ commit, dispatch }, productId) {
       commit("REMOVE_FROM_CART", productId);
+      await dispatch("syncCart");
     },
-    updateQuantity({ commit }, { productId, quantity }) {
+    async updateQuantity({ commit, dispatch }, { productId, quantity }) {
       commit("UPDATE_QUANTITY", { productId, quantity });
+      await dispatch("syncCart");
+    },
+    async syncCart({ state }) {
+      try {
+        await axios.post("/api/cart/sync", { cartItems: state.cartItems });
+      } catch (error) {
+        console.error("Failed to sync cart with server:", error);
+        // Handle the error appropriately in your application context
+      }
     },
   },
   getters: {

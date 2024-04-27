@@ -3,7 +3,5 @@ client/node_modules/
 server/node_modules/
 client/*.env*
 server/*.env*
-server/src/utilities/.DS_Store
-server/.DS_Store
-server/src/.DS_Store
 .DS_Store
+

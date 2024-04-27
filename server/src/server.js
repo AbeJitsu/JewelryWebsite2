@@ -113,7 +113,6 @@ app.post("/api/payment", async (req, res) => {
   }
 });
 
-
 // Error Handling Middleware for unexpected errors
 app.use((err, req, res, next) => {
   console.error(err.stack);
