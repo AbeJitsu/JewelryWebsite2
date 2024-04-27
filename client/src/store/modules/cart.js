@@ -1,5 +1,4 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
-import axios from "axios";
 
 export default {
   namespaced: true,
@@ -56,14 +55,14 @@ export default {
       commit("UPDATE_QUANTITY", { productId, quantity });
       await dispatch("syncCart");
     },
-    async syncCart({ state }) {
-      try {
-        await axios.post("/api/cart/sync", { cartItems: state.cartItems });
-      } catch (error) {
-        console.error("Failed to sync cart with server:", error);
-        alert("Failed to sync cart: " + error.message); // Display or log more detailed error information
-      }
-    },
+    // async syncCart({ state }) {
+    //   try {
+    //     await axios.post("/api/cart", { cartItems: state.cartItems });
+    //   } catch (error) {
+    //     console.error("Failed to sync cart with server:", error);
+    //     alert("Failed to sync cart: " + error.message); // Display or log more detailed error information
+    //   }
+    // },
   },
   getters: {
     isProductInCart: (state) => (productId) => {

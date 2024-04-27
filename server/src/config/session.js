@@ -9,6 +9,8 @@ const createSessionConfig = () => {
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       collectionName: "sessions",
+      autoRemove: "interval",
+      autoRemoveInterval: 10, // Removes expired sessions every 10 minutes
     }),
     cookie: {
       secure: process.env.NODE_ENV === "production", // Use secure cookies in production
