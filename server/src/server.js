@@ -1,6 +1,7 @@
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
+
 const cors = require("cors");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
@@ -21,14 +22,13 @@ const limiter = rateLimit({
   message: "Too many requests, please try again later.",
 });
 
-
 const port = process.env.PORT || 3000;
 
 app.use(limiter);
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
 );
