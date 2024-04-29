@@ -14,6 +14,8 @@ export default {
     },
     taxRate: 0.065,
     postLoginRedirect: null,
+    syncErrors: 0,
+    syncInProgress: false,
   },
   mutations: {
     ADD_TO_CART(state, { product, quantity }) {
@@ -56,12 +58,24 @@ export default {
       commit("UPDATE_QUANTITY", { productId, quantity });
       await dispatch("syncCart");
     },
-    async syncCart({ state }) {
+    async syncCart({ state, commit, dispatch }) {
+      if (state.syncInProgress) return; // Prevent overlapping sync attempts
+
+      commit('SYNC_IN_PROGRESS', true);
       try {
         await axios.post("/api/cart", { cartItems: state.cartItems });
+        commit('RESET_SYNC_ERRORS');
+        console.info("Cart synced successfully.");
       } catch (error) {
         console.error("Failed to sync cart with server:", error);
-        alert("Failed to sync cart: " + error.message); // Display or log more detailed error information
+        commit('INCREMENT_SYNC_ERRORS');
+        if (state.syncErrors < 3) { // Retry up to 3 times
+          setTimeout(() => dispatch('syncCart'), 2000 * Math.pow(2, state.syncErrors)); // Exponential back-off
+        } else {
+          alert("Failed to sync cart: " + error.message); // Notify user after final attempt
+        }
+      } finally {
+        commit('SYNC_IN_PROGRESS', false);
       }
     },
   },
