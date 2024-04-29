@@ -1,63 +1,23 @@
 // server/src/routes/cartRoutes.js
-
 const express = require("express");
 const router = express.Router();
-const Cart = require("../models/CartModel");
-const Product = require("../models/ProductModel");
 const cartController = require("../controllers/cartController");
 
-// Route to add an item to the cart
+// Route descriptions help developers understand what each route does at a glance.
+
+// Adds an item to the cart. Expects product ID and quantity in the request body.
 router.post("/add", cartController.addItemToCart);
 
-// Route to update an item in the cart (e.g., quantity)
+// Updates the quantity of an existing cart item. Expects the item ID as a URL parameter and quantity in the request body.
 router.put("/update/:itemId", cartController.updateCartItem);
 
-// Route to remove an item from the cart
+// Removes an item from the cart. The item ID is expected as a URL parameter.
 router.delete("/remove/:itemId", cartController.removeItemFromCart);
 
-// Route to get the current cart items for the user/session
+// Retrieves the current cart items for a user or session.
 router.get("/", cartController.getCartItems);
 
-// Additional route to handle cart conversion for guests becoming registered users
+// Converts a guest cart to a registered user cart. Expects session token and user ID in the request body.
 router.post("/convert", cartController.convertGuestCartToUserCart);
-
-
-// Test route for adding an item to the cart to validate functionality
-router.post("/test-add", async (req, res) => {
-  const { productId, quantity } = req.body;
-  const sessionToken = "test-session-token"; // Static token for testing
-
-  try {
-    let cart = await Cart.findOne({ sessionToken });
-    if (!cart) {
-      cart = new Cart({
-        sessionToken,
-        items: [],
-      });
-    }
-
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).send("Product not found");
-    }
-
-    const itemIndex = cart.items.findIndex(
-      (item) => item.product.toString() === productId
-    );
-    if (itemIndex > -1) {
-      cart.items[itemIndex].quantity += quantity;
-    } else {
-      cart.items.push({ product: productId, quantity });
-    }
-
-    await cart.save();
-    res.status(200).json({ message: "Item added to cart successfully", cart });
-  } catch (error) {
-    console.error("Error adding item to cart:", error);
-    res
-      .status(500)
-      .send({ message: "Error adding item to cart", error: error.toString() });
-  }
-});
 
 module.exports = router;

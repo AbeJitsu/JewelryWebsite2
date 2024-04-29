@@ -1,5 +1,3 @@
-// Users/abiezerreyes/Projects/JewelryWebsite2/server/src/models/CartModel.js
-
 const mongoose = require("mongoose");
 const moment = require("moment-timezone");
 const Schema = mongoose.Schema;
@@ -44,12 +42,12 @@ const cartSchema = new Schema(
 );
 
 cartSchema.methods.addItem = function (item) {
-  const existingItemIndex = this.items.findIndex(
+  const index = this.items.findIndex(
     (i) => i.product.toString() === item.product.toString()
   );
-  if (existingItemIndex > -1) {
-    this.items[existingItemIndex].quantity = Math.max(
-      this.items[existingItemIndex].quantity,
+  if (index !== -1) {
+    this.items[index].quantity = Math.max(
+      this.items[index].quantity,
       item.quantity
     );
   } else {
@@ -63,49 +61,42 @@ cartSchema.methods.removeItem = function (productId) {
   );
 };
 
-cartSchema.methods.clearExpiredItems = function () {
-  const now = new Date();
-  this.items = this.items.filter((item) => item.reservedUntil > now);
+cartSchema.methods.clearExpiredItems = async function () {
+  await this.updateOne({
+    $pull: {
+      items: { reservedUntil: { $lt: new Date() } },
+    },
+  });
 };
 
 cartSchema.statics.convertGuestCartToUserCart = async function (
   sessionToken,
   userId
 ) {
-  const guestCart = await this.findOne({ sessionToken: sessionToken }).populate(
+  const guestCart = await this.findOne({ sessionToken }).populate(
     "items.product"
   );
-  const userCart = await this.findOne({ user: userId });
+  if (!guestCart) return;
 
-  if (guestCart) {
-    // Remove unavailable items from the guest cart before merging
-    guestCart.items = guestCart.items.filter(
-      (item) => item.product && item.product.status === "available"
-    );
+  const userCart = await this.findOneAndUpdate(
+    { user: userId },
+    {
+      $push: {
+        items: {
+          $each: guestCart.items
+            .filter((item) => item.product.status === "available")
+            .map((item) => ({
+              product: item.product._id,
+              quantity: item.quantity,
+              reservedUntil: item.reservedUntil,
+            })),
+        },
+      },
+    },
+    { new: true, upsert: true }
+  );
 
-    if (userCart) {
-      guestCart.items.forEach((guestItem) => {
-        const existingItem = userCart.items.find(
-          (userItem) =>
-            userItem.product.toString() === guestItem.product.toString()
-        );
-        if (existingItem) {
-          existingItem.quantity = Math.max(
-            existingItem.quantity,
-            guestItem.quantity
-          );
-        } else {
-          userCart.items.push(guestItem);
-        }
-      });
-      await userCart.save();
-      await guestCart.remove();
-    } else {
-      guestCart.user = userId;
-      guestCart.sessionToken = null;
-      await guestCart.save();
-    }
-  }
+  if (userCart) await guestCart.remove();
 };
 
 module.exports = mongoose.model("Cart", cartSchema);
