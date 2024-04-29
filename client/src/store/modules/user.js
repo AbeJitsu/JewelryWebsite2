@@ -1,3 +1,4 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/user.js
 import axios from "axios";
 import router from "@/router";
 
