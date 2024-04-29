@@ -61,21 +61,25 @@ export default {
     async syncCart({ state, commit, dispatch }) {
       if (state.syncInProgress) return; // Prevent overlapping sync attempts
 
-      commit('SYNC_IN_PROGRESS', true);
+      commit("SYNC_IN_PROGRESS", true);
       try {
         await axios.post("/api/cart", { cartItems: state.cartItems });
-        commit('RESET_SYNC_ERRORS');
+        commit("RESET_SYNC_ERRORS");
         console.info("Cart synced successfully.");
       } catch (error) {
         console.error("Failed to sync cart with server:", error);
-        commit('INCREMENT_SYNC_ERRORS');
-        if (state.syncErrors < 3) { // Retry up to 3 times
-          setTimeout(() => dispatch('syncCart'), 2000 * Math.pow(2, state.syncErrors)); // Exponential back-off
+        commit("INCREMENT_SYNC_ERRORS");
+        if (state.syncErrors < 3) {
+          // Retry up to 3 times
+          setTimeout(
+            () => dispatch("syncCart"),
+            2000 * Math.pow(2, state.syncErrors)
+          ); // Exponential back-off
         } else {
           alert("Failed to sync cart: " + error.message); // Notify user after final attempt
         }
       } finally {
-        commit('SYNC_IN_PROGRESS', false);
+        commit("SYNC_IN_PROGRESS", false);
       }
     },
   },
