@@ -1,3 +1,4 @@
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
 <template>
   <div class="product-card">
     <vue-slick-carousel
@@ -175,4 +176,3 @@ export default {
   cursor: pointer;
 }
 </style>
-<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
