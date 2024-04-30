@@ -1,5 +1,6 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
 import axios from "axios";
+import _ from "lodash"; // Assuming lodash is installed for debouncing
 
 export default {
   namespaced: true,
@@ -44,44 +45,44 @@ export default {
     SET_POST_LOGIN_REDIRECT(state, redirect) {
       state.postLoginRedirect = redirect;
     },
+    SYNC_IN_PROGRESS(state, inProgress) {
+      state.syncInProgress = inProgress;
+    },
+    RESET_SYNC_ERRORS(state) {
+      state.syncErrors = 0;
+    },
+    INCREMENT_SYNC_ERRORS(state) {
+      state.syncErrors++;
+    },
   },
   actions: {
-    async addToCart({ commit, dispatch }, { product, quantity }) {
+    addToCart({ commit }, { product, quantity }) {
       commit("ADD_TO_CART", { product, quantity });
-      await dispatch("syncCart");
     },
-    async removeFromCart({ commit, dispatch }, productId) {
+    removeFromCart({ commit }, productId) {
       commit("REMOVE_FROM_CART", productId);
-      await dispatch("syncCart");
     },
-    async updateQuantity({ commit, dispatch }, { productId, quantity }) {
+    updateQuantity({ commit }, { productId, quantity }) {
       commit("UPDATE_QUANTITY", { productId, quantity });
-      await dispatch("syncCart");
     },
-    async syncCart({ state, commit, dispatch }) {
+    syncCart: _.debounce(({ state, commit }) => {
       if (state.syncInProgress) return; // Prevent overlapping sync attempts
 
       commit("SYNC_IN_PROGRESS", true);
-      try {
-        await axios.post("/api/cart", { cartItems: state.cartItems });
-        commit("RESET_SYNC_ERRORS");
-        console.info("Cart synced successfully.");
-      } catch (error) {
-        console.error("Failed to sync cart with server:", error);
-        commit("INCREMENT_SYNC_ERRORS");
-        if (state.syncErrors < 3) {
-          // Retry up to 3 times
-          setTimeout(
-            () => dispatch("syncCart"),
-            2000 * Math.pow(2, state.syncErrors)
-          ); // Exponential back-off
-        } else {
-          alert("Failed to sync cart: " + error.message); // Notify user after final attempt
-        }
-      } finally {
-        commit("SYNC_IN_PROGRESS", false);
-      }
-    },
+      axios
+        .post("/api/cart", { cartItems: state.cartItems })
+        .then(() => {
+          commit("RESET_SYNC_ERRORS");
+          console.info("Cart synced successfully.");
+        })
+        .catch((error) => {
+          console.error("Failed to sync cart with server:", error);
+          commit("INCREMENT_SYNC_ERRORS");
+        })
+        .finally(() => {
+          commit("SYNC_IN_PROGRESS", false);
+        });
+    }, 2000), // Debouncing the sync operation to every 2 seconds
   },
   getters: {
     isProductInCart: (state) => (productId) => {
@@ -89,9 +90,10 @@ export default {
     },
     cartItems: (state) => state.cartItems,
     cartTotal: (state) => {
-      return state.cartItems.reduce((total, item) => {
-        return total + item.product.variantPrice * item.quantity;
-      }, 0);
+      return state.cartItems.reduce(
+        (total, item) => total + item.product.variantPrice * item.quantity,
+        0
+      );
     },
     itemCount: (state) => {
       return state.cartItems.reduce(
@@ -112,16 +114,12 @@ export default {
     orderTotal: (state, getters) => {
       const productsTotal = getters.cartTotal;
       const rawTax = productsTotal * state.taxRate;
-      // Multiply by 100, use Math.ceil, then divide by 100 to keep two decimal places
       const tax = Math.round(rawTax * 100) / 100;
       const shippingFee = getters.currentShippingFee;
       const total = productsTotal + tax + shippingFee;
-
-      // Use Math.ceil for the final total as well
       const roundedTotal = Math.round(total * 100) / 100;
-
       return {
-        productsTotal: Math.round(productsTotal * 100) / 100, // Still rounding normally for total product cost
+        productsTotal: Math.round(productsTotal * 100) / 100,
         tax,
         total: roundedTotal,
       };
