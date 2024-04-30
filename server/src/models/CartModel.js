@@ -42,6 +42,7 @@ const cartSchema = new Schema(
 );
 
 cartSchema.methods.addItem = function (item) {
+  console.log(`Adding item with product ID ${item.product} to the cart`);
   const index = this.items.findIndex(
     (i) => i.product.toString() === item.product.toString()
   );
@@ -56,6 +57,7 @@ cartSchema.methods.addItem = function (item) {
 };
 
 cartSchema.methods.removeItem = function (productId) {
+  console.log(`Removing item with product ID ${productId} from the cart`);
   this.items = this.items.filter(
     (i) => i.product.toString() !== productId.toString()
   );
@@ -65,6 +67,9 @@ cartSchema.statics.convertGuestCartToUserCart = async function (
   sessionToken,
   userId
 ) {
+  console.log(
+    `Converting guest cart with sessionToken ${sessionToken} to user cart for userId ${userId}`
+  );
   const guestCart = await this.findOne({ sessionToken }).populate(
     "items.product"
   );
@@ -88,7 +93,10 @@ cartSchema.statics.convertGuestCartToUserCart = async function (
     { new: true, upsert: true }
   );
 
-  if (userCart) await guestCart.remove();
+  if (userCart) {
+    console.log(`Guest cart converted to user cart for userId ${userId}`);
+    await guestCart.remove();
+  }
 };
 
 module.exports = mongoose.model("Cart", cartSchema);
