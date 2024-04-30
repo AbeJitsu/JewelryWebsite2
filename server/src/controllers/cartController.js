@@ -6,7 +6,7 @@ const cron = require("node-cron");
 // Helper function to get the next Wednesday at noon for cart reservation expiry
 function getNextWednesdayNoon() {
   let now = moment().tz("America/New_York");
-  let nextWednesday = now.clone().day(3); // Day 3 is Wednesday
+  let nextWednesday = now.clone().day(3);
   if (now.day() > 3 || (now.day() === 3 && now.hour() >= 12)) {
     nextWednesday.add(1, "weeks");
   }
@@ -25,26 +25,16 @@ function handleResponse(res, promise) {
 }
 
 const cartController = {
-  // Convert a guest cart to a user cart
   convertGuestCartToUserCart: async (req, res) => {
     const { sessionToken, userId } = req.body;
-    console.log("Converting guest cart to user cart:", sessionToken, userId);
     handleResponse(res, Cart.convertGuestCartToUserCart(sessionToken, userId));
   },
-
-  // Retrieve items from the cart
   getCartItems: async (req, res) => {
     const query = {
       $or: [{ user: req.session.userId }, { sessionToken: req.sessionID }],
     };
-    console.log(
-      "Getting cart items for user or session:",
-      req.session.userId || req.sessionID
-    );
     handleResponse(res, Cart.findOne(query).populate("items.product"));
   },
-
-  // Add an item to the cart
   addItemToCart: async (req, res) => {
     const { productId, quantity } = req.body;
     if (!productId || quantity < 1) {
@@ -56,32 +46,10 @@ const cartController = {
     const sessionToken = req.sessionID;
     const reservedUntil = getNextWednesdayNoon();
 
-    console.log(
-      "Adding item to cart:",
-      productId,
-      quantity,
-      userId,
-      sessionToken
-    );
-
-    const updateCart = (cart) => {
-      const itemIndex = cart.items.findIndex(
-        (item) => item.product.toString() === productId
-      );
-      if (itemIndex > -1) {
-        cart.items[itemIndex].quantity = quantity;
-        cart.items[itemIndex].reservedUntil = reservedUntil;
-      } else {
-        cart.items.push({ product: productId, quantity, reservedUntil });
-      }
-      return cart.save();
-    };
-
     Product.findById(productId)
       .then((product) => {
-        if (!product || product.status !== "available") {
+        if (!product || product.status !== "available")
           throw new Error("Product not available");
-        }
         product.status = "in cart";
         return product.save();
       })
@@ -102,15 +70,25 @@ const cartController = {
         console.error("Error adding item to cart:", error);
         res.status(500).send({ message: error.message });
       });
-  },
 
-  // Update a cart item's quantity
+    function updateCart(cart) {
+      const itemIndex = cart.items.findIndex(
+        (item) => item.product.toString() === productId
+      );
+      if (itemIndex > -1) {
+        cart.items[itemIndex].quantity = quantity;
+        cart.items[itemIndex].reservedUntil = reservedUntil;
+      } else {
+        cart.items.push({ product: productId, quantity, reservedUntil });
+      }
+      return cart.save();
+    }
+  },
   updateCartItem: async (req, res) => {
     const { itemId, quantity } = req.params;
     if (!itemId || quantity < 1) {
       return res.status(400).send({ message: "Invalid item ID or quantity" });
     }
-    console.log("Updating cart item:", itemId, quantity);
     handleResponse(
       res,
       Cart.findOneAndUpdate(
@@ -120,11 +98,8 @@ const cartController = {
       )
     );
   },
-
-  // Remove an item from the cart
   removeItemFromCart: async (req, res) => {
     const { itemId } = req.params;
-    console.log("Removing item from cart:", itemId);
     handleResponse(
       res,
       Cart.findOneAndUpdate(
@@ -134,8 +109,6 @@ const cartController = {
       )
     );
   },
-
-  // Schedule a task to clear expired carts
   scheduleCartClearance: () => {
     cron.schedule(
       "0 12 * * 3",
@@ -152,8 +125,21 @@ const cartController = {
     );
   },
 };
-
-// Initialize scheduled tasks
-cartController.scheduleCartClearance();
+syncCart: async (req, res) => {
+  const { cartItems } = req.body; // Ensure `cartItems` structure matches the expected schema
+  try {
+    const cart = await Cart.findOneAndUpdate(
+      { user: req.session.userId || req.sessionID }, // Identifying the user or session cart
+      { $set: { items: cartItems } },
+      { new: true, upsert: true } // Update or create a new cart
+    );
+    res.status(200).send(cart);
+  } catch (error) {
+    console.error("Failed to sync cart items:", error);
+    res.status(500).send({ message: "Failed to sync cart items" });
+  }
+},
+  // Initialize scheduled tasks
+  cartController.scheduleCartClearance();
 
 module.exports = cartController;

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const moment = require("moment-timezone");
 const Schema = mongoose.Schema;
 
 const cartItemSchema = new Schema({
@@ -20,6 +19,7 @@ const cartItemSchema = new Schema({
   reservedUntil: {
     type: Date,
     required: true,
+    index: { expires: "7d" }, // Ensures items are automatically removed after 7 days
   },
 });
 
@@ -59,14 +59,6 @@ cartSchema.methods.removeItem = function (productId) {
   this.items = this.items.filter(
     (i) => i.product.toString() !== productId.toString()
   );
-};
-
-cartSchema.methods.clearExpiredItems = async function () {
-  await this.updateOne({
-    $pull: {
-      items: { reservedUntil: { $lt: new Date() } },
-    },
-  });
 };
 
 cartSchema.statics.convertGuestCartToUserCart = async function (
