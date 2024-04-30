@@ -8,3 +8,5 @@ server/*.env*
 server/.DS_Store
 server/src/.DS_Store
 server/.DS_Store
+server/src/utilities/.DS_Store
+.DS_Store
