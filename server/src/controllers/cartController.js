@@ -3,7 +3,6 @@ const Product = require("../models/ProductModel");
 const moment = require("moment-timezone");
 const cron = require("node-cron");
 
-// Helper function to get the next Wednesday at noon for cart reservation expiry
 function getNextWednesdayNoon() {
   let now = moment().tz("America/New_York");
   let nextWednesday = now.clone().day(3);
@@ -14,7 +13,6 @@ function getNextWednesdayNoon() {
   return nextWednesday.toDate();
 }
 
-// Helper function to handle common response patterns
 function handleResponse(res, promise) {
   promise
     .then((data) => res.status(200).send(data))
@@ -22,6 +20,18 @@ function handleResponse(res, promise) {
       console.error("Operation failed:", error);
       res.status(500).send({ message: error.message });
     });
+}
+
+function updateCart(cart, productId, quantity, reservedUntil) {
+  const itemIndex = cart.items.findIndex(
+    (item) => item.product.toString() === productId
+  );
+  if (itemIndex > -1) {
+    cart.items[itemIndex].quantity = quantity;
+    cart.items[itemIndex].reservedUntil = reservedUntil;
+  } else {
+    cart.items.push({ product: productId, quantity, reservedUntil });
+  }
 }
 
 const cartController = {
@@ -37,15 +47,9 @@ const cartController = {
   },
   addItemToCart: async (req, res) => {
     const { productId, quantity } = req.body;
-    if (!productId || quantity < 1) {
-      return res
-        .status(400)
-        .send({ message: "Invalid product ID or quantity" });
-    }
     const userId = req.session.userId || null;
     const sessionToken = req.sessionID;
     const reservedUntil = getNextWednesdayNoon();
-
     try {
       const product = await Product.findById(productId);
       if (!product || product.status !== "available") {
@@ -53,7 +57,6 @@ const cartController = {
       }
       product.status = "in cart";
       await product.save();
-
       const cart =
         (await Cart.findOne({ $or: [{ user: userId }, { sessionToken }] })) ||
         new Cart({ user: userId, sessionToken, items: [] });
@@ -69,9 +72,6 @@ const cartController = {
   },
   updateCartItem: async (req, res) => {
     const { itemId, quantity } = req.params;
-    if (!itemId || quantity < 1) {
-      return res.status(400).send({ message: "Invalid item ID or quantity" });
-    }
     handleResponse(
       res,
       Cart.findOneAndUpdate(
@@ -107,18 +107,20 @@ const cartController = {
       { scheduled: true, timezone: "America/New_York" }
     );
   },
+  syncCart: async (req, res) => {
+    const { cartItems } = req.body;
+    try {
+      const cart = await Cart.findOneAndUpdate(
+        { user: req.session.userId },
+        { $set: { items: cartItems } },
+        { new: true, upsert: true }
+      );
+      res.status(200).send(cart);
+    } catch (error) {
+      console.error("Failed to sync cart items:", error);
+      res.status(500).send({ message: "Failed to sync cart items" });
+    }
+  },
 };
-
-function updateCart(cart, productId, quantity, reservedUntil) {
-  const itemIndex = cart.items.findIndex(
-    (item) => item.product.toString() === productId
-  );
-  if (itemIndex > -1) {
-    cart.items[itemIndex].quantity = quantity;
-    cart.items[itemIndex].reservedUntil = reservedUntil;
-  } else {
-    cart.items.push({ product: productId, quantity, reservedUntil });
-  }
-}
 
 module.exports = cartController;
