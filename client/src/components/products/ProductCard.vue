@@ -1,40 +1,14 @@
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/products/ProductCard.vue -->
 <template>
   <div class="product-card">
-    <vue-slick-carousel
-      :dots="true"
-      :infinite="true"
-      :autoplay="true"
-      :autoplaySpeed="3000"
-      :arrows="true"
-      class="product-images-swiper"
-    >
-      <div
-        v-for="(image, index) in product.imageSrc"
-        :key="index"
-        class="product-image-container"
-      >
-        <img :src="image" alt="Product image" class="product-image" />
-      </div>
-    </vue-slick-carousel>
-    <div class="action-icons">
-      <div @click="quickView(product._id)" class="icon-container">
-        <i class="bi bi-eye-fill"></i>
-        <span>View</span>
-      </div>
-      <div
-        @click="handleAddToCart"
-        class="icon-container"
-        :class="{ 'in-cart': isProductInCart(product._id) }"
-      >
-        <i class="bi bi-cart-fill"></i>
-        <span>{{ isProductInCart(product._id) ? "In Cart" : "Add" }}</span>
-      </div>
-      <div @click="addToFavorites(product)" class="icon-container">
-        <i class="bi bi-heart-fill"></i>
-        <span>Fave</span>
-      </div>
-    </div>
+    <ProductCarousel :images="product.imageSrc" />
+
+    <ActionIcons
+      :isInCart="isProductInCart(product._id)"
+      :onQuickView="quickView"
+      :onAddToCart="handleAddToCart"
+      :onAddToFavorites="addToFavorites"
+    />
     <div class="product-info">
       <div class="name-price-container">
         <h3 class="product-name">{{ product.title }}</h3>
@@ -46,21 +20,22 @@
 </template>
 
 <script>
-import VueSlickCarousel from "vue-slick-carousel";
+import ProductCarousel from "./ProductCarousel.vue";
+import ActionIcons from "./ActionIcons.vue";
+
 import { mapActions, mapGetters } from "vuex";
 
 export default {
   name: "ProductCard",
-  components: { VueSlickCarousel },
+  components: { ProductCarousel, ActionIcons },
   props: { product: Object },
   computed: {
     ...mapGetters("cart", ["isProductInCart"]),
   },
   methods: {
     ...mapActions("cart", ["addToCart", "addToFavorites"]),
-    quickView(productId) {
-      this.$store.dispatch("product/setSelectedProduct", productId);
-      this.$store.dispatch("modal/toggleModal", true);
+    quickView() {
+      this.$store.dispatch("modal/selectProductForQuickView", this.product._id);
     },
     handleAddToCart() {
       if (!this.isProductInCart(this.product._id)) {
@@ -95,21 +70,6 @@ export default {
   transition: color 0.3s ease, transform 0.3s ease-in-out;
 }
 
-.product-image-container {
-  min-width: 100%;
-  padding-top: 100%;
-  position: relative;
-  margin-bottom: 2rem;
-}
-
-.product-image {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 .action-icons {
   color: #ff6b81;
   display: flex;

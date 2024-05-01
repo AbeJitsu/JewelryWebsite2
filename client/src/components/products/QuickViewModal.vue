@@ -3,7 +3,7 @@
     <template v-slot:modal-title>
       {{ selectedProduct?.title || "Product Details" }}
     </template>
-    <div class="modal-body" v-if="selectedProduct">
+    <div v-if="selectedProduct" class="modal-body">
       <div class="modal-content-layout">
         <div class="image-container">
           <img
@@ -20,14 +20,14 @@
             <b-button variant="primary" @click="handleAddToCart">
               Add to Cart
             </b-button>
-            <b-button variant="info" @click="handleaddToFavorites">
+            <b-button variant="info" @click="handleAddToFavorites">
               Add to Wishlist
             </b-button>
           </div>
         </div>
       </div>
     </div>
-    <div v-else>Product details not available.</div>
+    <div v-else class="loading-message">Loading product details...</div>
   </b-modal>
 </template>
 
@@ -50,7 +50,7 @@ export default {
     handleAddToCart() {
       this.addToCart(this.selectedProduct);
     },
-    handleaddToFavorites() {
+    handleAddToFavorites() {
       this.addToFavorites(this.selectedProduct);
     },
   },
@@ -86,6 +86,12 @@ export default {
   margin-top: 20px;
   display: flex;
   gap: 10px;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2em;
 }
 
 @media (max-width: 768px) {

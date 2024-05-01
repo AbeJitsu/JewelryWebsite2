@@ -18,19 +18,17 @@ export default {
     toggleModal({ commit }, isVisible) {
       commit("TOGGLE_MODAL", isVisible);
     },
-    selectProductForQuickView({ commit, dispatch }, productId) {
-      // Correctly dispatch to `product/setSelectedProduct` with namespacing
-      dispatch("product/setSelectedProduct", productId, { root: true });
+    async selectProductForQuickView({ commit, dispatch }, productId) {
+      // Fetch and set selected product
+      await dispatch("product/setSelectedProduct", productId, { root: true });
+      // Open the modal
       commit("TOGGLE_MODAL", true);
     },
   },
   getters: {
     isModalOpen: (state) => state.isModalOpen,
     selectedProduct: (state, getters, rootState) => {
-      // Adjusted to directly access the product from the product module's state
-      return rootState.product.products.find(
-        (product) => product._id === state.selectedProductId
-      );
+      return rootState.product.selectedProduct;
     },
   },
 };

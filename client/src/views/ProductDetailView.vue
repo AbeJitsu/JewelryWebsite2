@@ -1,3 +1,4 @@
+<!-- client/src/views/ProductDetailView.vue -->
 <template>
   <b-container fluid="lg" class="py-4">
     <b-row>

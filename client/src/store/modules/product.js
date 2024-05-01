@@ -18,9 +18,9 @@ export default {
       ];
     },
     SET_SELECTED_PRODUCT(state, product) {
-      console.log("Setting selected product:", product);
       state.selectedProduct = product;
     },
+
     SET_PRODUCT_DETAILS(state, productDetails) {
       console.log("Setting product details:", productDetails);
       const existingProductIndex = state.products.findIndex(
@@ -49,20 +49,18 @@ export default {
         commit("SET_ERROR", "Failed to fetch products");
       }
     },
-    async setSelectedProduct({ commit, state }, productId) {
-      const product = state.products.find((p) => p._id === productId);
-      if (product) {
-        commit("SET_SELECTED_PRODUCT", product);
-      } else {
-        try {
-          const response = await axios.get(`/api/products/${productId}`);
-          commit("SET_SELECTED_PRODUCT", response.data);
-        } catch (error) {
-          console.error("Error fetching product:", productId, error);
-          commit("SET_ERROR", `Product fetch failed: ${productId}`);
-        }
+    async setSelectedProduct({ commit }, productId) {
+      try {
+        // Fetch product details using the productId
+        const response = await axios.get(`/api/products/${productId}`);
+        // Commit the product data to the store
+        commit("SET_SELECTED_PRODUCT", response.data);
+      } catch (error) {
+        // Handle errors gracefully
+        console.error("Error fetching product:", error);
       }
     },
+
     async fetchProductById({ commit, state }, productId) {
       console.log("Fetching product by ID:", productId);
       if (state.products.some((product) => product._id === productId)) {

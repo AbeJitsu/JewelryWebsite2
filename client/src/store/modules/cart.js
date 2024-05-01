@@ -20,6 +20,7 @@ export default {
   },
   mutations: {
     ADD_TO_CART(state, { product, quantity }) {
+      console.log(`Adding product to cart:`, { product, quantity });
       const productIndex = state.cartItems.findIndex(
         (item) => item.product._id === product._id
       );
@@ -30,11 +31,13 @@ export default {
       }
     },
     REMOVE_FROM_CART(state, productId) {
+      console.log(`Removing product from cart: ${productId}`);
       state.cartItems = state.cartItems.filter(
         (item) => item.product._id !== productId
       );
     },
     UPDATE_QUANTITY(state, { productId, quantity }) {
+      console.log(`Updating quantity for product ${productId} to ${quantity}`);
       const item = state.cartItems.find(
         (item) => item.product._id === productId
       );
@@ -43,37 +46,45 @@ export default {
       }
     },
     SET_POST_LOGIN_REDIRECT(state, redirect) {
+      console.log(`Setting post-login redirect to: ${redirect}`);
       state.postLoginRedirect = redirect;
     },
     SYNC_IN_PROGRESS(state, inProgress) {
+      console.log(`Sync in progress: ${inProgress}`);
       state.syncInProgress = inProgress;
     },
     RESET_SYNC_ERRORS(state) {
+      console.log("Resetting sync errors");
       state.syncErrors = 0;
     },
     INCREMENT_SYNC_ERRORS(state) {
+      console.log("Incrementing sync errors");
       state.syncErrors++;
     },
   },
   actions: {
     addToCart({ commit }, { product, quantity }) {
+      console.log("Action: addToCart");
       commit("ADD_TO_CART", { product, quantity });
     },
     removeFromCart({ commit }, productId) {
+      console.log("Action: removeFromCart");
       commit("REMOVE_FROM_CART", productId);
     },
     updateQuantity({ commit }, { productId, quantity }) {
+      console.log("Action: updateQuantity");
       commit("UPDATE_QUANTITY", { productId, quantity });
     },
     syncCart: _.debounce(({ state, commit }) => {
       if (state.syncInProgress) return; // Prevent overlapping sync attempts
+      console.log("Action: syncCart - Syncing cart to server", state.cartItems);
 
       commit("SYNC_IN_PROGRESS", true);
       axios
         .post("/api/cart", { cartItems: state.cartItems })
-        .then(() => {
+        .then((response) => {
+          console.log("Sync successful:", response.data);
           commit("RESET_SYNC_ERRORS");
-          console.info("Cart synced successfully.");
         })
         .catch((error) => {
           console.error("Failed to sync cart with server:", error);

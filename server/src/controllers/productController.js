@@ -184,16 +184,25 @@ async function deleteProduct(req, res) {
 
 // Fetch a single product by its ID
 async function getProductById(req, res) {
+  // Log the ID received from the client
+  console.log("Fetching product with ID:", req.params.id);
+
   try {
+    // Fetch the product from the database using the ID
     const product = await Product.findById(req.params.id);
+
+    // Check if product exists
     if (!product) {
-      return res.status(404).send({ message: "Product not found" });
+      return res.status(404).json({ message: "Product not found" });
     }
+
+    // Send the product data as a response
     res.json(product);
   } catch (error) {
+    console.error("Error fetching product:", error);
     res
       .status(500)
-      .send({ message: "Failed to fetch product", error: error.message });
+      .json({ message: "Failed to fetch product", error: error.message });
   }
 }
 
