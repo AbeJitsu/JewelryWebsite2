@@ -45,9 +45,8 @@ export default {
         item.quantity = quantity;
       }
     },
-    SET_POST_LOGIN_REDIRECT(state, redirect) {
-      console.log(`Setting post-login redirect to: ${redirect}`);
-      state.postLoginRedirect = redirect;
+    SET_CART_ITEMS(state, items) {
+      state.cartItems = items;
     },
     SYNC_IN_PROGRESS(state, inProgress) {
       console.log(`Sync in progress: ${inProgress}`);
@@ -63,17 +62,28 @@ export default {
     },
   },
   actions: {
-    addToCart({ commit }, { product, quantity }) {
+    async fetchCart({ commit }) {
+      try {
+        const response = await axios.get("/api/cart");
+        commit("SET_CART_ITEMS", response.data.items || []);
+      } catch (error) {
+        console.error("Failed to fetch cart:", error);
+      }
+    },
+    addToCart({ commit, dispatch }, { product, quantity }) {
       console.log("Action: addToCart");
       commit("ADD_TO_CART", { product, quantity });
+      dispatch("syncCart");
     },
-    removeFromCart({ commit }, productId) {
+    removeFromCart({ commit, dispatch }, productId) {
       console.log("Action: removeFromCart");
       commit("REMOVE_FROM_CART", productId);
+      dispatch("syncCart");
     },
-    updateQuantity({ commit }, { productId, quantity }) {
+    updateQuantity({ commit, dispatch }, { productId, quantity }) {
       console.log("Action: updateQuantity");
       commit("UPDATE_QUANTITY", { productId, quantity });
+      dispatch("syncCart");
     },
     syncCart: _.debounce(({ state, commit }) => {
       if (state.syncInProgress) return; // Prevent overlapping sync attempts
@@ -81,7 +91,7 @@ export default {
 
       commit("SYNC_IN_PROGRESS", true);
       axios
-        .post("/api/cart", { cartItems: state.cartItems })
+        .post("/api/cart/add", { cartItems: state.cartItems })
         .then((response) => {
           console.log("Sync successful:", response.data);
           commit("RESET_SYNC_ERRORS");
