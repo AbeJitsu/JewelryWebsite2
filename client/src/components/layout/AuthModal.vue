@@ -6,31 +6,77 @@
       <!-- Login Form -->
       <b-form v-if="isLogin" @submit.prevent="loginUser">
         <b-form-group label="Email" label-for="login-email">
-          <b-form-input id="login-email" v-model="loginForm.email" type="email" required placeholder="Enter email"></b-form-input>
+          <b-form-input
+            id="login-email"
+            v-model="loginForm.email"
+            type="email"
+            required
+            placeholder="Enter email"
+          ></b-form-input>
         </b-form-group>
         <b-form-group label="Password" label-for="login-password">
-          <b-form-input id="login-password" v-model="loginForm.password" type="password" required placeholder="Password" autocomplete="current-password"></b-form-input>
+          <b-form-input
+            id="login-password"
+            v-model="loginForm.password"
+            type="password"
+            required
+            placeholder="Password"
+            autocomplete="current-password"
+          ></b-form-input>
         </b-form-group>
         <b-button type="submit" variant="primary">Login</b-button>
-        <b-button variant="link" @click="toggleForm">Don't have an account? Register</b-button>
+        <b-button variant="link" @click="toggleForm"
+          >Don't have an account? Register</b-button
+        >
       </b-form>
 
       <!-- Registration Form -->
       <b-form v-else @submit.prevent="registerUser">
-        <b-form-group label="Preferred First Name" label-for="register-first-name">
-          <b-form-input id="register-first-name" v-model="registerForm.preferredFirstName" required placeholder="Preferred first name"></b-form-input>
+        <b-form-group
+          label="Preferred First Name"
+          label-for="register-first-name"
+        >
+          <b-form-input
+            id="register-first-name"
+            v-model="registerForm.preferredFirstName"
+            required
+            placeholder="Preferred first name"
+          ></b-form-input>
         </b-form-group>
         <b-form-group label="Email" label-for="register-email">
-          <b-form-input id="register-email" v-model="registerForm.email" type="email" required placeholder="Enter email"></b-form-input>
+          <b-form-input
+            id="register-email"
+            v-model="registerForm.email"
+            type="email"
+            required
+            placeholder="Enter email"
+          ></b-form-input>
         </b-form-group>
         <b-form-group label="Password" label-for="register-password">
-          <b-form-input id="register-password" v-model="registerForm.password" type="password" required placeholder="Password"></b-form-input>
+          <b-form-input
+            id="register-password"
+            v-model="registerForm.password"
+            type="password"
+            required
+            placeholder="Password"
+          ></b-form-input>
         </b-form-group>
-        <b-form-group label="Confirm Password" label-for="register-password-confirmation">
-          <b-form-input id="register-password-confirmation" v-model="registerForm.passwordConfirmation" type="password" required placeholder="Confirm Password"></b-form-input>
+        <b-form-group
+          label="Confirm Password"
+          label-for="register-password-confirmation"
+        >
+          <b-form-input
+            id="register-password-confirmation"
+            v-model="registerForm.passwordConfirmation"
+            type="password"
+            required
+            placeholder="Confirm Password"
+          ></b-form-input>
         </b-form-group>
         <b-button type="submit" variant="primary">Register</b-button>
-        <b-button variant="link" @click="toggleForm">Already have an account? Login</b-button>
+        <b-button variant="link" @click="toggleForm"
+          >Already have an account? Login</b-button
+        >
       </b-form>
     </b-modal>
   </div>
@@ -64,10 +110,9 @@ export default {
     },
 
     loginUser() {
-      // Store the intended path before login
-      if (this.$router.currentRoute.path !== "/login") {
-        this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", this.$router.currentRoute.name);
-      }
+      // Store the current route path in postLoginRedirect
+      const currentRoute = this.$router.currentRoute.name;
+      this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", currentRoute);
 
       this.login(this.loginForm)
         .then(() => {
@@ -88,7 +133,9 @@ export default {
     },
 
     registerUser() {
-      if (this.registerForm.password !== this.registerForm.passwordConfirmation) {
+      if (
+        this.registerForm.password !== this.registerForm.passwordConfirmation
+      ) {
         alert("Passwords do not match.");
         return;
       }

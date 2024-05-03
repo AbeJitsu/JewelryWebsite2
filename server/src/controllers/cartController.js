@@ -1,8 +1,5 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/cartController.js
-
 const Cart = require("../models/CartModel");
 
-// Retrieve cart based on session token or user ID
 exports.getCart = async (req, res) => {
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
@@ -17,17 +14,13 @@ exports.getCart = async (req, res) => {
   }
 };
 
-// Add or update an item in the cart
 exports.addItemToCart = async (req, res) => {
-  console.log("Received request:", req.body);
-  console.log("Session Token:", req.sessionToken);
-  console.log("User ID:", req.userId);
   const { productId, quantity } = req.body;
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
 
   try {
-    const cart = await Cart.findOne(query);
+    let cart = await Cart.findOne(query);
 
     if (cart) {
       const itemIndex = cart.items.findIndex(
@@ -35,21 +28,19 @@ exports.addItemToCart = async (req, res) => {
       );
 
       if (itemIndex !== -1) {
-        cart.items[itemIndex].quantity += quantity; // Increment quantity if item already exists
+        cart.items[itemIndex].quantity += quantity;
       } else {
-        cart.items.push({ product: productId, quantity }); // Add new item
+        cart.items.push({ product: productId, quantity });
       }
-
-      await cart.save();
     } else {
-      // If cart doesn't exist, create a new one
-      const newCart = new Cart({
+      cart = new Cart({
         user: userId || null,
         sessionToken: sessionToken || null,
         items: [{ product: productId, quantity }],
       });
-      await newCart.save();
     }
+
+    await cart.save();
 
     const updatedCart = await Cart.findOne(query).populate("items.product");
     res.status(200).send(updatedCart);
@@ -61,7 +52,6 @@ exports.addItemToCart = async (req, res) => {
   }
 };
 
-// Update the quantity of an item in the cart
 exports.updateItemQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
   const { sessionToken, userId } = req;
@@ -76,7 +66,7 @@ exports.updateItemQuantity = async (req, res) => {
     );
 
     if (itemIndex !== -1) {
-      cart.items[itemIndex].quantity = quantity; // Set new quantity
+      cart.items[itemIndex].quantity = quantity;
       await cart.save();
       res.status(200).send(cart);
     } else {
@@ -90,7 +80,6 @@ exports.updateItemQuantity = async (req, res) => {
   }
 };
 
-// Remove an item from the cart
 exports.removeItemFromCart = async (req, res) => {
   const { productId } = req.body;
   const { sessionToken, userId } = req;
