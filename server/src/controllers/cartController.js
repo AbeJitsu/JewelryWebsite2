@@ -19,7 +19,9 @@ exports.getCart = async (req, res) => {
 
 // Add or update an item in the cart
 exports.addItemToCart = async (req, res) => {
-  console.log("Received request:", req.body, req.userId, req.sessionToken)
+  console.log("Received request:", req.body);
+  console.log("Session Token:", req.sessionToken);
+  console.log("User ID:", req.userId);
   const { productId, quantity } = req.body;
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
