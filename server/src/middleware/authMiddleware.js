@@ -1,16 +1,16 @@
 //Users/abiezerreyes/Projects/JewelryWebsite2/server/src/middleware/authMiddleware.js
 
-const User = require("../models/userModel"); // Adjust the path as necessary
+const User = require("../models/userModel");
 
 function authMiddleware(req, res, next) {
   if (req.session && req.session.userId) {
+    req.userId = req.session.userId; // Ensure userId is accessible
     next();
   } else {
     res.status(401).send({ message: "Unauthorized access" });
   }
 }
 
-// Middleware to check user role
 function roleMiddleware(roles) {
   return async (req, res, next) => {
     if (!req.session || !req.session.userId) {
