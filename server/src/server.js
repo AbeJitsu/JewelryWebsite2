@@ -30,6 +30,7 @@ const port = process.env.PORT || 3000;
 
 // Applying middleware
 app.use(limiter);
+app.use(session(createSessionConfig())); // Apply the session configuration function early
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN, // Ensure CORS settings are correct for frontend
@@ -39,7 +40,6 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use(session(createSessionConfig())); // Apply the session configuration function
 
 // Custom middleware to set userId and sessionToken
 app.use((req, res, next) => {
