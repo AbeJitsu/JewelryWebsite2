@@ -1,4 +1,5 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/controllers/cartController.js
+
 const Cart = require("../models/CartModel");
 
 // Retrieve cart based on session token or user ID
@@ -16,23 +17,44 @@ exports.getCart = async (req, res) => {
   }
 };
 
-// Add an item to the cart
+// Add or update an item in the cart
 exports.addItemToCart = async (req, res) => {
   const { productId, quantity } = req.body;
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
 
   try {
-    const cart = await Cart.findOneAndUpdate(
-      query,
-      { $push: { items: { product: productId, quantity } } },
-      { new: true, upsert: true }
-    ).populate("items.product");
-    res.status(200).send(cart);
+    const cart = await Cart.findOne(query);
+
+    if (cart) {
+      const itemIndex = cart.items.findIndex(
+        (item) => item.product.toString() === productId
+      );
+
+      if (itemIndex !== -1) {
+        cart.items[itemIndex].quantity += quantity; // Increment quantity if item already exists
+      } else {
+        cart.items.push({ product: productId, quantity }); // Add new item
+      }
+
+      await cart.save();
+    } else {
+      // If cart doesn't exist, create a new one
+      const newCart = new Cart({
+        user: userId || null,
+        sessionToken: sessionToken || null,
+        items: [{ product: productId, quantity }],
+      });
+      await newCart.save();
+    }
+
+    const updatedCart = await Cart.findOne(query).populate("items.product");
+    res.status(200).send(updatedCart);
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Failed to add item to cart", error: error.message });
+    res.status(500).send({
+      message: "Failed to add/update item in cart",
+      error: error.message,
+    });
   }
 };
 
@@ -49,20 +71,19 @@ exports.updateItemQuantity = async (req, res) => {
     const itemIndex = cart.items.findIndex(
       (item) => item.product.toString() === productId
     );
+
     if (itemIndex !== -1) {
-      cart.items[itemIndex].quantity = quantity;
+      cart.items[itemIndex].quantity = quantity; // Set new quantity
       await cart.save();
       res.status(200).send(cart);
     } else {
       res.status(404).send({ message: "Item not found in cart" });
     }
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        message: "Failed to update item quantity",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Failed to update item quantity",
+      error: error.message,
+    });
   }
 };
 
@@ -80,11 +101,9 @@ exports.removeItemFromCart = async (req, res) => {
     ).populate("items.product");
     res.status(200).send(cart);
   } catch (error) {
-    res
-      .status(500)
-      .send({
-        message: "Failed to remove item from cart",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Failed to remove item from cart",
+      error: error.message,
+    });
   }
 };
