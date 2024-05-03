@@ -41,6 +41,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 app.use(session(createSessionConfig())); // Apply the session configuration function
 
+// Custom middleware to set userId and sessionToken
+app.use((req, res, next) => {
+  if (req.session && req.session.userId) {
+    req.userId = req.session.userId;
+    console.log("Middleware: User ID set:", req.userId);
+  } else if (req.cookies && req.cookies.sessionToken) {
+    req.sessionToken = req.cookies.sessionToken;
+    console.log("Middleware: Session Token set:", req.sessionToken);
+  }
+  next();
+});
+
 // Route setup
 app.use("/api", routes);
 app.use(errorHandlingMiddleware); // Global error handling
