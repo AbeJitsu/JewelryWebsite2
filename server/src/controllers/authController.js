@@ -58,6 +58,7 @@ exports.login = async (req, res) => {
       }
 
       req.session.userId = user._id;
+      console.log("User ID set in session:", req.session.userId); // Added logging
 
       // Check for the existence of a guest cart before initiating the merge
       const guestCartExists = await Cart.findOne({
@@ -81,3 +82,4 @@ exports.login = async (req, res) => {
     res.status(500).send({ error: "An internal error occurred during login" });
   }
 };
+

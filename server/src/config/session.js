@@ -22,3 +22,4 @@ const createSessionConfig = () => {
 };
 
 module.exports = createSessionConfig;
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/config/session.js
