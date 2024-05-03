@@ -110,20 +110,20 @@ export default {
     },
 
     loginUser() {
-      // Store the current route path in postLoginRedirect
-      const currentRoute = this.$router.currentRoute.name;
-      this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", currentRoute);
+      // Store the intended route path
+      const intendedRoute = this.$router.currentRoute.fullPath;
+      this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", intendedRoute);
 
       this.login(this.loginForm)
         .then(() => {
           this.$bvModal.hide("auth-modal");
           const redirect = this.$store.state.cart.postLoginRedirect;
           if (redirect) {
-            this.$router.push({ name: redirect });
+            this.$router.replace(redirect);
             this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
           } else {
             if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-              this.$router.push("/jewelry-showcase");
+              this.$router.replace("/jewelry-showcase");
             }
           }
         })
@@ -144,7 +144,7 @@ export default {
           this.$bvModal.hide("auth-modal");
           this.resetForm();
           if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-            this.$router.push("/jewelry-showcase");
+            this.$router.replace("/jewelry-showcase");
           }
         })
         .catch((error) => {
