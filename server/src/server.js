@@ -12,6 +12,9 @@ const session = require("express-session");
 // Import the session configuration
 const createSessionConfig = require("./config/session");
 
+// Import custom middleware
+const cartMiddleware = require("./middleware/cartMiddleware");
+
 // Connect to the database
 const connectDB = require("./config/db");
 connectDB();
@@ -35,26 +38,36 @@ const port = process.env.PORT || 3000; // Initialize the port variable correctly
 
 // Applying middleware
 app.use(limiter);
-app.use(session(createSessionConfig())); // Apply the session configuration function early
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN, // Ensure CORS settings are correct for frontend
     credentials: true, // Enable cookies across different domains (for sessions)
   })
 );
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-// Custom middleware to set userId and sessionToken
-app.use((req, res, next) => {
-  if (req.session && req.session.userId) {
-    req.userId = req.session.userId;
-    console.log("Middleware: User ID set:", req.userId);
-  } else {
-    console.log("Middleware: No session or token found");
-  }
-  next();
+// Use the cart middleware before session creation
+app.use(session(createSessionConfig()));
+app.use(cartMiddleware);
+
+// Middleware to check for session asynchronously
+app.use(async (req, res, next) => {
+  // Adding await ensures MongoStore returns session before proceeding
+  await req.session.reload(err => {
+    if (err) {
+      console.error("Error reloading session:", err);
+    }
+    // Check session data here
+    if (req.session && req.session.userId) {
+      req.userId = req.session.userId;
+      console.log("Middleware: User ID set:", req.userId);
+    } else {
+      console.log("Middleware: No session or token found");
+    }
+    next();
+  });
 });
 
 // Route setup

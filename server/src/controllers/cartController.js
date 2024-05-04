@@ -1,4 +1,5 @@
 const Cart = require("../models/CartModel");
+const Product = require("../models/ProductModel");
 
 // Retrieve cart based on session token or user ID
 exports.getCart = async (req, res) => {
@@ -20,9 +21,10 @@ exports.getCart = async (req, res) => {
 exports.addItemToCart = async (req, res) => {
   const { productId, quantity } = req.body;
 
-  // Logging received data
+  // Log the request data for debugging
   console.log("Received request data:", req.body);
 
+  // Validate the request body data
   if (!productId || !quantity) {
     return res.status(400).send({
       message: "Invalid request: 'productId' and 'quantity' are required.",
@@ -33,9 +35,19 @@ exports.addItemToCart = async (req, res) => {
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
 
   try {
+    // Check if the product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).send({
+        message: "Product not found",
+      });
+    }
+
+    // Find or create the cart
     let cart = await Cart.findOne(query);
 
     if (cart) {
+      // Update quantity if the product already exists in the cart
       const itemIndex = cart.items.findIndex(
         (item) => item.product.toString() === productId
       );
@@ -43,9 +55,11 @@ exports.addItemToCart = async (req, res) => {
       if (itemIndex !== -1) {
         cart.items[itemIndex].quantity += quantity;
       } else {
+        // Add new item to the cart
         cart.items.push({ product: productId, quantity });
       }
     } else {
+      // Create a new cart if it doesn't exist
       cart = new Cart({
         user: userId || null,
         sessionToken: sessionToken || null,
@@ -53,8 +67,8 @@ exports.addItemToCart = async (req, res) => {
       });
     }
 
+    // Save and return the updated cart
     await cart.save();
-
     const updatedCart = await Cart.findOne(query).populate("items.product");
     res.status(200).send(updatedCart);
   } catch (error) {

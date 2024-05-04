@@ -71,22 +71,17 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = store.getters["user/isLoggedIn"];
   const hasItemsInCart = store.getters["cart/cartItems"].length > 0;
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isLoggedIn) {
-      // Save the intended path to Vuex store
-      store.commit("cart/SET_POST_LOGIN_REDIRECT", to.fullPath);
-      store.dispatch("triggerAuthModal");
-      next(false); // halt the navigation
-    } else {
-      next();
-    }
+  // Authentication and Cart Checks
+  if (to.matched.some((record) => record.meta.requiresAuth && !isLoggedIn)) {
+    store.commit("cart/SET_POST_LOGIN_REDIRECT", to.fullPath);
+    store.dispatch("triggerAuthModal");
+    next(false); // halt navigation
   } else if (
-    to.matched.some((record) => record.meta.requiresCart) &&
-    !hasItemsInCart
+    to.matched.some((record) => record.meta.requiresCart && !hasItemsInCart)
   ) {
     next({ name: "jewelry-showcase" });
   } else {
-    next();
+    next(); // proceed
   }
 });
 

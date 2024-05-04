@@ -1,3 +1,5 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/config/session.js
+
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
@@ -13,10 +15,10 @@ const createSessionConfig = () => {
       autoRemove: "native",
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // False if not in production
       httpOnly: true,
       sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
   };
   console.log("Session Config:", config);

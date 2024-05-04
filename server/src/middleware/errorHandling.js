@@ -1,10 +1,5 @@
-/**
- *
- * server/src/middleware/errorHandling.js
- * 
- * Middleware for handling exceptions caught in Express routes and middleware.
- * Ensures errors caught in Express routes are handled uniformly.
- */
+// src/middleware/errorHandling.js
+
 module.exports = (err, req, res, next) => {
   console.error(err.stack);
 
