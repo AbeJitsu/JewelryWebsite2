@@ -1,3 +1,5 @@
+// server.js
+
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
@@ -7,10 +9,13 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 
+// Import the session configuration
+const createSessionConfig = require("./config/session");
+
+// Connect to the database
 const connectDB = require("./config/db");
 connectDB();
 
-const createSessionConfig = require("./config/session");
 const routes = require("./routes/index");
 const errorHandlingMiddleware = require("./middleware/errorHandling");
 
@@ -19,14 +24,14 @@ const app = express();
 // Trust the first proxy in front of the server
 app.set("trust proxy", 1);
 
-// Rate limiting to prevent abuse and to manage load on the server
+// Rate limiting to prevent abuse and manage load on the server
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // Limit each IP to 100 requests per 15-minute window
   message: "Too many requests from this IP, please try again after 15 minutes",
 });
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; // Initialize the port variable correctly
 
 // Applying middleware
 app.use(limiter);
@@ -46,9 +51,6 @@ app.use((req, res, next) => {
   if (req.session && req.session.userId) {
     req.userId = req.session.userId;
     console.log("Middleware: User ID set:", req.userId);
-  } else if (req.cookies && req.cookies.sessionToken) {
-    req.sessionToken = req.cookies.sessionToken;
-    console.log("Middleware: Session Token set:", req.sessionToken);
   } else {
     console.log("Middleware: No session or token found");
   }

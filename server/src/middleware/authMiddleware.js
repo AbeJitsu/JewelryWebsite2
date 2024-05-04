@@ -1,4 +1,4 @@
-//Users/abiezerreyes/Projects/JewelryWebsite2/server/src/middleware/authMiddleware.js
+// src/middleware/authMiddleware.js
 
 const User = require("../models/userModel");
 
@@ -7,14 +7,14 @@ function authMiddleware(req, res, next) {
     req.userId = req.session.userId; // Ensure userId is accessible
     next();
   } else {
-    res.status(401).send({ message: "Unauthorized access" });
+    res.status(401).json({ message: "Unauthorized access" });
   }
 }
 
 function roleMiddleware(roles) {
   return async (req, res, next) => {
     if (!req.session || !req.session.userId) {
-      return res.status(401).send({ message: "Unauthorized access" });
+      return res.status(401).json({ message: "Unauthorized access" });
     }
 
     try {
@@ -22,7 +22,7 @@ function roleMiddleware(roles) {
       if (!user || !roles.includes(user.role)) {
         return res
           .status(403)
-          .send({ message: "Forbidden access: Insufficient role" });
+          .json({ message: "Forbidden access: Insufficient role" });
       }
 
       next();
@@ -30,7 +30,7 @@ function roleMiddleware(roles) {
       console.error("Error verifying user role:", error);
       res
         .status(500)
-        .send({ message: "Internal server error during role verification" });
+        .json({ message: "Internal server error during role verification" });
     }
   };
 }

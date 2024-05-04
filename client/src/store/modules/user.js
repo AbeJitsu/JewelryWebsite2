@@ -119,6 +119,7 @@ export default {
     },
     setUser(state, user) {
       state.user = user;
+      state.preferredFirstName = user.preferredFirstName;
     },
     TOGGLE_MODAL(state) {
       state.showModal = !state.showModal;
