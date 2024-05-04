@@ -1,10 +1,14 @@
+<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/layout/AuthModal.vue -->
+
 <template>
   <div>
+    <!-- Authentication Modal -->
     <b-modal v-model="showModal" @hide="resetForm" id="auth-modal">
       <template #modal-title>{{ isLogin ? "Login" : "Register" }}</template>
 
       <!-- Login Form -->
       <b-form v-if="isLogin" @submit.prevent="loginUser">
+        <!-- Email Input -->
         <b-form-group label="Email" label-for="login-email">
           <b-form-input
             id="login-email"
@@ -14,6 +18,7 @@
             placeholder="Enter email"
           ></b-form-input>
         </b-form-group>
+        <!-- Password Input -->
         <b-form-group label="Password" label-for="login-password">
           <b-form-input
             id="login-password"
@@ -25,6 +30,8 @@
           ></b-form-input>
         </b-form-group>
         <b-button type="submit" variant="primary">Login</b-button>
+
+        <!-- Toggle to Registration Form -->
         <b-button variant="link" @click="toggleForm"
           >Don't have an account? Register</b-button
         >
@@ -32,6 +39,7 @@
 
       <!-- Registration Form -->
       <b-form v-else @submit.prevent="registerUser">
+        <!-- Name Input -->
         <b-form-group
           label="Preferred First Name"
           label-for="register-first-name"
@@ -43,6 +51,7 @@
             placeholder="Preferred first name"
           ></b-form-input>
         </b-form-group>
+        <!-- Email Input -->
         <b-form-group label="Email" label-for="register-email">
           <b-form-input
             id="register-email"
@@ -52,6 +61,7 @@
             placeholder="Enter email"
           ></b-form-input>
         </b-form-group>
+        <!-- Password Input -->
         <b-form-group label="Password" label-for="register-password">
           <b-form-input
             id="register-password"
@@ -61,6 +71,7 @@
             placeholder="Password"
           ></b-form-input>
         </b-form-group>
+        <!-- Confirm Password Input -->
         <b-form-group
           label="Confirm Password"
           label-for="register-password-confirmation"
@@ -73,7 +84,9 @@
             placeholder="Confirm Password"
           ></b-form-input>
         </b-form-group>
+        <!-- Register Button -->
         <b-button type="submit" variant="primary">Register</b-button>
+        <!-- Toggle to Login Form -->
         <b-button variant="link" @click="toggleForm"
           >Already have an account? Login</b-button
         >
@@ -110,21 +123,16 @@ export default {
     },
 
     loginUser() {
-      // Store the intended route path
-      const intendedRoute = this.$router.currentRoute.fullPath;
-      this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", intendedRoute);
-
       this.login(this.loginForm)
         .then(() => {
           this.$bvModal.hide("auth-modal");
-          const redirect = this.$store.state.cart.postLoginRedirect;
-          if (redirect) {
-            this.$router.replace(redirect);
-            this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
+          // Retrieve the redirect path from Vuex
+          const redirectPath = this.$store.state.cart.postLoginRedirect;
+          if (redirectPath) {
+            this.$router.push(redirectPath);
+            this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null); // Clear the redirect path
           } else {
-            if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-              this.$router.replace("/jewelry-showcase");
-            }
+            this.$router.push("/jewelry-showcase");
           }
         })
         .catch((error) => {
@@ -144,7 +152,7 @@ export default {
           this.$bvModal.hide("auth-modal");
           this.resetForm();
           if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-            this.$router.replace("/jewelry-showcase");
+            this.$router.push("/jewelry-showcase");
           }
         })
         .catch((error) => {

@@ -1,5 +1,6 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
 import axios from "axios";
-import _ from "lodash";
+import _ from "lodash"; // Assuming lodash is installed for debouncing
 
 export default {
   namespaced: true,
@@ -59,8 +60,8 @@ export default {
       console.log("Incrementing sync errors");
       state.syncErrors++;
     },
-    SET_POST_LOGIN_REDIRECT(state, path) {
-      state.postLoginRedirect = path;
+    SET_POST_LOGIN_REDIRECT(state, redirectPath) {
+      state.postLoginRedirect = redirectPath;
     },
   },
   actions: {

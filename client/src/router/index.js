@@ -1,4 +1,4 @@
-// Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js
 
 import Vue from "vue";
 import VueRouter from "vue-router";
@@ -73,6 +73,8 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isLoggedIn) {
+      // Save the intended path to Vuex store
+      store.commit("cart/SET_POST_LOGIN_REDIRECT", to.fullPath);
       store.dispatch("triggerAuthModal");
       next(false); // halt the navigation
     } else {
@@ -89,5 +91,3 @@ router.beforeEach((to, from, next) => {
 });
 
 export default router;
-
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js
