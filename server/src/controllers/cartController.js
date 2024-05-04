@@ -16,8 +16,8 @@ exports.getCart = async (req, res) => {
 
 exports.addItemToCart = async (req, res) => {
   const { productId, quantity } = req.body;
-  const { sessionToken, userId } = req;
-  const query = userId ? { user: userId } : { sessionToken: sessionToken };
+  const sessionToken = req.sessionID; // Use session ID as the token
+  const query = { sessionToken };
 
   try {
     let cart = await Cart.findOne(query);
@@ -34,7 +34,6 @@ exports.addItemToCart = async (req, res) => {
       }
     } else {
       cart = new Cart({
-        user: userId || null,
         sessionToken: sessionToken || null,
         items: [{ product: productId, quantity }],
       });
@@ -45,6 +44,7 @@ exports.addItemToCart = async (req, res) => {
     const updatedCart = await Cart.findOne(query).populate("items.product");
     res.status(200).send(updatedCart);
   } catch (error) {
+    console.error("Error adding/updating item in cart:", error);
     res.status(500).send({
       message: "Failed to add/update item in cart",
       error: error.message,
