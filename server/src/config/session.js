@@ -1,11 +1,11 @@
-
+const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
 const createSessionConfig = () => {
   const config = {
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true, // Allow creating sessions even if empty
+    saveUninitialized: true, // To ensure carts are created for unauthenticated users
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
       collectionName: "sessions",
