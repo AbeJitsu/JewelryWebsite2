@@ -1,5 +1,6 @@
 const Cart = require("../models/CartModel");
 
+// Retrieve cart based on session token or user ID
 exports.getCart = async (req, res) => {
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
@@ -8,14 +9,26 @@ exports.getCart = async (req, res) => {
     if (!cart) return res.status(404).send({ message: "Cart not found" });
     res.status(200).send(cart);
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Failed to retrieve cart", error: error.message });
+    res.status(500).send({
+      message: "Failed to retrieve cart",
+      error: error.message,
+    });
   }
 };
 
+// Add or update an item in the cart
 exports.addItemToCart = async (req, res) => {
   const { productId, quantity } = req.body;
+
+  // Logging received data
+  console.log("Received request data:", req.body);
+
+  if (!productId || !quantity) {
+    return res.status(400).send({
+      message: "Invalid request: 'productId' and 'quantity' are required.",
+    });
+  }
+
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
 
@@ -35,7 +48,7 @@ exports.addItemToCart = async (req, res) => {
     } else {
       cart = new Cart({
         user: userId || null,
-        sessionToken: sessionToken || req.sessionID,
+        sessionToken: sessionToken || null,
         items: [{ product: productId, quantity }],
       });
     }
@@ -45,6 +58,7 @@ exports.addItemToCart = async (req, res) => {
     const updatedCart = await Cart.findOne(query).populate("items.product");
     res.status(200).send(updatedCart);
   } catch (error) {
+    console.error("Error adding/updating item in cart:", error);
     res.status(500).send({
       message: "Failed to add/update item in cart",
       error: error.message,
@@ -52,8 +66,13 @@ exports.addItemToCart = async (req, res) => {
   }
 };
 
+// Update the quantity of an item in the cart
 exports.updateItemQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
+
+  // Logging received data
+  console.log("Received request data:", req.body);
+
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
 
@@ -80,8 +99,13 @@ exports.updateItemQuantity = async (req, res) => {
   }
 };
 
+// Remove an item from the cart
 exports.removeItemFromCart = async (req, res) => {
   const { productId } = req.body;
+
+  // Logging received data
+  console.log("Received request data:", req.body);
+
   const { sessionToken, userId } = req;
   const query = userId ? { user: userId } : { sessionToken: sessionToken };
 

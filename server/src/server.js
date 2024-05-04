@@ -46,9 +46,11 @@ app.use((req, res, next) => {
   if (req.session && req.session.userId) {
     req.userId = req.session.userId;
     console.log("Middleware: User ID set:", req.userId);
-  } else {
-    req.sessionToken = req.sessionID;
+  } else if (req.cookies && req.cookies.sessionToken) {
+    req.sessionToken = req.cookies.sessionToken;
     console.log("Middleware: Session Token set:", req.sessionToken);
+  } else {
+    console.log("Middleware: No session or token found");
   }
   next();
 });
