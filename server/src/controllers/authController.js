@@ -1,4 +1,4 @@
-// src/controllers/authController.js
+
 
 const User = require("../models/userModel");
 const validator = require("validator");
