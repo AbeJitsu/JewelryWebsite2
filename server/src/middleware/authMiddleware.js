@@ -1,4 +1,4 @@
-// src/middleware/authMiddleware.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/middleware/authMiddleware.js
 
 const User = require("../models/userModel");
 
