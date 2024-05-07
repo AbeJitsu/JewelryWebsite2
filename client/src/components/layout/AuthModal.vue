@@ -6,6 +6,8 @@
     <b-modal v-model="showModal" @hide="resetForm" id="auth-modal">
       <template #modal-title>{{ isLogin ? "Login" : "Register" }}</template>
 
+      <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
+
       <!-- Login Form -->
       <b-form v-if="isLogin" @submit.prevent="loginUser">
         <!-- Email Input -->
@@ -113,6 +115,7 @@ export default {
         password: "",
         passwordConfirmation: "",
       },
+      errorMessage: "",
     };
   },
   methods: {
@@ -126,17 +129,22 @@ export default {
       this.login(this.loginForm)
         .then(() => {
           this.$bvModal.hide("auth-modal");
-          // Retrieve the redirect path from Vuex
+          // Clear any previous error message
+          this.errorMessage = "";
+
           const redirectPath = this.$store.state.cart.postLoginRedirect;
           if (redirectPath) {
             this.$router.push(redirectPath);
-            this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null); // Clear the redirect path
+            this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
           } else {
             this.$router.push("/jewelry-showcase");
           }
         })
         .catch((error) => {
           console.error("Login error:", error);
+          // Set the error message to be displayed
+          this.errorMessage =
+            error.response?.data?.error || "Login failed. Please try again.";
         });
     },
 
@@ -144,12 +152,15 @@ export default {
       if (
         this.registerForm.password !== this.registerForm.passwordConfirmation
       ) {
-        alert("Passwords do not match.");
+        this.errorMessage = "Passwords do not match.";
         return;
       }
+
       this.register(this.registerForm)
         .then(() => {
           this.$bvModal.hide("auth-modal");
+          // Clear any previous error message
+          this.errorMessage = "";
           this.resetForm();
           if (this.$router.currentRoute.path !== "/jewelry-showcase") {
             this.$router.push("/jewelry-showcase");
@@ -157,6 +168,10 @@ export default {
         })
         .catch((error) => {
           console.error("Registration error:", error);
+          // Set the error message to be displayed
+          this.errorMessage =
+            error.response?.data?.error ||
+            "Registration failed. Please try again.";
         });
     },
 
