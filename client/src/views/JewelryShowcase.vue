@@ -35,7 +35,7 @@ export default {
       try {
         const offset = this.products.length;
         const response = await axios.get(
-          `${process.env.VUE_APP_API_URL}/api/products?offset=${offset}&limit=12`
+          `${process.env.CLIENT_VUE_APP_API_URL}/api/products?offset=${offset}&limit=12`
         );
         this.products = this.products.concat(response.data);
       } catch (error) {

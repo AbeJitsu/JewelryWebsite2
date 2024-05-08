@@ -1,0 +1,31 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
+      env:
+        SESSION_SECRET: ${{ secrets.SERVER_SESSION_SECRET }}
+        NODE_ENV: ${{ secrets.SERVER_NODE_ENV }}
+        MONGODB_URI: ${{ secrets.SERVER_MONGODB_URI }}
+        PORT: ${{ secrets.SERVER_PORT }}
+        CORS_ORIGIN: ${{ secrets.SERVER_CORS_ORIGIN }}
