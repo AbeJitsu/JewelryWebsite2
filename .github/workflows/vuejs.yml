@@ -2,9 +2,9 @@ name: Vue.js CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -15,13 +15,13 @@ jobs:
         node-version: [14.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run build
-      env:
-        VUE_APP_API_URL: ${{ secrets.CLIENT_VUE_APP_API_URL }}
-        BASE_URL: ${{ secrets.CLIENT_BASE_URL }}
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm ci
+      - run: npm run build
+        env:
+          VUE_APP_API_URL: ${{ secrets.CLIENT_VUE_APP_API_URL }}
+          BASE_URL: ${{ secrets.VUE_APP_CLIENT_BASE_URL }}

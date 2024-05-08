@@ -1,5 +1,5 @@
 <script>
-import FormInput from "@/components/form/FormInput.vue";
+import FormInput from "@/components/common/FormInput.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -124,5 +124,5 @@ export default {
 </template>
 
 <style scoped>
-@import "@/assets/sharedStyles.css";
+@import "@/assets/styles/sharedStyles.css";
 </style>

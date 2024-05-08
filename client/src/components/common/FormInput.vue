@@ -1,4 +1,4 @@
-<!-- >Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/form/FormInput.vue -->
+<!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/components/common/FormInput.vue -->
 <template>
   <b-form-group
     :label="label"

@@ -27,14 +27,15 @@ import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./assets/custom.scss"; // Custom overrides - currently not used
+import "./assets/styles/custom.scss"; // Custom overrides - currently not used
 
 // Local imports
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import TheHeader from "@/components/layout/TheHeader.vue";
-import TheFooter from "@/components/layout/TheFooter.vue";
+import TheHeader from "@/components/common/TheHeader.vue";
+
+import TheFooter from "@/components/common/TheFooter.vue";
 
 // Axios configuration
 axios.defaults.baseURL = process.env.CLIENT_VUE_APP_API_URL;

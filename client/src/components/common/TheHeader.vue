@@ -1,3 +1,4 @@
+<!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/components/common/TheHeader.vue -->
 <template>
   <div>
     <b-navbar
@@ -70,7 +71,7 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import AuthModal from "@/components/layout/AuthModal.vue";
+import AuthModal from "@/components/auth/AuthModal.vue";
 
 export default {
   components: {
