@@ -2,6 +2,8 @@
 
 // Main server file, sets up Express app, middleware, and routes
 
+require("module-alias/register");
+
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
@@ -47,10 +49,15 @@ const sessionConfig = {
 };
 
 // Import custom middleware and routes
-const cartMiddleware = require("./middleware/cartMiddleware");
+const cartMiddleware = require("./api/middleware/cartMiddleware");
+console.log("cartMiddleware", cartMiddleware);
+
 const connectDB = require("./config/db");
-const routes = require("./routes/index");
-const errorHandlingMiddleware = require("./middleware/errorHandling");
+
+const routes = require("./api/routes/index");
+
+const errorHandlingMiddleware = require("./api/middleware/errorHandling");
+console.log("errorHandlingMiddleware", errorHandlingMiddleware);
 
 connectDB();
 const app = express();

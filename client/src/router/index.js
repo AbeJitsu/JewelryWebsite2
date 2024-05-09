@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js
+// /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/router/index.js
 
 import Vue from "vue";
 import VueRouter from "vue-router";
