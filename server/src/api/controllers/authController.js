@@ -4,7 +4,6 @@ require("module-alias/register");
 
 const validator = require("validator");
 const authService = require("@/services/authService");
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/services/authService.js
 const userService = require("@/services/userService");
 const Cart = require("@/api/models/CartModel");
 
@@ -69,4 +68,17 @@ exports.login = async (req, res) => {
     console.error("Error during login:", error);
     res.status(500).json({ error: "An internal error occurred during login" });
   }
+};
+
+exports.logout = async (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res
+        .status(500)
+        .json({ error: "Failed to log out, please try again" });
+    }
+    res.clearCookie("connect.sid"); // Assuming 'connect.sid' is your session cookie name
+    res.status(200).json({ message: "Logged out successfully" });
+  });
 };

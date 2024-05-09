@@ -1,13 +1,8 @@
-// server/src/server.js
-
 // Main server file, sets up Express app, middleware, and routes
-
 require("module-alias/register");
-
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
-
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -15,6 +10,9 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const winston = require("winston");
+const connectDB = require("./config/db");
+const routes = require("./api/routes/index");
+const { errorHandler } = require("./api/middleware/errorHandling");
 
 // Configure Winston logger
 const logger = winston.createLogger({
@@ -48,17 +46,6 @@ const sessionConfig = {
   },
 };
 
-// Import custom middleware and routes
-const cartMiddleware = require("./api/middleware/cartMiddleware");
-console.log("cartMiddleware", cartMiddleware);
-
-const connectDB = require("./config/db");
-
-const routes = require("./api/routes/index");
-
-const errorHandlingMiddleware = require("./api/middleware/errorHandling");
-console.log("errorHandlingMiddleware", errorHandlingMiddleware);
-
 connectDB();
 const app = express();
 app.set("trust proxy", 1);
@@ -80,7 +67,6 @@ app.use(
   morgan("dev", { stream: { write: (message) => logger.info(message) } })
 );
 app.use(session(sessionConfig));
-app.use(cartMiddleware);
 
 // Middleware to ensure session reloads
 app.use(async (req, res, next) => {
@@ -101,7 +87,7 @@ app.use(async (req, res, next) => {
 
 // Setup routes
 app.use("/api", routes);
-app.use(errorHandlingMiddleware);
+app.use(errorHandler);
 
 const port = process.env.SERVER_PORT || 3000;
 if (require.main === module) {
