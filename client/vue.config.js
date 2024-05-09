@@ -14,7 +14,7 @@ module.exports = {
     resolve: {
       // Define aliases for directories
       alias: {
-        "@": path.resolve(__dirname, "src"),
+        "@": path.resolve(__dirname, "src/"),
       },
     },
   },
