@@ -44,7 +44,9 @@
     "supertest": "^6.3.4"
   },
   "_moduleAliases": {
-    "@": "./src"
+    "@": "./src",
+    "@/services": "./src/services",
+    "@/api": "./src/api"
   }
 }
 

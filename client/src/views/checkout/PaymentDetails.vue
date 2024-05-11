@@ -1,3 +1,5 @@
+<!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/views/checkout/PaymentDetails.vue -->
+
 <template>
   <div>
     <h2 class="section-title">Payment Details</h2>

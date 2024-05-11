@@ -21,4 +21,4 @@ module.exports = {
   },
 };
 
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/vue.config.js
+// /Users/abiezerreyes/Documents/JewelryWebsite2/client/vue.config.js

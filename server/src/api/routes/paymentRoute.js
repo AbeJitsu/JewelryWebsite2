@@ -1,6 +1,8 @@
+// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/routes/paymentRoute.js
+
 const express = require("express");
-const router = express.Router();
 const { handlePayment } = require("../controllers/paymentController");
+const router = express.Router();
 
 router.post("/", handlePayment);
 

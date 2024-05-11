@@ -97,3 +97,5 @@ if (require.main === module) {
 }
 
 module.exports = app;
+
+// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/server.js
