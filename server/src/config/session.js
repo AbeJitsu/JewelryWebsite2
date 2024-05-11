@@ -5,17 +5,17 @@ const MongoStore = require("connect-mongo");
 
 const createSessionConfig = () => {
   const config = {
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SERVER_SESSION_SECRET,
     resave: false,
     saveUninitialized: false, // To ensure carts are created for unauthenticated users
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
+      mongoUrl: process.env.SERVER_MONGODB_URI,
       collectionName: "sessions",
       ttl: 24 * 60 * 60,
       autoRemove: "native",
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production", // False if not in production
+      secure: process.env.SERVER_NODE_ENV === "production", // False if not in production
       httpOnly: true,
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 1 day

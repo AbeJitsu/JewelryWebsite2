@@ -37,8 +37,10 @@ import TheHeader from "@/components/common/TheHeader.vue";
 
 import TheFooter from "@/components/common/TheFooter.vue";
 
+console.log("API URL:", process.env.VUE_APP_API_URL);
+
 // Axios configuration
-axios.defaults.baseURL = process.env.CLIENT_VUE_APP_API_URL;
+axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 // Font Awesome icons
 library.add(

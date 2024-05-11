@@ -1,8 +1,8 @@
 // Main server file, sets up Express app, middleware, and routes
+require("dotenv").config();
 require("module-alias/register");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
-require("dotenv").config();
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -27,12 +27,20 @@ const logger = winston.createLogger({
 
 // CORS options setup
 const corsOptions = {
-  origin:
-    process.env.SERVER_NODE_ENV === "production"
-      ? "https://yourproductiondomain.com"
-      : ["http://localhost:8080", "http://localhost:3000"],
+  origin: (origin, callback) => {
+    console.log("Origin of request " + origin);
+    if (
+      !origin ||
+      ["http://localhost:8080", "http://localhost:3000"].indexOf(origin) !== -1
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 };
+
 
 // Session configuration
 const sessionConfig = {

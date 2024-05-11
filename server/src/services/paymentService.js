@@ -5,7 +5,7 @@ const crypto = require("crypto");
 
 const squareClient = new Client({
   environment:
-    process.env.NODE_ENV === "production"
+    process.env.SERVER_NODE_ENV === "production"
       ? Environment.Production
       : Environment.Sandbox,
   accessToken: process.env.SQUARE_ACCESS_TOKEN,

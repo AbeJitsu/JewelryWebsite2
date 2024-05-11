@@ -23,5 +23,5 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          VUE_APP_API_URL: ${{ secrets.CLIENT_VUE_APP_API_URL }}
+          VUE_APP_API_URL: ${{ secrets.VUE_APP_API_URL }}
           BASE_URL: ${{ secrets.VUE_APP_CLIENT_BASE_URL }}

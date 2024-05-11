@@ -41,7 +41,7 @@ export default {
     async fetchProducts({ commit }, { offset = 0, limit = 12 } = {}) {
       try {
         const response = await axios.get(
-          `${process.env.CLIENT_VUE_APP_API_URL}/api/products?offset=${offset}&limit=${limit}`
+          `${process.env.VUE_APP_API_URL}/api/products?offset=${offset}&limit=${limit}`
         );
         commit("SET_PRODUCTS", response.data);
       } catch (error) {
