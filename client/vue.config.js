@@ -1,4 +1,5 @@
 // /Users/abiezerreyes/Documents/JewelryWebsite2/client/vue.config.js
+
 const path = require("path");
 
 module.exports = {

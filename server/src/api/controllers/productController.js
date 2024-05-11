@@ -1,4 +1,5 @@
-// productController.js
+// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/controllers/productController.js
+
 const Product = require("../models/ProductModel");
 const csvParser = require("csv-parser");
 const fs = require("fs");
