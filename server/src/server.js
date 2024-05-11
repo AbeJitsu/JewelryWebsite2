@@ -2,7 +2,6 @@
 require("dotenv").config();
 require("module-alias/register");
 const express = require("express");
-const rateLimit = require("express-rate-limit");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -14,7 +13,7 @@ const connectDB = require("./config/db");
 const routes = require("./api/routes/index");
 const { errorHandler } = require("./api/middleware/errorHandling");
 
-// Configure Winston logger
+// Configure Winston logger for better error tracking
 const logger = winston.createLogger({
   level: "info",
   format: winston.format.json(),
@@ -25,29 +24,31 @@ const logger = winston.createLogger({
   ],
 });
 
-// CORS options setup
+// CORS configuration for handling requests from different origins
 const corsOptions = {
   origin: (origin, callback) => {
-    console.log("Origin of request " + origin);
+    console.log("Origin of request: " + origin); // This will log the origin of each request
     if (
       !origin ||
-      ["http://localhost:8080", "http://localhost:3000"].indexOf(origin) !== -1
+      ["http://localhost:8080", "http://localhost:3000"].includes(origin)
     ) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error("Not allowed by CORS"), false);
     }
   },
   credentials: true,
 };
 
 
-// Session configuration
+// Session configuration using MongoDB for session storage
 const sessionConfig = {
   secret: process.env.SERVER_SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({ mongoUrl: process.env.SERVER_MONGODB_URI }),
+  saveUninitialized: false, // Updated to prevent empty sessions
+  store: MongoStore.create({
+    mongoUrl: process.env.SERVER_MONGODB_URI,
+  }),
   cookie: {
     secure: process.env.SERVER_NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24, // 24 hours
@@ -58,52 +59,20 @@ connectDB();
 const app = express();
 app.set("trust proxy", 1);
 
-// Apply middleware
 app.use(cors(corsOptions));
 app.use(helmet());
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100,
-    message:
-      "Too many requests from this IP, please try again after 15 minutes",
-  })
-);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(
-  morgan("dev", { stream: { write: (message) => logger.info(message) } })
-);
+app.use(morgan("dev"));
 app.use(session(sessionConfig));
+app.use(errorHandler); // Error handling middleware
 
-// Middleware to ensure session reloads
-app.use(async (req, res, next) => {
-  await req.session.reload((err) => {
-    if (err) {
-      logger.error("Error reloading session:", err);
-      return next(err);
-    }
-    if (req.session && req.session.userId) {
-      req.userId = req.session.userId;
-      logger.info("Middleware: User ID set:", req.userId);
-    } else {
-      logger.info("Middleware: No session or token found");
-    }
-    next();
-  });
-});
-
-// Setup routes
 app.use("/api", routes);
-app.use(errorHandler);
 
 const port = process.env.SERVER_PORT || 3000;
-if (require.main === module) {
-  app.listen(port, () => {
-    logger.info(`Server listening on port ${port}`);
-  });
-}
+app.listen(port, () => {
+  logger.info(`Server listening on port ${port}`);
+  console.log(`Server listening on port ${port}`);
+});
 
 module.exports = app;
-
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/server.js

@@ -1,3 +1,5 @@
+// /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/store/modules/product.js
+
 import axios from "axios";
 
 export default {
@@ -41,7 +43,7 @@ export default {
     async fetchProducts({ commit }, { offset = 0, limit = 12 } = {}) {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_API_URL}/api/products?offset=${offset}&limit=${limit}`
+          `${process.env.VUE_APP_API_URL}/products?offset=${offset}&limit=${limit}`
         );
         commit("SET_PRODUCTS", response.data);
       } catch (error) {
@@ -98,5 +100,3 @@ export default {
       ),
   },
 };
-
-// Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/product.js
