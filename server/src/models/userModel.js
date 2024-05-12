@@ -1,5 +1,5 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/models/userModel.js
 
-// Importing necessary libraries
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs"); // bcryptjs is used for hashing passwords
 
