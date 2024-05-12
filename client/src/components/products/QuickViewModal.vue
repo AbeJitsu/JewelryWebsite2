@@ -1,3 +1,5 @@
+<!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/components/products/QuickViewModal.vue -->
+
 <template>
   <b-modal :show="isModalOpen" @hide="closeModal" centered size="lg">
     <template v-slot:modal-title>

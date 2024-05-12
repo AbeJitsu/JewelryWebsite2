@@ -12,7 +12,7 @@
 <script>
 import TheHeader from "@/components/common/TheHeader.vue";
 import TheFooter from "@/components/common/TheFooter.vue";
-import QuickViewModal from "./components/products/QuickViewModal.vue";
+import QuickViewModal from "@/components/products/QuickViewModal.vue";
 
 export default {
   components: {
