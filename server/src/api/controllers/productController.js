@@ -6,10 +6,13 @@ const {
 } = require("@/utilities/keywordExtraction");
 const { handleCSVUpload } = require("@/utilities/csvUpload");
 
-// Get all products
+// Get all products with pagination
 async function getProducts(req, res) {
   try {
-    const products = await Product.find({});
+    const { offset = 0, limit = 12 } = req.query;
+    const products = await Product.find({})
+      .skip(parseInt(offset))
+      .limit(parseInt(limit));
     res.json(products);
   } catch (error) {
     res

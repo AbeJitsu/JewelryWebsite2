@@ -1,4 +1,5 @@
 // /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/middleware/errorHandling.js
+
 exports.errorHandler = (err, req, res, next) => {
   console.error(err.stack);
   const statusCode = err.status || 500;
