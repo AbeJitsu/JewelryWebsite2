@@ -1,4 +1,5 @@
 <!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/components/common/TheHeader.vue -->
+
 <template>
   <div>
     <b-navbar
@@ -102,6 +103,9 @@ export default {
     },
     goToCart() {
       this.$router.push({ name: "cart" });
+    },
+    goToAccount() {
+      this.$router.push({ name: "account" });
     },
   },
 };

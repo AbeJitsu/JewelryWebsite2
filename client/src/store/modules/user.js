@@ -1,4 +1,5 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/user.js
+
 import axios from "axios";
 import router from "@/router";
 
@@ -87,15 +88,30 @@ export default {
         console.error("Error fetching user profile:", error);
       }
     },
+
+    async tryAutoLogin({ commit }) {
+      try {
+        const response = await axios.get("/auth/user", {
+          withCredentials: true,
+        });
+        commit("setUser", response.data);
+      } catch (error) {
+        console.error("Auto login error:", error);
+      }
+    },
+
     toggleModal({ commit }) {
       commit("TOGGLE_MODAL");
     },
+
     toggleLogin({ commit }) {
       commit("TOGGLE_LOGIN");
     },
+
     updateLoginForm({ commit }, payload) {
       commit("UPDATE_LOGIN_FORM", payload);
     },
+
     updateRegisterForm({ commit }, payload) {
       commit("UPDATE_REGISTER_FORM", payload);
     },
