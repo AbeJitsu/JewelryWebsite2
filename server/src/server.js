@@ -1,6 +1,6 @@
 // Main server file, sets up Express app, middleware, and routes
-require("dotenv").config();
 require("module-alias/register");
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");

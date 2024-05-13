@@ -5,7 +5,7 @@ require("module-alias/register");
 const validator = require("validator");
 const authService = require("@/services/authService");
 const userService = require("@/services/userService");
-const Cart = require("@/api/models/CartModel");
+const Cart = require("@/api/models/cartModel");
 
 exports.register = async (req, res) => {
   try {

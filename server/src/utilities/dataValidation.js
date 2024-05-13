@@ -1,1 +1,0 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/utilities/dataValidation.js

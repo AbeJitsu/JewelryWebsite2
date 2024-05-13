@@ -1,10 +1,10 @@
 // /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/controllers/productController.js
 
-const Product = require("../models/ProductModel");
+const Product = require("@/api/models/productModel");
 const {
   extractKeywordsFromDescription,
-} = require("../utilities/keywordExtraction");
-const { handleCSVUpload } = require("../utilities/csvUpload");
+} = require("@/utilities/keywordExtraction");
+const { handleCSVUpload } = require("@/utilities/csvUpload");
 
 // Get all products
 async function getProducts(req, res) {
@@ -95,3 +95,4 @@ module.exports = {
   getProductById,
   uploadCSV,
 };
+

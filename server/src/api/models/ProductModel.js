@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/models/productModel.js
+// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/api/models/productModel.js
 
 const mongoose = require("mongoose");
 const moment = require("moment-timezone");

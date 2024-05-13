@@ -1,7 +1,7 @@
 // /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/controllers/cartController.js
 
-const Cart = require("../models/CartModel");
-const Product = require("../models/ProductModel");
+const Cart = require("@/api/models/cartModel");
+const Product = require("@/api/models/productModel");
 
 // Retrieve cart based on session token or user ID
 exports.getCart = async (req, res) => {
