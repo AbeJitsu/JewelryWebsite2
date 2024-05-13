@@ -42,7 +42,7 @@ export default {
     async fetchProducts({ commit }, { offset = 0, limit = 12 } = {}) {
       try {
         const response = await axios.get(
-          `${process.env.VUE_APP_API_URL}/products?offset=${offset}&limit=${limit}`
+          `${process.env.VUE_APP_API_URL}/api/products?offset=${offset}&limit=${limit}`
         );
         commit("SET_PRODUCTS", response.data);
       } catch (error) {
@@ -52,7 +52,9 @@ export default {
     },
     async setSelectedProduct({ commit }, productId) {
       try {
-        const response = await axios.get(`/api/products/${productId}`);
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_URL}/api/products/${productId}`
+        );
         commit("SET_SELECTED_PRODUCT", response.data);
       } catch (error) {
         console.error("Error fetching product:", error);
@@ -66,7 +68,9 @@ export default {
       }
 
       try {
-        const response = await axios.get(`/api/products/${productId}`);
+        const response = await axios.get(
+          `${process.env.VUE_APP_API_URL}/api/products/${productId}`
+        );
         console.log("API response for product:", response.data);
         if (response.data) {
           commit("SET_PRODUCT_DETAILS", response.data);

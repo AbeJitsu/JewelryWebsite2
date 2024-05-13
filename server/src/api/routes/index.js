@@ -17,4 +17,3 @@ router.use("/cart", cartRoutes);
 router.use("/payment", paymentRoute);
 
 module.exports = router;
-

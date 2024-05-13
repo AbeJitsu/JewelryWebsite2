@@ -14,3 +14,4 @@ router.delete("/:id", productController.deleteProduct);
 router.post("/upload-csv", upload.single("file"), productController.uploadCSV);
 
 module.exports = router;
+
