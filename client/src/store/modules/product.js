@@ -22,7 +22,6 @@ export default {
     SET_SELECTED_PRODUCT(state, product) {
       state.selectedProduct = product;
     },
-
     SET_PRODUCT_DETAILS(state, productDetails) {
       console.log("Setting product details:", productDetails);
       const existingProductIndex = state.products.findIndex(
@@ -53,16 +52,12 @@ export default {
     },
     async setSelectedProduct({ commit }, productId) {
       try {
-        // Fetch product details using the productId
         const response = await axios.get(`/api/products/${productId}`);
-        // Commit the product data to the store
         commit("SET_SELECTED_PRODUCT", response.data);
       } catch (error) {
-        // Handle errors gracefully
         console.error("Error fetching product:", error);
       }
     },
-
     async fetchProductById({ commit, state }, productId) {
       console.log("Fetching product by ID:", productId);
       if (state.products.some((product) => product._id === productId)) {

@@ -1,6 +1,5 @@
 // /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/server.js
 
-// Main server file, sets up Express app, middleware, and routes
 require("module-alias/register");
 require("dotenv").config();
 const express = require("express");
@@ -42,12 +41,11 @@ const corsOptions = {
   credentials: true,
 };
 
-
 // Session configuration using MongoDB for session storage
 const sessionConfig = {
   secret: process.env.SERVER_SESSION_SECRET,
   resave: false,
-  saveUninitialized: false, // Updated to prevent empty sessions
+  saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.SERVER_MONGODB_URI,
   }),
@@ -78,5 +76,3 @@ app.listen(port, () => {
 });
 
 module.exports = app;
-
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/server.js
