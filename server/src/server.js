@@ -1,3 +1,5 @@
+// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/server.js
+
 // Main server file, sets up Express app, middleware, and routes
 require("module-alias/register");
 require("dotenv").config();
