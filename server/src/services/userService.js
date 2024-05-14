@@ -20,4 +20,8 @@ module.exports = {
   deleteUser: async (userId) => {
     return await User.findByIdAndDelete(userId);
   },
+
+  getUserByEmail: async (email) => {
+    return await User.findOne({ email });
+  },
 };

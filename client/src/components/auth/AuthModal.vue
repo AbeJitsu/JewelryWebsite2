@@ -125,30 +125,27 @@ export default {
       this.resetForm();
     },
 
-    loginUser() {
-      this.login(this.loginForm)
-        .then(() => {
-          this.$bvModal.hide("auth-modal");
-          // Clear any previous error message
-          this.errorMessage = "";
+    async loginUser() {
+      try {
+        await this.login(this.loginForm);
+        this.$bvModal.hide("auth-modal");
+        this.errorMessage = ""; // Clear any previous error message
 
-          const redirectPath = this.$store.state.cart.postLoginRedirect;
-          if (redirectPath) {
-            this.$router.push(redirectPath);
-            this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
-          } else {
-            this.$router.push("/jewelry-showcase");
-          }
-        })
-        .catch((error) => {
-          console.error("Login error:", error);
-          // Set the error message to be displayed
-          this.errorMessage =
-            error.response?.data?.error || "Login failed. Please try again.";
-        });
+        const redirectPath = this.$store.state.cart.postLoginRedirect;
+        if (redirectPath) {
+          this.$router.push(redirectPath);
+          this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
+        } else {
+          this.$router.push("/jewelry-showcase");
+        }
+      } catch (error) {
+        console.error("Login error:", error);
+        this.errorMessage =
+          error.response?.data?.error || "Login failed. Please try again.";
+      }
     },
 
-    registerUser() {
+    async registerUser() {
       if (
         this.registerForm.password !== this.registerForm.passwordConfirmation
       ) {
@@ -156,23 +153,20 @@ export default {
         return;
       }
 
-      this.register(this.registerForm)
-        .then(() => {
-          this.$bvModal.hide("auth-modal");
-          // Clear any previous error message
-          this.errorMessage = "";
-          this.resetForm();
-          if (this.$router.currentRoute.path !== "/jewelry-showcase") {
-            this.$router.push("/jewelry-showcase");
-          }
-        })
-        .catch((error) => {
-          console.error("Registration error:", error);
-          // Set the error message to be displayed
-          this.errorMessage =
-            error.response?.data?.error ||
-            "Registration failed. Please try again.";
-        });
+      try {
+        await this.register(this.registerForm);
+        this.$bvModal.hide("auth-modal");
+        this.errorMessage = ""; // Clear any previous error message
+        this.resetForm();
+        if (this.$router.currentRoute.path !== "/jewelry-showcase") {
+          this.$router.push("/jewelry-showcase");
+        }
+      } catch (error) {
+        console.error("Registration error:", error);
+        this.errorMessage =
+          error.response?.data?.error ||
+          "Registration failed. Please try again.";
+      }
     },
 
     resetForm() {
@@ -183,6 +177,7 @@ export default {
         password: "",
         passwordConfirmation: "",
       };
+      this.errorMessage = ""; // Clear any previous error message
     },
   },
 };

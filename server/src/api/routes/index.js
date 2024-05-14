@@ -9,7 +9,7 @@ const paymentRoute = require("./paymentRoute");
 
 const router = express.Router();
 
-// Use the routes
+// Use the routes with /api prefix
 router.use("/products", productRoutes);
 router.use("/users", userRoutes);
 router.use("/auth", authRoutes);
@@ -17,4 +17,5 @@ router.use("/cart", cartRoutes);
 router.use("/payment", paymentRoute);
 
 module.exports = router;
+
 

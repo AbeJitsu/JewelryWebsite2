@@ -80,17 +80,16 @@ export default {
   },
   computed: {
     ...mapGetters("user", ["isLoggedIn", "user"]),
+    ...mapGetters("cart", ["itemCount"]),
     userPreferredName() {
       return this.user && this.user.preferredFirstName
         ? this.user.preferredFirstName
         : "";
     },
-    ...mapGetters("cart", ["itemCount"]),
   },
   methods: {
-    ...mapActions("user", {
-      logout: "logout",
-    }),
+    ...mapActions("user", ["logout", "fetchUserProfile"]),
+    ...mapActions("cart", ["fetchCart"]),
     showAuthModal() {
       this.$bvModal.show("auth-modal");
     },
@@ -106,6 +105,20 @@ export default {
     },
     goToAccount() {
       this.$router.push({ name: "account" });
+    },
+  },
+  created() {
+    if (this.isLoggedIn) {
+      this.fetchUserProfile();
+      this.fetchCart();
+    }
+  },
+  watch: {
+    isLoggedIn(newValue) {
+      if (newValue) {
+        this.fetchUserProfile();
+        this.fetchCart();
+      }
     },
   },
 };

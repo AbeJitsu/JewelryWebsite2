@@ -23,4 +23,40 @@ cartSchema.pre("save", function (next) {
   next();
 });
 
+// Static method to convert guest cart to user cart
+cartSchema.statics.convertGuestCartToUserCart = async function (
+  sessionToken,
+  userId
+) {
+  const guestCart = await this.findOne({ sessionToken: sessionToken });
+  if (!guestCart) {
+    throw new Error("Guest cart not found");
+  }
+
+  let userCart = await this.findOne({ user: userId });
+
+  if (userCart) {
+    // Merge items
+    guestCart.items.forEach((guestItem) => {
+      const itemIndex = userCart.items.findIndex(
+        (userItem) =>
+          userItem.product.toString() === guestItem.product.toString()
+      );
+      if (itemIndex !== -1) {
+        userCart.items[itemIndex].quantity += guestItem.quantity;
+      } else {
+        userCart.items.push(guestItem);
+      }
+    });
+    await guestCart.remove();
+  } else {
+    // Assign user to guest cart
+    guestCart.user = userId;
+    guestCart.sessionToken = null;
+    userCart = guestCart;
+  }
+
+  return await userCart.save();
+};
+
 module.exports = mongoose.model("Cart", cartSchema);

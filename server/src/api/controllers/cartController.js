@@ -3,10 +3,12 @@
 const Cart = require("@/api/models/cartModel");
 const Product = require("@/api/models/productModel");
 
-// Retrieve cart based on session token or user ID
+// Retrieve cart based on session ID or user ID
 exports.getCart = async (req, res) => {
-  const { sessionToken, userId } = req;
-  const query = userId ? { user: userId } : { sessionToken: sessionToken };
+  const sessionId = req.sessionID;
+  const userId = req.session.userId;
+  const query = userId ? { user: userId } : { sessionToken: sessionId };
+
   try {
     const cart = await Cart.findOne(query).populate("items.product");
     if (!cart) return res.status(404).send({ message: "Cart not found" });
@@ -29,8 +31,9 @@ exports.addItemToCart = async (req, res) => {
     });
   }
 
-  const { sessionToken, userId } = req;
-  const query = userId ? { user: userId } : { sessionToken: sessionToken };
+  const sessionId = req.sessionID;
+  const userId = req.session.userId;
+  const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
     const product = await Product.findById(productId);
@@ -55,7 +58,7 @@ exports.addItemToCart = async (req, res) => {
     } else {
       cart = new Cart({
         user: userId || null,
-        sessionToken: sessionToken || null,
+        sessionToken: sessionId || null,
         items: [{ product: productId, quantity }],
       });
     }
@@ -76,8 +79,9 @@ exports.addItemToCart = async (req, res) => {
 exports.updateItemQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
 
-  const { sessionToken, userId } = req;
-  const query = userId ? { user: userId } : { sessionToken: sessionToken };
+  const sessionId = req.sessionID;
+  const userId = req.session.userId;
+  const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
     const cart = await Cart.findOne(query);
@@ -106,8 +110,9 @@ exports.updateItemQuantity = async (req, res) => {
 exports.removeItemFromCart = async (req, res) => {
   const { productId } = req.body;
 
-  const { sessionToken, userId } = req;
-  const query = userId ? { user: userId } : { sessionToken: sessionToken };
+  const sessionId = req.sessionID;
+  const userId = req.session.userId;
+  const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
     const cart = await Cart.findOneAndUpdate(
@@ -121,5 +126,37 @@ exports.removeItemFromCart = async (req, res) => {
       message: "Failed to remove item from cart",
       error: error.message,
     });
+  }
+};
+
+// Merge guest cart into user cart upon login
+exports.mergeGuestCartToUserCart = async (sessionId, userId) => {
+  try {
+    const guestCart = await Cart.findOne({ sessionToken: sessionId });
+    if (!guestCart) return;
+
+    let userCart = await Cart.findOne({ user: userId });
+    if (!userCart) {
+      guestCart.user = userId;
+      guestCart.sessionToken = null;
+      await guestCart.save();
+    } else {
+      guestCart.items.forEach((guestItem) => {
+        const itemIndex = userCart.items.findIndex(
+          (item) => item.product.toString() === guestItem.product.toString()
+        );
+
+        if (itemIndex !== -1) {
+          userCart.items[itemIndex].quantity += guestItem.quantity;
+        } else {
+          userCart.items.push(guestItem);
+        }
+      });
+
+      await userCart.save();
+      await Cart.deleteOne({ sessionToken: sessionId });
+    }
+  } catch (error) {
+    console.error("Error merging guest cart into user cart:", error);
   }
 };

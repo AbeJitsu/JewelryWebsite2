@@ -1,33 +1,36 @@
 // /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/controllers/authController.js
 
-require("module-alias/register");
-
-const validator = require("validator");
 const authService = require("@/services/authService");
 const userService = require("@/services/userService");
 const Cart = require("@/api/models/cartModel");
 
+// User registration
 exports.register = async (req, res) => {
   try {
     const { email, password, preferredFirstName } = req.body;
+
     if (!validator.isEmail(email)) {
       return res.status(400).json({ error: "Invalid email format" });
     }
+
     if (password.length < 8) {
       return res
         .status(400)
         .json({ error: "Password must be at least 8 characters long" });
     }
-    const existingUser = await userService.getUserById(email);
+
+    const existingUser = await userService.getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ error: "User already exists" });
     }
+
     const hashedPassword = await authService.hashPassword(password);
     const newUser = await userService.createUser({
       email,
       password: hashedPassword,
       preferredFirstName,
     });
+
     res
       .status(201)
       .json({ message: "User registered successfully. Please log in." });
@@ -37,27 +40,30 @@ exports.register = async (req, res) => {
   }
 };
 
+// User login
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await userService.getUserById(email);
+    const user = await userService.getUserByEmail(email); // Ensure fetching user by email
+
     if (!user || !(await authService.verifyPassword(password, user.password))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+
     req.session.regenerate(async (err) => {
       if (err) {
         console.error("Session regeneration error:", err);
         return res.status(500).json({ error: "Session regeneration failed" });
       }
+
       req.session.userId = user._id;
-      const guestCartExists = await Cart.findOne({
-        sessionToken: req.sessionID,
-      });
-      if (guestCartExists) {
-        await Cart.convertGuestCartToUserCart(req.sessionID, user._id).catch(
-          (error) => console.error("Cart merge error:", error)
-        );
+
+      try {
+        await mergeGuestCartToUserCart(req.sessionID, user._id);
+      } catch (mergeError) {
+        console.error("Cart merge error:", mergeError);
       }
+
       res.json({
         message: "Login successful",
         userId: user._id,
@@ -70,6 +76,7 @@ exports.login = async (req, res) => {
   }
 };
 
+// User logout
 exports.logout = async (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -78,7 +85,35 @@ exports.logout = async (req, res) => {
         .status(500)
         .json({ error: "Failed to log out, please try again" });
     }
-    res.clearCookie("connect.sid"); // Assuming 'connect.sid' is your session cookie name
+    res.clearCookie("connect.sid"); // Ensure clearing the session cookie
     res.status(200).json({ message: "Logged out successfully" });
   });
+};
+
+// Helper function to merge guest cart into user cart
+const mergeGuestCartToUserCart = async (sessionId, userId) => {
+  const guestCart = await Cart.findOne({ sessionToken: sessionId });
+  if (!guestCart) return;
+
+  let userCart = await Cart.findOne({ user: userId });
+  if (!userCart) {
+    guestCart.user = userId;
+    guestCart.sessionToken = null;
+    await guestCart.save();
+  } else {
+    guestCart.items.forEach((guestItem) => {
+      const itemIndex = userCart.items.findIndex(
+        (item) => item.product.toString() === guestItem.product.toString()
+      );
+
+      if (itemIndex !== -1) {
+        userCart.items[itemIndex].quantity += guestItem.quantity;
+      } else {
+        userCart.items.push(guestItem);
+      }
+    });
+
+    await userCart.save();
+    await Cart.deleteOne({ sessionToken: sessionId });
+  }
 };

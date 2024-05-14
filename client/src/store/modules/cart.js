@@ -1,4 +1,5 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
+
 import axios from "axios";
 import _ from "lodash"; // Assuming lodash is installed for debouncing
 
@@ -67,7 +68,7 @@ export default {
   actions: {
     async fetchCart({ commit }) {
       try {
-        const response = await axios.get("/cart");
+        const response = await axios.get("/api/cart");
         commit("SET_CART_ITEMS", response.data.items || []);
       } catch (error) {
         console.error("Failed to fetch cart:", error);
@@ -88,24 +89,23 @@ export default {
       commit("UPDATE_QUANTITY", { productId, quantity });
       dispatch("syncCart");
     },
-    syncCart: _.debounce(({ state, commit }) => {
+    syncCart: _.debounce(async ({ state, commit }) => {
       if (state.syncInProgress) return; // Prevent overlapping sync attempts
       console.log("Action: syncCart - Syncing cart to server", state.cartItems);
 
       commit("SYNC_IN_PROGRESS", true);
-      axios
-        .post("/cart/add", { cartItems: state.cartItems })
-        .then((response) => {
-          console.log("Sync successful:", response.data);
-          commit("RESET_SYNC_ERRORS");
-        })
-        .catch((error) => {
-          console.error("Failed to sync cart with server:", error);
-          commit("INCREMENT_SYNC_ERRORS");
-        })
-        .finally(() => {
-          commit("SYNC_IN_PROGRESS", false);
+      try {
+        const response = await axios.post("/api/cart/sync", {
+          cartItems: state.cartItems,
         });
+        console.log("Sync successful:", response.data);
+        commit("RESET_SYNC_ERRORS");
+      } catch (error) {
+        console.error("Failed to sync cart with server:", error);
+        commit("INCREMENT_SYNC_ERRORS");
+      } finally {
+        commit("SYNC_IN_PROGRESS", false);
+      }
     }, 2000), // Debouncing the sync operation to every 2 seconds
   },
   getters: {

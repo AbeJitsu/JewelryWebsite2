@@ -35,7 +35,7 @@ export default {
     async register({ commit }, userData) {
       commit("auth_request");
       try {
-        const response = await axios.post("/auth/register", userData, {
+        const response = await axios.post("/api/auth/register", userData, {
           withCredentials: true,
         });
         commit("auth_success", response.data);
@@ -49,7 +49,7 @@ export default {
     async login({ commit }, userCredentials) {
       commit("auth_request");
       try {
-        const response = await axios.post("/auth/login", userCredentials, {
+        const response = await axios.post("/api/auth/login", userCredentials, {
           withCredentials: true,
         });
         if (response.data.message === "Login successful") {
@@ -67,7 +67,7 @@ export default {
 
     async logout({ commit }) {
       try {
-        await axios.post("/auth/logout", {}, { withCredentials: true });
+        await axios.post("/api/auth/logout", {}, { withCredentials: true });
         commit("logout");
 
         if (router.currentRoute.meta.requiresAuth) {
@@ -80,7 +80,7 @@ export default {
 
     async fetchUserProfile({ commit }) {
       try {
-        const response = await axios.get("/auth/user", {
+        const response = await axios.get("/api/auth/user", {
           withCredentials: true,
         });
         commit("setUser", response.data);
@@ -91,7 +91,7 @@ export default {
 
     async tryAutoLogin({ commit }) {
       try {
-        const response = await axios.get("/auth/user", {
+        const response = await axios.get("/api/auth/user", {
           withCredentials: true,
         });
         commit("setUser", response.data);
@@ -103,15 +103,12 @@ export default {
     toggleModal({ commit }) {
       commit("TOGGLE_MODAL");
     },
-
     toggleLogin({ commit }) {
       commit("TOGGLE_LOGIN");
     },
-
     updateLoginForm({ commit }, payload) {
       commit("UPDATE_LOGIN_FORM", payload);
     },
-
     updateRegisterForm({ commit }, payload) {
       commit("UPDATE_REGISTER_FORM", payload);
     },

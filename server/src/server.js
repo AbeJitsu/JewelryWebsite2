@@ -8,9 +8,9 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const winston = require("winston");
 const connectDB = require("./config/db");
+const createSessionConfig = require("./config/session");
 const routes = require("./api/routes/index");
 const { errorHandler } = require("./api/middleware/errorHandling");
 
@@ -41,20 +41,6 @@ const corsOptions = {
   credentials: true,
 };
 
-// Session configuration using MongoDB for session storage
-const sessionConfig = {
-  secret: process.env.SERVER_SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.SERVER_MONGODB_URI,
-  }),
-  cookie: {
-    secure: process.env.SERVER_NODE_ENV === "production",
-    maxAge: 1000 * 60 * 60 * 24, // 24 hours
-  },
-};
-
 connectDB();
 const app = express();
 app.set("trust proxy", 1);
@@ -64,10 +50,10 @@ app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
-app.use(session(sessionConfig));
+app.use(session(createSessionConfig())); // Use the session configuration
 app.use(errorHandler); // Error handling middleware
 
-app.use("/api", routes);
+app.use("/api", routes); // Ensure routes are prefixed with /api
 
 const port = process.env.SERVER_PORT || 3000;
 app.listen(port, () => {
