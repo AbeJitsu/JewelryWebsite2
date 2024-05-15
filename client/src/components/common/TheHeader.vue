@@ -88,7 +88,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions("user", ["logout", "fetchUserProfile"]),
+    ...mapActions("user", [
+      "logout",
+      "fetchUserProfile",
+      "checkLoginAndFetchUser",
+    ]),
     ...mapActions("cart", ["fetchCart"]),
     showAuthModal() {
       this.$bvModal.show("auth-modal");
@@ -108,10 +112,11 @@ export default {
     },
   },
   created() {
-    if (this.isLoggedIn) {
-      this.fetchUserProfile();
-      this.fetchCart();
-    }
+    this.checkLoginAndFetchUser().then(() => {
+      if (this.isLoggedIn) {
+        this.fetchCart();
+      }
+    });
   },
   watch: {
     isLoggedIn(newValue) {

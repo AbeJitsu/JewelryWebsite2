@@ -1,8 +1,8 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/controllers/userController.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/userController.js
 
 
 const User = require("@/api/models/userModel");
-/Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/models/userModel.js
+
 
 // Method to update user's address information
 exports.updateAddress = async (req, res) => {

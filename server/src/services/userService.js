@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/services/userService.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/services/userService.js
 
 const User = require("@/api/models/userModel");
 

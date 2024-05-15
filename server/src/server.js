@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/server.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js
 
 require("module-alias/register");
 require("dotenv").config();

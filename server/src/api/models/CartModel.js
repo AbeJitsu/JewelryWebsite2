@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/models/cartModel.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/models/CartModel.js
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;

@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/services/authService.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/services/authService.js
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");

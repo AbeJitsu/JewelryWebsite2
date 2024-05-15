@@ -1,4 +1,4 @@
-<!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/components/auth/AuthModal.vue -->
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/auth/AuthModal.vue -->
 
 <template>
   <div>

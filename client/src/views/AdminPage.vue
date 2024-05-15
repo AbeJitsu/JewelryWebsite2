@@ -1,4 +1,5 @@
-<!-- // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/admin/CSVUploader.vue -->
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/AdminPage.vue -->
+
 <template>
   <div v-if="isAdmin">
     <h1>Upload CSV File and Quantities</h1>

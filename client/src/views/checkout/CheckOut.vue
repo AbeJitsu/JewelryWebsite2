@@ -1,3 +1,5 @@
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/CheckOut.vue -->
+
 <template>
   <b-container class="checkout-component">
     <b-row>

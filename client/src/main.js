@@ -1,4 +1,4 @@
-//Users/abiezerreyes/Projects/JewelryWebsite2/client/src/main.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/main.js
 
 // Vue and third-party imports
 import Vue from "vue";

@@ -1,12 +1,14 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/middleware/authMiddleware.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/middleware/authMiddleware.js
 
 const User = require("../models/userModel");
 
 exports.authMiddleware = function (req, res, next) {
   if (req.session && req.session.userId) {
+    console.log(`Authenticated user: ${req.session.userId}`);
     req.userId = req.session.userId;
     next();
   } else {
+    console.log("Unauthorized access attempt");
     res.status(401).json({ message: "Unauthorized access" });
   }
 };

@@ -1,4 +1,5 @@
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/ViewCart.vue -->
+
 <template>
   <b-container class="cart-component">
     <b-row>

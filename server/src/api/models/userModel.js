@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/models/userModel.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/models/userModel.js
 
 // Importing necessary libraries
 const mongoose = require("mongoose");

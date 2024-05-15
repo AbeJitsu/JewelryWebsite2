@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/config/session.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/config/session.js
 
 const session = require("express-session");
 const MongoStore = require("connect-mongo");

@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/routes/index.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/routes/index.js
 
 const express = require("express");
 const productRoutes = require("./productRoutes");

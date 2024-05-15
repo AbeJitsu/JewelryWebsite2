@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/api/routes/userRoutes.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/routes/userRoutes.js
 
 const express = require("express");
 const { asyncHandler } = require("../middleware/errorHandling");

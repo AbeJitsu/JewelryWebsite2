@@ -68,7 +68,9 @@ export default {
   actions: {
     async fetchCart({ commit }) {
       try {
-        const response = await axios.get("/api/cart");
+        const response = await axios.get("/api/cart", {
+          withCredentials: true, // Ensure cookies are sent with the request
+        });
         commit("SET_CART_ITEMS", response.data.items || []);
       } catch (error) {
         console.error("Failed to fetch cart:", error);
@@ -95,9 +97,15 @@ export default {
 
       commit("SYNC_IN_PROGRESS", true);
       try {
-        const response = await axios.post("/api/cart/sync", {
-          cartItems: state.cartItems,
-        });
+        const response = await axios.post(
+          "/api/cart/sync",
+          {
+            cartItems: state.cartItems,
+          },
+          {
+            withCredentials: true, // Ensure cookies are sent with the request
+          }
+        );
         console.log("Sync successful:", response.data);
         commit("RESET_SYNC_ERRORS");
       } catch (error) {
