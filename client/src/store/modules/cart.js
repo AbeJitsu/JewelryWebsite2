@@ -1,12 +1,14 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
 
 import axios from "axios";
-import _ from "lodash"; // Assuming lodash is installed for debouncing
+import _ from "lodash";
+
+const CART_STORAGE_KEY = "cartItems";
 
 export default {
   namespaced: true,
   state: {
-    cartItems: [],
+    cartItems: JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [],
     checkedOutOrders: [],
     shippingInfo: {
       baseShippingFee: 5,
@@ -21,7 +23,6 @@ export default {
   },
   mutations: {
     ADD_TO_CART(state, { product, quantity }) {
-      console.log(`Adding product to cart:`, { product, quantity });
       const productIndex = state.cartItems.findIndex(
         (item) => item.product._id === product._id
       );
@@ -30,35 +31,34 @@ export default {
       } else {
         state.cartItems.push({ product, quantity });
       }
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
     },
     REMOVE_FROM_CART(state, productId) {
-      console.log(`Removing product from cart: ${productId}`);
       state.cartItems = state.cartItems.filter(
         (item) => item.product._id !== productId
       );
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
     },
     UPDATE_QUANTITY(state, { productId, quantity }) {
-      console.log(`Updating quantity for product ${productId} to ${quantity}`);
       const item = state.cartItems.find(
         (item) => item.product._id === productId
       );
       if (item) {
         item.quantity = quantity;
       }
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
     },
     SET_CART_ITEMS(state, items) {
       state.cartItems = items;
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
     },
     SYNC_IN_PROGRESS(state, inProgress) {
-      console.log(`Sync in progress: ${inProgress}`);
       state.syncInProgress = inProgress;
     },
     RESET_SYNC_ERRORS(state) {
-      console.log("Resetting sync errors");
       state.syncErrors = 0;
     },
     INCREMENT_SYNC_ERRORS(state) {
-      console.log("Incrementing sync errors");
       state.syncErrors++;
     },
     SET_POST_LOGIN_REDIRECT(state, redirectPath) {
@@ -68,53 +68,39 @@ export default {
   actions: {
     async fetchCart({ commit }) {
       try {
-        const response = await axios.get("/api/cart", {
-          withCredentials: true, // Ensure cookies are sent with the request
-        });
+        const response = await axios.get("/api/cart");
         commit("SET_CART_ITEMS", response.data.items || []);
       } catch (error) {
         console.error("Failed to fetch cart:", error);
       }
     },
     addToCart({ commit, dispatch }, { product, quantity }) {
-      console.log("Action: addToCart");
       commit("ADD_TO_CART", { product, quantity });
       dispatch("syncCart");
     },
     removeFromCart({ commit, dispatch }, productId) {
-      console.log("Action: removeFromCart");
       commit("REMOVE_FROM_CART", productId);
       dispatch("syncCart");
     },
     updateQuantity({ commit, dispatch }, { productId, quantity }) {
-      console.log("Action: updateQuantity");
       commit("UPDATE_QUANTITY", { productId, quantity });
       dispatch("syncCart");
     },
     syncCart: _.debounce(async ({ state, commit }) => {
-      if (state.syncInProgress) return; // Prevent overlapping sync attempts
-      console.log("Action: syncCart - Syncing cart to server", state.cartItems);
-
+      if (state.syncInProgress) return;
       commit("SYNC_IN_PROGRESS", true);
       try {
-        const response = await axios.post(
-          "/api/cart/sync",
-          {
-            cartItems: state.cartItems,
-          },
-          {
-            withCredentials: true, // Ensure cookies are sent with the request
-          }
-        );
-        console.log("Sync successful:", response.data);
+        await axios.post("/api/cart/sync", {
+          cartItems: state.cartItems,
+        });
         commit("RESET_SYNC_ERRORS");
       } catch (error) {
-        console.error("Failed to sync cart with server:", error);
         commit("INCREMENT_SYNC_ERRORS");
+        console.error("Failed to sync cart with server:", error);
       } finally {
         commit("SYNC_IN_PROGRESS", false);
       }
-    }, 2000), // Debouncing the sync operation to every 2 seconds
+    }, 2000),
   },
   getters: {
     isProductInCart: (state) => (productId) => {

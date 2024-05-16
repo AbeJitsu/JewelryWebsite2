@@ -3,6 +3,7 @@
 const authService = require("@/services/authService");
 const userService = require("@/services/userService");
 const Cart = require("@/api/models/cartModel");
+const validator = require("validator");
 
 // User registration
 exports.register = async (req, res) => {
@@ -44,7 +45,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await userService.getUserByEmail(email); // Ensure fetching user by email
+    const user = await userService.getUserByEmail(email);
 
     if (!user || !(await authService.verifyPassword(password, user.password))) {
       return res.status(401).json({ error: "Invalid credentials" });
@@ -85,7 +86,7 @@ exports.logout = async (req, res) => {
         .status(500)
         .json({ error: "Failed to log out, please try again" });
     }
-    res.clearCookie("connect.sid"); // Ensure clearing the session cookie
+    res.clearCookie("connect.sid");
     res.status(200).json({ message: "Logged out successfully" });
   });
 };
@@ -113,42 +114,9 @@ exports.getUser = async (req, res) => {
   }
 };
 
-// Helper function to merge guest cart into user cart
-const mergeGuestCartToUserCart = async (sessionId, userId) => {
-  try {
-    const guestCart = await Cart.findOne({ sessionToken: sessionId });
-    if (!guestCart) return;
-
-    let userCart = await Cart.findOne({ user: userId });
-    if (!userCart) {
-      guestCart.user = userId;
-      guestCart.sessionToken = null;
-      await guestCart.save();
-    } else {
-      guestCart.items.forEach((guestItem) => {
-        const itemIndex = userCart.items.findIndex(
-          (item) => item.product.toString() === guestItem.product.toString()
-        );
-
-        if (itemIndex !== -1) {
-          userCart.items[itemIndex].quantity += guestItem.quantity;
-        } else {
-          userCart.items.push(guestItem);
-        }
-      });
-
-      await userCart.save();
-      await Cart.deleteOne({ sessionToken: sessionId });
-    }
-  } catch (error) {
-    console.error("Error merging guest cart into user cart:", error);
-  }
-};
-
 module.exports = {
   register: exports.register,
   login: exports.login,
   logout: exports.logout,
   getUser: exports.getUser,
-  mergeGuestCartToUserCart,
 };
