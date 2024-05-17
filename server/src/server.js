@@ -28,7 +28,6 @@ const logger = winston.createLogger({
 // CORS configuration for handling requests from different origins
 const corsOptions = {
   origin: (origin, callback) => {
-    console.log("Origin of request: " + origin); // This will log the origin of each request
     if (
       !origin ||
       ["http://localhost:8080", "http://localhost:3000"].includes(origin)
@@ -58,7 +57,6 @@ app.use("/api", routes); // Ensure routes are prefixed with /api
 const port = process.env.SERVER_PORT || 3000;
 app.listen(port, () => {
   logger.info(`Server listening on port ${port}`);
-  console.log(`Server listening on port ${port}`);
 });
 
 module.exports = app;

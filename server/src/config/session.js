@@ -4,7 +4,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 
 const createSessionConfig = () => {
-  const config = {
+  return {
     secret: process.env.SERVER_SESSION_SECRET,
     resave: false,
     saveUninitialized: false, // To ensure carts are created for unauthenticated users
@@ -21,8 +21,6 @@ const createSessionConfig = () => {
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
   };
-  console.log("Session Config:", config);
-  return config;
 };
 
 module.exports = createSessionConfig;
