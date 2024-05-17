@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/models/CartModel.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/models/cartModel.js
 
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
@@ -28,7 +28,7 @@ cartSchema.statics.convertGuestCartToUserCart = async function (
   sessionToken,
   userId
 ) {
-  const guestCart = await this.findOne({ sessionToken: sessionToken });
+  const guestCart = await this.findOne({ sessionToken });
   if (!guestCart) {
     throw new Error("Guest cart not found");
   }
