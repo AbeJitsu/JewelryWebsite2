@@ -3,88 +3,45 @@
 <template>
   <b-container class="cart-component">
     <b-row>
-      <b-col>
+      <!-- Cart Items Column -->
+      <b-col md="8">
         <div v-if="enrichedCartItems.length > 0">
           <b-list-group>
-            <b-list-group-item
+            <CartItem
               v-for="(item, index) in enrichedCartItems"
               :key="index"
-              class="item-container"
-            >
-              <!-- Main Image -->
-              <div class="main-image-container">
-                <b-img
-                  :src="item.product.imageSrc[item.product.imageSrc.length - 1]"
-                  alt="Main product image"
-                  class="main-image"
-                  @click="
-                    setMainImage(
-                      item,
-                      item.product.imageSrc[item.product.imageSrc.length - 1]
-                    )
-                  "
-                />
-              </div>
-
-              <!-- Additional Images -->
-              <div class="additional-images">
-                <b-img
-                  v-for="(image, idx) in item.product.imageSrc.slice(0, -1)"
-                  :key="`additional-${idx}`"
-                  :src="image"
-                  alt="Additional product image"
-                  class="additional-image"
-                  @click="setMainImage(item, image)"
-                />
-              </div>
-
-              <!-- Title, Price, and Item Actions -->
-              <div class="title-price-actions">
-                <div class="title-price">
-                  {{ item.product.title }} - Only ${{
-                    item.product.variantPrice
-                  }}
-                </div>
-                <div class="item-actions">
-                  <span class="quantity-label">Quantity:</span>
-                  <b-form-select
-                    v-model="item.quantity"
-                    :options="quantityOptions"
-                    class="quantity-select"
-                    @change="updateQuantity(item.product._id, item.quantity)"
-                  ></b-form-select>
-                </div>
-              </div>
-
-              <!-- Product Info -->
-              <div class="product-info">
-                <p
-                  class="product-description"
-                  v-html="item.product.bodyHtml"
-                ></p>
-              </div>
-            </b-list-group-item>
+              :item="item"
+              :quantityOptions="quantityOptions"
+              @remove-from-cart="removeFromCart"
+              @update-quantity="updateQuantity"
+            />
           </b-list-group>
-          <div class="my-3">Total: ${{ cartTotal }}</div>
-          <div class="my-3">
-            Estimated Shipping: ${{ estimatedShippingFee }}
-          </div>
-          <b-button class="checkout-button" @click="proceedToCheckout"
-            >Checkout</b-button
-          >
-          <b-button class="continue-shopping-button" @click="continueShopping"
-            >Continue Shopping</b-button
-          >
         </div>
         <div v-else>Your cart is empty.</div>
+      </b-col>
+      <!-- Cart Summary Column -->
+      <b-col md="4">
+        <CartSummary
+          :cartTotal="cartTotal"
+          :estimatedShippingFee="estimatedShippingFee"
+          :isLoggedIn="isLoggedIn"
+          @proceed-to-checkout="proceedToCheckout"
+          @continue-shopping="continueShopping"
+        />
       </b-col>
     </b-row>
   </b-container>
 </template>
 
 <script>
-import Vue from "vue";
+import CartItem from "@/components/cart/CartItem.vue";
+import CartSummary from "@/components/cart/CartSummary.vue";
+
 export default {
+  components: {
+    CartItem,
+    CartSummary,
+  },
   data() {
     return {
       quantityOptions: [
@@ -101,7 +58,6 @@ export default {
       ],
     };
   },
-
   computed: {
     enrichedCartItems() {
       return this.cartItems.map((item) => ({
@@ -121,38 +77,31 @@ export default {
       return this.$store.getters["cart/cartItems"];
     },
     estimatedShippingFee() {
-      return this.$store.state.cart.shippingInfo.currentShippingFee;
+      return this.$store.getters["cart/currentShippingFee"];
     },
     isLoggedIn() {
-      return this.$store.getters["user/isLoggedIn"]; // Adjust based on your store's structure
+      return this.$store.getters["user/isLoggedIn"];
     },
   },
-
   methods: {
-    getAdditionalImages(item) {
-      return item.product.imageSrc.filter((image) => image !== item.mainImage);
-    },
-    setMainImage(item, image) {
-      Vue.set(item, "mainImage", image);
-    },
     removeFromCart(productId) {
       this.$store.dispatch("cart/removeFromCart", productId);
     },
-    updateQuantity(productId, quantity) {
-      this.$store.dispatch("cart/updateQuantity", { productId, quantity });
+    updateQuantity({ productId, quantity }) {
+      if (quantity === 0) {
+        this.removeFromCart(productId);
+      } else {
+        this.$store.dispatch("cart/updateQuantity", { productId, quantity });
+      }
     },
     proceedToCheckout() {
       if (!this.isLoggedIn) {
-        // Trigger the mutation to set the post-login redirect destination
         this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", "CheckOut");
-        // Show the login modal since the user is not logged in
         this.$bvModal.show("auth-modal");
       } else {
-        // If the user is already logged in, proceed directly to the checkout page
         this.$router.push({ name: "CheckOut" });
       }
     },
-
     continueShopping() {
       this.$router.push("/jewelry-showcase");
     },
@@ -162,108 +111,6 @@ export default {
 
 <style scoped>
 .cart-component {
-  max-width: 55%;
-  margin-top: 2rem;
-}
-
-.item-container {
-  display: grid;
-  grid-template-columns: 30% 70%;
-  grid-template-rows: auto auto auto;
-  margin-bottom: 20px; /* Adds space between the products */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow around each product container */
-  transition: box-shadow 0.3s; /* Smooth transition for the shadow for a better visual effect */
-  border-radius: 1rem;
-}
-
-.item-container:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhances the shadow when hovering over the product */
-}
-
-.main-image-container {
-  grid-column: 1;
-  grid-row: 1;
-  width: 100%;
-  height: auto;
-  align-self: start;
-  justify-self: start;
-}
-
-.main-image {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
-}
-
-.additional-images {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  display: flex;
-  justify-content: space-around;
-}
-
-.additional-image {
-  width: 15%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-.title-price {
-  grid-column: 1;
-  grid-row: 2;
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 1rem 0;
-}
-
-.item-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 1rem 0;
-}
-
-.quantity-label {
-  margin-right: 0.5rem;
-}
-
-.quantity-select {
-  width: auto;
-}
-
-.product-info {
-  grid-column: 2;
-  grid-row: 1 / 3;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  font-size: 0.9rem;
-}
-
-.product-description {
-  margin-bottom: 1rem;
-}
-
-.checkout-button,
-.continue-shopping-button {
-  margin: 1rem; /* Adds margin above the buttons */
-  margin-right: 1rem; /* Adds some space between the buttons */
-}
-
-/* Apply a vibrant color scheme for buttons */
-.checkout-button {
-  background-color: #4caf50; /* A rich green, good for 'Checkout' implying go forward */
-  color: white; /* White text for better readability */
-}
-
-.continue-shopping-button {
-  background-color: #f76c6c; /* A soft red, inviting users to continue shopping */
-  color: white;
-}
-
-/* Hover effects for buttons */
-.checkout-button:hover,
-.continue-shopping-button:hover {
-  opacity: 0.9; /* Slight opacity change on hover for feedback */
+  margin-top: 1rem;
 }
 </style>

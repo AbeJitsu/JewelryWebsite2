@@ -1,3 +1,5 @@
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/ShippingInformation.vue -->
+
 <script>
 import FormInput from "@/components/common/FormInput.vue";
 import { mapState } from "vuex";

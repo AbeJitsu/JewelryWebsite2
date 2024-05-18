@@ -1,7 +1,9 @@
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/App.vue -->
+
 <template>
   <div id="app">
     <TheHeader />
-    <div class="flex-grow-1">
+    <div class="main-content">
       <router-view />
     </div>
     <TheFooter />
@@ -38,12 +40,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: justify;
-  /* color: #371f2d; */
 }
 
-.flex-grow-1 {
+.main-content {
   flex-grow: 1;
+  display: flex;
+  justify-content: center;
 }
 </style>
-
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/App.vue -->

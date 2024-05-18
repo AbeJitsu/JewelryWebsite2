@@ -1,4 +1,4 @@
-<!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/views/checkout/PaymentDetails.vue -->
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/PaymentDetails.vue -->
 
 <template>
   <div>

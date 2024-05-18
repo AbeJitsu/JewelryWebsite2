@@ -1,3 +1,5 @@
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/BillingInformation.vue -->
+
 <template>
   <div>
     <h2 class="section-title">Billing Information</h2>

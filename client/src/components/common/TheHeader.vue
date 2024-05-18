@@ -1,7 +1,7 @@
-<!-- /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/components/common/TheHeader.vue -->
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/common/TheHeader.vue -->
 
 <template>
-  <div>
+  <div class="header-container">
     <b-navbar
       toggleable="lg"
       type="darker"
@@ -37,12 +37,10 @@
               <b-icon icon="search" class="search-icon"></b-icon>
             </b-button>
           </div>
-
           <div class="user-actions-container d-flex align-items-center">
             <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
               <b-icon icon="key-fill"></b-icon> Shine In
             </b-nav-item>
-
             <b-nav-item v-else @click="performLogout">
               <b-icon icon="box-arrow-right"></b-icon> Welcome,
               {{ userPreferredName }}!
@@ -50,7 +48,6 @@
             <b-nav-item @click="goToAccount">
               <b-icon icon="person-circle"></b-icon> Account & Orders
             </b-nav-item>
-
             <b-nav-item class="cart-icon-container" @click="goToCart">
               <div>
                 <div class="cart-icon-wrapper">
@@ -130,6 +127,12 @@ export default {
 </script>
 
 <style scoped>
+.header-container {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
 .custom-brand-container {
   display: flex;
   align-items: center;

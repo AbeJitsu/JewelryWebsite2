@@ -1,3 +1,5 @@
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/common/TheFooter.vue -->
+
 <template>
   <footer class="footer mt-auto py-4 bg-darker text-white">
     <div class="container">
