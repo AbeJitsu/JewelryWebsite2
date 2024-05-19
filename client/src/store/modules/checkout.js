@@ -27,26 +27,27 @@ export default {
 
   mutations: {
     UPDATE_DETAIL(state, { detailType, field, value }) {
+      console.log("UPDATE_DETAIL mutation:", detailType, field, value);
       if (state[`${detailType}Details`]) {
         state[`${detailType}Details`][field] = value;
       }
     },
     LINK_BILLING_TO_SHIPPING(state, link) {
+      console.log("LINK_BILLING_TO_SHIPPING mutation:", link);
       state.isBillingSameAsShipping = link;
       if (link) {
-        // Copy shipping details to billing details
         state.billingDetails = { ...state.shippingDetails };
-        // Additional field if needed
         state.billingDetails.cardholderName = `${state.shippingDetails.firstName} ${state.shippingDetails.lastName}`;
       }
     },
   },
   actions: {
     updateDetail({ commit }, payload) {
+      console.log("updateDetail action:", payload);
       commit("UPDATE_DETAIL", payload);
     },
     linkBillingToShipping({ commit }, link) {
-      // Removed 'state' since it is not used
+      console.log("linkBillingToShipping action:", link);
       commit("LINK_BILLING_TO_SHIPPING", link);
     },
   },

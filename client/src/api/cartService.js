@@ -2,11 +2,24 @@
 
 import axios from "axios";
 
-export default {
-  fetchCart() {
-    return axios.get("/api/cart");
+const cartService = {
+  async fetchCart() {
+    try {
+      const response = await axios.get("/api/cart");
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch cart:", error);
+      throw error;
+    }
   },
-  syncCart(cartItems) {
-    return axios.post("/api/cart/sync", { cartItems });
+  async syncCart(cartItems) {
+    try {
+      await axios.post("/api/cart/sync", { items: cartItems });
+    } catch (error) {
+      console.error("Failed to sync cart:", error);
+      throw error;
+    }
   },
 };
+
+export default cartService;

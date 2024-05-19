@@ -12,7 +12,7 @@ const ensureCartExists = async (req, res, next) => {
     let cart;
     if (req.session.userId) {
       // Find the cart associated with the logged-in user
-      cart = await cart.findOne({ user: req.session.userId });
+      cart = await Cart.findOne({ user: req.session.userId });
     } else {
       // Find the cart associated with the session ID
       cart = await Cart.findOne({ sessionToken: req.sessionID });
@@ -30,14 +30,11 @@ const ensureCartExists = async (req, res, next) => {
     // Attach the cart to the request object
     req.cart = cart;
 
-    // Add a 10-second delay before moving to the next middleware
-    setTimeout(() => {
-      console.log(`cartMiddleware Session ID (After): ${req.sessionID}`);
-      console.log(
-        `cartMiddleware Session Data (After): ${JSON.stringify(req.session)}`
-      );
-      next();
-    }, 10000); // 10 seconds delay
+    console.log(`cartMiddleware Session ID (After): ${req.sessionID}`);
+    console.log(
+      `cartMiddleware Session Data (After): ${JSON.stringify(req.session)}`
+    );
+    next();
   } catch (error) {
     console.error("Error ensuring cart exists:", error);
     res

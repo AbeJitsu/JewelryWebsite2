@@ -86,6 +86,8 @@
             required
           />
         </template>
+
+        <b-button type="submit" variant="primary">Next</b-button>
       </b-form>
     </div>
   </div>
@@ -93,8 +95,7 @@
 
 <script>
 import FormInput from "@/components/common/FormInput.vue";
-
-import { mapState, mapActions } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   components: {
@@ -130,14 +131,18 @@ export default {
     },
   },
   methods: {
-    ...mapActions("checkout", ["updateDetail", "linkBillingToShipping"]),
     onSubmitBilling() {
-      console.log("Billing information submitted", this.billingDetails);
+      // Update billing details in Vuex and proceed to the next step
+      this.$store.commit("checkout/UPDATE_DETAIL", {
+        detailType: "billing",
+        field: "all",
+        value: this.billingDetails,
+      });
     },
   },
   watch: {
     isBillingSameAsShipping(newValue) {
-      this.linkBillingToShipping(newValue);
+      this.$store.dispatch("checkout/linkBillingToShipping", newValue);
       if (newValue) {
         this.cardholderNameSameAsShipping = true;
       }

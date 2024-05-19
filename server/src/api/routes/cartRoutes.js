@@ -2,16 +2,18 @@
 
 const express = require("express");
 const cartController = require("../controllers/cartController");
-const { authMiddleware } = require("../middleware/authMiddleware");
+const { authMiddleware } = require("../middleware/auth/authMiddleware");
 const router = express.Router();
 
 // Retrieve cart by session token or user ID
-router.get("/", cartController.getCart);
-router.post("/add", cartController.addItemToCart);
-router.post("/update", cartController.updateItemQuantity);
-router.delete("/remove/:productId", cartController.removeItemFromCart);
-router.post("/sync", cartController.syncCart);
+router.get("/", authMiddleware, cartController.getCart);
+router.post("/add", authMiddleware, cartController.addItemToCart);
+router.post("/update", authMiddleware, cartController.updateItemQuantity);
+router.delete(
+  "/remove/:productId",
+  authMiddleware,
+  cartController.removeItemFromCart
+);
+router.post("/sync", authMiddleware, cartController.syncCart);
 
 module.exports = router;
-
-

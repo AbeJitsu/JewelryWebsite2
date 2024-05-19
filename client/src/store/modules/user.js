@@ -33,6 +33,7 @@ export default {
 
   actions: {
     async register({ commit }, userData) {
+      console.log("register action:", userData);
       commit("auth_request");
       try {
         const response = await axios.post("/api/auth/register", userData, {
@@ -47,6 +48,7 @@ export default {
     },
 
     async login({ commit }, userCredentials) {
+      console.log("login action:", userCredentials);
       commit("auth_request");
       try {
         const response = await axios.post("/api/auth/login", userCredentials, {
@@ -66,6 +68,7 @@ export default {
     },
 
     async logout({ commit }) {
+      console.log("logout action");
       try {
         await axios.post("/api/auth/logout", {}, { withCredentials: true });
         commit("logout");
@@ -79,6 +82,7 @@ export default {
     },
 
     async fetchUserProfile({ commit }) {
+      console.log("fetchUserProfile action");
       try {
         const response = await axios.get("/api/auth/user", {
           withCredentials: true,
@@ -90,6 +94,7 @@ export default {
     },
 
     async tryAutoLogin({ commit }) {
+      console.log("tryAutoLogin action");
       try {
         const response = await axios.get("/api/auth/user", {
           withCredentials: true,
@@ -100,50 +105,74 @@ export default {
       }
     },
 
+    async checkLoginAndFetchUser({ dispatch }) {
+      console.log("checkLoginAndFetchUser action");
+      try {
+        const response = await dispatch("tryAutoLogin");
+        return response;
+      } catch (error) {
+        console.error("Auto login and fetch user error:", error);
+        throw error;
+      }
+    },
+
     toggleModal({ commit }) {
+      console.log("toggleModal action");
       commit("TOGGLE_MODAL");
     },
     toggleLogin({ commit }) {
+      console.log("toggleLogin action");
       commit("TOGGLE_LOGIN");
     },
     updateLoginForm({ commit }, payload) {
+      console.log("updateLoginForm action:", payload);
       commit("UPDATE_LOGIN_FORM", payload);
     },
     updateRegisterForm({ commit }, payload) {
+      console.log("updateRegisterForm action:", payload);
       commit("UPDATE_REGISTER_FORM", payload);
     },
   },
 
   mutations: {
     auth_request(state) {
+      console.log("auth_request mutation");
       state.status = "loading";
     },
     auth_success(state, userData) {
+      console.log("auth_success mutation:", userData);
       state.status = "success";
       state.user = userData;
     },
     auth_error(state) {
+      console.log("auth_error mutation");
       state.status = "error";
       state.user = null;
     },
     logout(state) {
+      console.log("logout mutation");
       state.status = "";
       state.user = null;
     },
     setUser(state, user) {
+      console.log("setUser mutation:", user);
       state.user = user;
       state.preferredFirstName = user.preferredFirstName;
     },
     TOGGLE_MODAL(state) {
+      console.log("TOGGLE_MODAL mutation");
       state.showModal = !state.showModal;
     },
     TOGGLE_LOGIN(state) {
+      console.log("TOGGLE_LOGIN mutation");
       state.isLogin = !state.isLogin;
     },
     UPDATE_LOGIN_FORM(state, { field, value }) {
+      console.log("UPDATE_LOGIN_FORM mutation:", field, value);
       state.loginForm[field] = value;
     },
     UPDATE_REGISTER_FORM(state, { field, value }) {
+      console.log("UPDATE_REGISTER_FORM mutation:", field, value);
       state.registerForm[field] = value;
     },
   },

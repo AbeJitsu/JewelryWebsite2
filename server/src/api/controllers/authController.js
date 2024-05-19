@@ -58,6 +58,8 @@ exports.login = async (req, res) => {
       }
 
       req.session.userId = user._id;
+      console.log("Session ID after login:", req.sessionID);
+      console.log("User ID after login:", req.session.userId);
 
       try {
         await Cart.convertGuestCartToUserCart(req.sessionID, user._id);
@@ -69,6 +71,7 @@ exports.login = async (req, res) => {
         message: "Login successful",
         userId: user._id,
         preferredFirstName: user.preferredFirstName,
+        token: authService.generateToken(user),
       });
     });
   } catch (error) {

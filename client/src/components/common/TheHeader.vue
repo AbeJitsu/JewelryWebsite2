@@ -109,11 +109,15 @@ export default {
     },
   },
   created() {
-    this.checkLoginAndFetchUser().then(() => {
-      if (this.isLoggedIn) {
-        this.fetchCart();
-      }
-    });
+    this.checkLoginAndFetchUser()
+      .then(() => {
+        if (this.isLoggedIn) {
+          this.fetchCart();
+        }
+      })
+      .catch((error) => {
+        console.error("Error during auto login and fetch user:", error);
+      });
   },
   watch: {
     isLoggedIn(newValue) {

@@ -127,3 +127,7 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+@import "@/assets/styles/sharedStyles.css";
+</style>

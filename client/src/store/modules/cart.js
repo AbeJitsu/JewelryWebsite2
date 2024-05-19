@@ -22,6 +22,7 @@ const state = {
 
 const mutations = {
   ADD_TO_CART(state, { product, quantity }) {
+    console.log("ADD_TO_CART mutation:", product, quantity);
     const productIndex = state.cartItems.findIndex(
       (item) => item.product._id === product._id
     );
@@ -33,12 +34,14 @@ const mutations = {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
   },
   REMOVE_FROM_CART(state, productId) {
+    console.log("REMOVE_FROM_CART mutation:", productId);
     state.cartItems = state.cartItems.filter(
       (item) => item.product._id !== productId
     );
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
   },
   UPDATE_QUANTITY(state, { productId, quantity }) {
+    console.log("UPDATE_QUANTITY mutation:", productId, quantity);
     const item = state.cartItems.find((item) => item.product._id === productId);
     if (item) {
       item.quantity = quantity;
@@ -46,46 +49,56 @@ const mutations = {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
   },
   SET_CART_ITEMS(state, items) {
+    console.log("SET_CART_ITEMS mutation:", items);
     state.cartItems = items;
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(state.cartItems));
   },
   SYNC_IN_PROGRESS(state, inProgress) {
+    console.log("SYNC_IN_PROGRESS mutation:", inProgress);
     state.syncInProgress = inProgress;
   },
   RESET_SYNC_ERRORS(state) {
+    console.log("RESET_SYNC_ERRORS mutation");
     state.syncErrors = 0;
   },
   INCREMENT_SYNC_ERRORS(state) {
+    console.log("INCREMENT_SYNC_ERRORS mutation");
     state.syncErrors++;
   },
   SET_POST_LOGIN_REDIRECT(state, redirectPath) {
+    console.log("SET_POST_LOGIN_REDIRECT mutation:", redirectPath);
     state.postLoginRedirect = redirectPath;
   },
 };
 
 const actions = {
   async fetchCart({ commit }) {
+    console.log("fetchCart action");
     try {
       const response = await cartService.fetchCart();
-      commit("SET_CART_ITEMS", response.data.items || []);
+      commit("SET_CART_ITEMS", response.items || []);
     } catch (error) {
       console.error("Failed to fetch cart:", error);
     }
   },
   addToCart({ commit, dispatch }, { product, quantity }) {
+    console.log("addToCart action:", product, quantity);
     commit("ADD_TO_CART", { product, quantity });
     dispatch("syncCart");
   },
   removeFromCart({ commit, dispatch }, productId) {
+    console.log("removeFromCart action:", productId);
     commit("REMOVE_FROM_CART", productId);
     dispatch("syncCart");
   },
   updateQuantity({ commit, dispatch }, { productId, quantity }) {
+    console.log("updateQuantity action:", productId, quantity);
     commit("UPDATE_QUANTITY", { productId, quantity });
     dispatch("syncCart");
   },
   syncCart: _.debounce(async ({ state, commit }) => {
     if (state.syncInProgress) return;
+    console.log("syncCart action");
     commit("SYNC_IN_PROGRESS", true);
     try {
       await cartService.syncCart(state.cartItems);
@@ -120,11 +133,6 @@ const getters = {
     const productsTotal = getters.cartTotal;
     const { baseShippingFee, extendedShippingFee, freeShippingThreshold } =
       state.shippingInfo;
-
-    console.log(`productsTotal: ${productsTotal}`);
-    console.log(`freeShippingThreshold: ${freeShippingThreshold}`);
-    console.log(`extendedShippingFee: ${extendedShippingFee}`);
-    console.log(`baseShippingFee: ${baseShippingFee}`);
 
     if (productsTotal >= freeShippingThreshold) {
       return 0;

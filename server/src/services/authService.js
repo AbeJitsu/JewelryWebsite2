@@ -10,6 +10,15 @@ module.exports = {
     });
   },
 
+  verifyToken: (token) => {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) return reject(err);
+        resolve(decoded);
+      });
+    });
+  },
+
   verifyPassword: async (password, hashedPassword) => {
     return bcrypt.compare(password, hashedPassword);
   },

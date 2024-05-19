@@ -28,14 +28,21 @@ cartSchema.statics.convertGuestCartToUserCart = async function (
   sessionToken,
   userId
 ) {
+  console.log(
+    `Attempting to convert guest cart to user cart for sessionToken: ${sessionToken}, userId: ${userId}`
+  );
+
   const guestCart = await this.findOne({ sessionToken });
   if (!guestCart) {
-    throw new Error("Guest cart not found");
+    console.log("Guest cart not found for sessionToken:", sessionToken);
+    return; // Instead of throwing an error, just return
   }
 
-  let userCart = await this.findOne({ user: userId });
+  console.log("Guest cart found:", guestCart);
 
+  let userCart = await this.findOne({ user: userId });
   if (userCart) {
+    console.log("User cart found, merging items...");
     // Merge items
     guestCart.items.forEach((guestItem) => {
       const itemIndex = userCart.items.findIndex(
@@ -50,13 +57,16 @@ cartSchema.statics.convertGuestCartToUserCart = async function (
     });
     await guestCart.remove();
   } else {
+    console.log("User cart not found, assigning user to guest cart...");
     // Assign user to guest cart
     guestCart.user = userId;
     guestCart.sessionToken = null;
     userCart = guestCart;
   }
 
-  return await userCart.save();
+  const savedCart = await userCart.save();
+  console.log("Cart after conversion:", savedCart);
+  return savedCart;
 };
 
 module.exports = mongoose.model("Cart", cartSchema);

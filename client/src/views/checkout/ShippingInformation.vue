@@ -1,40 +1,5 @@
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/ShippingInformation.vue -->
 
-<script>
-import FormInput from "@/components/common/FormInput.vue";
-import { mapState } from "vuex";
-
-export default {
-  components: {
-    FormInput,
-  },
-  computed: {
-    ...mapState("checkout", ["shippingDetails"]),
-  },
-  methods: {
-    onSubmitShipping() {
-      console.log(
-        "Form submitted with current shipping details:",
-        this.shippingDetails
-      );
-      // Additional logic for form submission can be added here
-    },
-  },
-  created() {
-    // Example: Initialize data from localStorage if it exists
-    const localShippingDetails = localStorage.getItem("shippingDetails");
-    if (localShippingDetails) {
-      const details = JSON.parse(localShippingDetails);
-      this.$store.commit("checkout/UPDATE_DETAIL", {
-        detailType: "shipping",
-        field: "all",
-        value: details,
-      });
-    }
-  },
-};
-</script>
-
 <template>
   <div>
     <h2 class="section-title">Shipping Information</h2>
@@ -120,10 +85,36 @@ export default {
           fieldKey="zip"
           required
         />
+
+        <b-button type="submit" variant="primary">Next</b-button>
       </b-form>
     </div>
   </div>
 </template>
+
+<script>
+import FormInput from "@/components/common/FormInput.vue";
+import { mapState } from "vuex";
+
+export default {
+  components: {
+    FormInput,
+  },
+  computed: {
+    ...mapState("checkout", ["shippingDetails"]),
+  },
+  methods: {
+    onSubmitShipping() {
+      // Update shipping details in Vuex and proceed to the next step
+      this.$store.commit("checkout/UPDATE_DETAIL", {
+        detailType: "shipping",
+        field: "all",
+        value: this.shippingDetails,
+      });
+    },
+  },
+};
+</script>
 
 <style scoped>
 @import "@/assets/styles/sharedStyles.css";

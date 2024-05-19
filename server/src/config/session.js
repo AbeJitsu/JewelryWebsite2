@@ -7,11 +7,11 @@ const createSessionConfig = () => {
   return {
     secret: process.env.SERVER_SESSION_SECRET,
     resave: false,
-    saveUninitialized: false, // To ensure carts are created for unauthenticated users
+    saveUninitialized: false, // Ensures carts are created for unauthenticated users
     store: MongoStore.create({
       mongoUrl: process.env.SERVER_MONGODB_URI,
       collectionName: "sessions",
-      ttl: 24 * 60 * 60,
+      ttl: 24 * 60 * 60, // 1 day
       autoRemove: "native",
     }),
     cookie: {

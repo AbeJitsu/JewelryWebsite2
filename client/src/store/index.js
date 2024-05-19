@@ -1,3 +1,4 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/index.js
 import Vue from "vue";
 import Vuex from "vuex";
 
@@ -11,7 +12,6 @@ import checkout from "./modules/checkout";
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  // Registering modules with namespaced: true
   modules: {
     product: {
       ...productModule,
@@ -35,5 +35,3 @@ export default new Vuex.Store({
     },
   },
 });
-
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/index.js

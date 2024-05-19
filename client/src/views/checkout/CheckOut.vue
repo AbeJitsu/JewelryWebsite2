@@ -19,7 +19,6 @@
 
 <script>
 import AuthModal from "@/components/auth/AuthModal.vue";
-
 import ShippingInformation from "./ShippingInformation.vue";
 import BillingInformation from "./BillingInformation.vue";
 import PaymentDetails from "./PaymentDetails.vue";
@@ -59,5 +58,3 @@ export default {
   margin-top: 2rem;
 }
 </style>
-
-<!-- Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/CheckOut.vue -->
