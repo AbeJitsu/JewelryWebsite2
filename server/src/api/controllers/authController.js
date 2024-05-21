@@ -1,8 +1,8 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/authController.js
 
-const authService = require("@/services/authService");
-const userService = require("@/services/userService");
-const Cart = require("@/api/models/cartModel");
+const authService = require("../../services/authService");
+const userService = require("../../services/userService");
+const Cart = require("../models/cartModel");
 const validator = require("validator");
 
 // User registration
@@ -51,28 +51,22 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    req.session.regenerate(async (err) => {
-      if (err) {
-        console.error("Session regeneration error:", err);
-        return res.status(500).json({ error: "Session regeneration failed" });
-      }
+    // Preserving the session ID across the login
+    req.session.userId = user._id; // Link the user ID to the existing session
 
-      req.session.userId = user._id;
-      console.log("Session ID after login:", req.sessionID);
-      console.log("User ID after login:", req.session.userId);
+    // Convert guest cart to user cart if possible
+    const guestCartConversion = await Cart.convertGuestCartToUserCart(
+      req.sessionID,
+      user._id
+    );
 
-      try {
-        await Cart.convertGuestCartToUserCart(req.sessionID, user._id);
-      } catch (mergeError) {
-        console.error("Cart merge error:", mergeError);
-      }
-
-      res.json({
-        message: "Login successful",
-        userId: user._id,
-        preferredFirstName: user.preferredFirstName,
-        token: authService.generateToken(user),
-      });
+    const token = authService.generateToken(user);
+    res.json({
+      message: "Login successful",
+      userId: user._id,
+      preferredFirstName: user.preferredFirstName,
+      token,
+      guestCartConverted: !!guestCartConversion,
     });
   } catch (error) {
     console.error("Error during login:", error);
@@ -110,6 +104,7 @@ exports.getUser = async (req, res) => {
       email: user.email,
       preferredFirstName: user.preferredFirstName,
       role: user.role,
+      token: req.token,
     });
   } catch (error) {
     console.error("Error fetching user profile:", error);

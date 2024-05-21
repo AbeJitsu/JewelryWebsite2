@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 
 const authService = {
   login: async (email, password) => {
-    const response = await axiosInstance.post("/auth/login", {
+    const response = await axiosInstance.post("/api/auth/login", {
       email,
       password,
     });
@@ -17,7 +17,7 @@ const authService = {
     return response.data;
   },
   logout: async () => {
-    await axiosInstance.post("/auth/logout");
+    await axiosInstance.post("/api/auth/logout");
     localStorage.removeItem("token");
     delete axiosInstance.defaults.headers.common["Authorization"];
   },
@@ -27,9 +27,14 @@ const authService = {
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${token}`;
-      const response = await axiosInstance.get("/auth/user");
+      const response = await axiosInstance.get("/api/auth/user");
       return response.data;
     }
+    return null;
+  },
+  register: async (userData) => {
+    const response = await axiosInstance.post("/api/auth/register", userData);
+    return response.data;
   },
 };
 

@@ -2,7 +2,7 @@
 
 // Vue and third-party imports
 import Vue from "vue";
-import axios from "axios";
+import axiosInstance from "@/api/axiosInstance";
 import BootstrapVue, { IconsPlugin } from "bootstrap-vue";
 import PortalVue from "portal-vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -34,13 +34,18 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import TheHeader from "@/components/common/TheHeader.vue";
-
 import TheFooter from "@/components/common/TheFooter.vue";
 
 console.log("API URL:", process.env.VUE_APP_API_URL);
 
 // Axios configuration
-axios.defaults.baseURL = process.env.VUE_APP_API_URL;
+axiosInstance.defaults.baseURL = process.env.VUE_APP_API_URL;
+
+// Check and set token from localStorage
+const token = localStorage.getItem("token");
+if (token) {
+  axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+}
 
 // Font Awesome icons
 library.add(
