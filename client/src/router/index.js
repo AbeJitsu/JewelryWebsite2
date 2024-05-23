@@ -1,11 +1,15 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/router/index.js
 
 import Vue from "vue";
-import VueRouter from "vue-router";
+import Router from "vue-router";
+import CheckOut from "@/views/checkout/CheckOut.vue";
+import ShippingInformation from "@/views/checkout/ShippingInformation.vue";
+import BillingInformation from "@/views/checkout/BillingInformation.vue";
+import PaymentDetails from "@/views/checkout/PaymentDetails.vue";
 import JewelryShowcase from "../views/JewelryShowcase.vue";
 import store from "@/store";
 
-Vue.use(VueRouter);
+Vue.use(Router);
 
 const routes = [
   {
@@ -55,13 +59,31 @@ const routes = [
   },
   {
     path: "/checkout",
-    name: "CheckOut",
-    component: () => import("../views/checkout/CheckOut.vue"),
+    component: CheckOut,
     meta: { requiresCart: true, requiresAuth: true },
+    children: [
+      {
+        path: "shipping",
+        name: "checkout-shipping",
+        component: ShippingInformation,
+      },
+      {
+        path: "billing",
+        name: "checkout-billing",
+        component: BillingInformation,
+        meta: { requiresShipping: true },
+      },
+      {
+        path: "payment",
+        name: "checkout-payment",
+        component: PaymentDetails,
+        meta: { requiresBilling: true },
+      },
+    ],
   },
 ];
 
-const router = new VueRouter({
+const router = new Router({
   mode: "history",
   base: process.env.VUE_APP_CLIENT_BASE_URL,
   routes,
@@ -70,6 +92,8 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const isLoggedIn = store.getters["user/isLoggedIn"];
   const hasItemsInCart = store.getters["cart/cartItems"].length > 0;
+  const shippingCompleted = store.getters["checkout/shippingCompleted"];
+  const billingCompleted = store.getters["checkout/billingCompleted"];
 
   // Authentication and Cart Checks
   if (to.matched.some((record) => record.meta.requiresAuth && !isLoggedIn)) {
@@ -80,6 +104,18 @@ router.beforeEach((to, from, next) => {
     to.matched.some((record) => record.meta.requiresCart && !hasItemsInCart)
   ) {
     next({ name: "jewelry-showcase" });
+  } else if (
+    to.matched.some(
+      (record) => record.meta.requiresShipping && !shippingCompleted
+    )
+  ) {
+    next({ name: "checkout-shipping" });
+  } else if (
+    to.matched.some(
+      (record) => record.meta.requiresBilling && !billingCompleted
+    )
+  ) {
+    next({ name: "checkout-billing" });
   } else {
     next(); // proceed
   }

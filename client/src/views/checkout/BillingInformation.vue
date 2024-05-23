@@ -1,17 +1,17 @@
-<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/BillingInformation.vue -->
-
 <template>
   <div>
     <h2 class="section-title">Billing Information</h2>
     <div class="info-container">
       <b-form @submit.prevent="onSubmitBilling">
-        <!-- Checkbox for Cardholder Name Same as Shipping Name -->
         <div class="checkbox-align">
-          <b-form-checkbox v-model="cardholderNameSameAsShipping">
+          <b-form-checkbox
+            v-model="cardholderNameSameAsShipping"
+            @change="toggleCardholderName"
+          >
             Card name same as above
           </b-form-checkbox>
         </div>
-        <!-- Name on Card Input -->
+
         <FormInput
           label="Name on Card"
           label-for="cardholder-name"
@@ -19,18 +19,16 @@
           detailType="billing"
           fieldKey="cardholderName"
           v-model="computedCardholderName"
-          required
           :disabled="cardholderNameSameAsShipping"
+          required
         />
 
-        <!-- Billing Address Same as Shipping Address Checkbox -->
         <div class="checkbox-align">
           <b-form-checkbox v-model="isBillingSameAsShipping">
             Same as shipping address
           </b-form-checkbox>
         </div>
 
-        <!-- Conditional Rendering for Billing Address Inputs -->
         <template v-if="!isBillingSameAsShipping">
           <FormInput
             label="Address"
@@ -41,14 +39,12 @@
             required
           />
 
-          <!-- Checkbox for Apt, Unit, or Suite Information in Billing -->
           <div class="checkbox-align">
             <b-form-checkbox id="has-apartment" v-model="hasBillingApartment">
               Includes an Apt or Suite
             </b-form-checkbox>
           </div>
 
-          <!-- Apt, Unit, or Suite Input in Billing -->
           <div v-if="hasBillingApartment">
             <FormInput
               label="Apt or Suite"
@@ -120,19 +116,31 @@ export default {
           : this.billingDetails.cardholderName || "";
       },
       set(value) {
-        if (!this.cardholderNameSameAsShipping) {
-          this.$store.dispatch("checkout/updateDetail", {
-            detailType: "billing",
-            fieldKey: "cardholderName",
-            value,
-          });
-        }
+        this.$store.dispatch("checkout/updateDetail", {
+          detailType: "billing",
+          fieldKey: "cardholderName",
+          value,
+        });
       },
     },
   },
   methods: {
+    toggleCardholderName() {
+      if (this.cardholderNameSameAsShipping) {
+        this.$store.dispatch("checkout/updateDetail", {
+          detailType: "billing",
+          fieldKey: "cardholderName",
+          value: `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`,
+        });
+      } else {
+        this.$store.dispatch("checkout/updateDetail", {
+          detailType: "billing",
+          fieldKey: "cardholderName",
+          value: "",
+        });
+      }
+    },
     onSubmitBilling() {
-      // Update billing details in Vuex and proceed to the next step
       this.$store.commit("checkout/UPDATE_DETAIL", {
         detailType: "billing",
         field: "all",

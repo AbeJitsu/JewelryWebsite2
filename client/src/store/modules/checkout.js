@@ -23,6 +23,7 @@ export default {
     },
     paymentDetails: {},
     isBillingSameAsShipping: false,
+    showModal: false,
   },
 
   mutations: {
@@ -40,6 +41,9 @@ export default {
         state.billingDetails.cardholderName = `${state.shippingDetails.firstName} ${state.shippingDetails.lastName}`;
       }
     },
+    SET_SHOW_MODAL(state, value) {
+      state.showModal = value;
+    },
   },
   actions: {
     updateDetail({ commit }, payload) {
@@ -49,6 +53,9 @@ export default {
     linkBillingToShipping({ commit }, link) {
       console.log("linkBillingToShipping action:", link);
       commit("LINK_BILLING_TO_SHIPPING", link);
+    },
+    handleAuthSuccess({ commit }) {
+      commit("SET_SHOW_MODAL", false);
     },
   },
   getters: {
