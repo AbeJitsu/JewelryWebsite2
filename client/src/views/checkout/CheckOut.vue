@@ -1,12 +1,12 @@
 <template>
-  <b-container class="checkout-component">
-    <router-view />
-  </b-container>
+  <div class="checkout-component">
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
 export default {
-  name: "CheckOut",
+  name: "CheckoutComponent",
 };
 </script>
 

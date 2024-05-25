@@ -3,24 +3,26 @@
   <b-form-group
     :label="label"
     :label-for="labelFor"
-    :label-cols-sm="labelColsSm"
+    :label-cols-sm="labelColSm"
     :label-align-sm="labelAlignSm"
     :label-size="labelSize"
+    :content-cols-sm="contentColSm"
+    :label-class="labelClass"
+    :description="description"
+    :feedback="feedback"
+    :state="state"
   >
-    <b-col :sm="contentColsSm">
-      <b-form-input
-        :id="labelFor"
-        v-model="inputValue"
-        :placeholder="placeholder"
-        :required="required"
-        :type="type"
-        :state="validState"
-        :disabled="disabled"
-      ></b-form-input>
-      <b-form-invalid-feedback v-if="feedback">
-        {{ feedback }}
-      </b-form-invalid-feedback>
-    </b-col>
+    <b-form-input
+      :id="labelFor"
+      :type="type"
+      v-model="inputValue"
+      :disabled="disabled"
+      :placeholder="placeholder"
+      :state="state"
+    ></b-form-input>
+    <b-form-invalid-feedback v-if="feedback" :state="state">{{
+      feedback
+    }}</b-form-invalid-feedback>
   </b-form-group>
 </template>
 
@@ -29,24 +31,30 @@ export default {
   props: {
     label: String,
     labelFor: String,
-    placeholder: String,
-    required: Boolean,
-    type: { type: String, default: "text" },
-    labelColsSm: { type: [String, Number], default: 3 },
-    contentColsSm: { type: [String, Number], default: 9 },
-    labelAlignSm: { type: String, default: "right" },
+    labelColSm: String,
+    contentColSm: String,
+    labelAlignSm: String,
     labelSize: String,
-    validState: { type: Boolean, default: null },
+    labelClass: String,
+    placeholder: String,
+    type: {
+      type: String,
+      default: "text",
+    },
     feedback: String,
-    disabled: Boolean,
+    state: {
+      type: Boolean,
+      default: null,
+    },
     detailType: String, // 'shipping' or 'billing'
     fieldKey: String,
+    disabled: Boolean,
   },
   computed: {
     inputValue: {
       get() {
         // Directly access the state based on the detailType and fieldKey
-        return this.$store.state.checkout[this.detailType + "Details"][
+        return this.$store.state.checkout[`${this.detailType}Details`][
           this.fieldKey
         ];
       },
@@ -55,7 +63,7 @@ export default {
         this.$store.dispatch("checkout/updateDetail", {
           detailType: this.detailType,
           field: this.fieldKey,
-          value: value,
+          value,
         });
       },
     },

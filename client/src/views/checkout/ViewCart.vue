@@ -25,7 +25,7 @@
           :cartTotal="cartTotal"
           :estimatedShippingFee="estimatedShippingFee"
           :isLoggedIn="isLoggedIn"
-          @proceed-to-checkout="proceedToCheckout"
+          @proceed-to-checkout="proceedToCheckOut"
           @continue-shopping="continueShopping"
         />
       </b-col>
@@ -94,12 +94,12 @@ export default {
         this.$store.dispatch("cart/updateQuantity", { productId, quantity });
       }
     },
-    proceedToCheckout() {
+    proceedToCheckOut() {
       if (!this.isLoggedIn) {
-        this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", "CheckOut");
+        this.$store.commit("cart/VUE_APP_LOGIN_REDIRECT", "CheckOut");
         this.$bvModal.show("auth-modal");
       } else {
-        this.$router.push({ name: "CheckOut" });
+        this.$router.push({ name: "checkout-shipping" });
       }
     },
     continueShopping() {

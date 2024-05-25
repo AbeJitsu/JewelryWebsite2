@@ -4,8 +4,8 @@
   <div class="cart-summary">
     <div class="my-3">Total: ${{ cartTotal }}</div>
     <div class="my-3">Estimated Shipping: ${{ estimatedShippingFee }}</div>
-    <b-button class="checkout-button" @click="proceedToCheckout"
-      >Checkout</b-button
+    <b-button class="checkout-button" @click="proceedToCheckOut"
+      >CheckOut</b-button
     >
     <b-button class="continue-shopping-button" @click="continueShopping"
       >Continue Shopping</b-button
@@ -30,7 +30,7 @@ export default {
     },
   },
   methods: {
-    proceedToCheckout() {
+    proceedToCheckOut() {
       this.$emit("proceed-to-checkout");
     },
     continueShopping() {

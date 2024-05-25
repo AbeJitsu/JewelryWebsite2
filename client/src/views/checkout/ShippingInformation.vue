@@ -86,7 +86,7 @@
           required
         />
 
-        <b-button type="submit" variant="primary">Next</b-button>
+        <b-button type="submit" variant="primary">Continue to Billing</b-button>
       </b-form>
     </div>
   </div>
@@ -111,6 +111,8 @@ export default {
         field: "all",
         value: this.shippingDetails,
       });
+      this.$store.commit("checkout/SET_SHIPPING_COMPLETED", true);
+      this.$router.push({ name: "checkout-billing" });
     },
   },
 };

@@ -1,3 +1,5 @@
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/views/checkout/BillingInformation.vue -->
+
 <template>
   <div>
     <h2 class="section-title">Billing Information</h2>
@@ -24,7 +26,10 @@
         />
 
         <div class="checkbox-align">
-          <b-form-checkbox v-model="isBillingSameAsShipping">
+          <b-form-checkbox
+            v-model="isBillingSameAsShipping"
+            @change="toggleBillingAddress"
+          >
             Same as shipping address
           </b-form-checkbox>
         </div>
@@ -84,6 +89,9 @@
         </template>
 
         <b-button type="submit" variant="primary">Next</b-button>
+        <b-button @click="goBackToShipping" variant="secondary" class="ml-5"
+          >Back to Shipping</b-button
+        >
       </b-form>
     </div>
   </div>
@@ -118,7 +126,7 @@ export default {
       set(value) {
         this.$store.dispatch("checkout/updateDetail", {
           detailType: "billing",
-          fieldKey: "cardholderName",
+          field: "cardholderName",
           value,
         });
       },
@@ -129,16 +137,22 @@ export default {
       if (this.cardholderNameSameAsShipping) {
         this.$store.dispatch("checkout/updateDetail", {
           detailType: "billing",
-          fieldKey: "cardholderName",
+          field: "cardholderName",
           value: `${this.shippingDetails.firstName} ${this.shippingDetails.lastName}`,
         });
       } else {
         this.$store.dispatch("checkout/updateDetail", {
           detailType: "billing",
-          fieldKey: "cardholderName",
+          field: "cardholderName",
           value: "",
         });
       }
+    },
+    toggleBillingAddress() {
+      this.$store.dispatch(
+        "checkout/linkBillingToShipping",
+        this.isBillingSameAsShipping
+      );
     },
     onSubmitBilling() {
       this.$store.commit("checkout/UPDATE_DETAIL", {
@@ -146,14 +160,15 @@ export default {
         field: "all",
         value: this.billingDetails,
       });
+      this.$router.push({ name: "checkout-payment" });
+    },
+    goBackToShipping() {
+      this.$router.push({ name: "checkout-shipping" });
     },
   },
   watch: {
     isBillingSameAsShipping(newValue) {
-      this.$store.dispatch("checkout/linkBillingToShipping", newValue);
-      if (newValue) {
-        this.cardholderNameSameAsShipping = true;
-      }
+      this.toggleBillingAddress(newValue);
     },
   },
 };
@@ -161,4 +176,8 @@ export default {
 
 <style scoped>
 @import "@/assets/styles/sharedStyles.css";
+
+.b-button + .b-button {
+  margin-left: 11rem;
+}
 </style>

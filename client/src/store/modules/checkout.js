@@ -23,44 +23,54 @@ export default {
     },
     paymentDetails: {},
     isBillingSameAsShipping: false,
-    showModal: false,
+    shippingCompleted: false,
+    billingCompleted: false,
   },
 
   mutations: {
     UPDATE_DETAIL(state, { detailType, field, value }) {
-      console.log("UPDATE_DETAIL mutation:", detailType, field, value);
-      if (state[`${detailType}Details`]) {
+      if (field === "all") {
+        state[`${detailType}Details`] = value;
+        if (detailType === "shipping") {
+          state.shippingCompleted = true;
+        } else if (detailType === "billing") {
+          state.billingCompleted = true;
+        }
+      } else {
         state[`${detailType}Details`][field] = value;
       }
     },
     LINK_BILLING_TO_SHIPPING(state, link) {
-      console.log("LINK_BILLING_TO_SHIPPING mutation:", link);
       state.isBillingSameAsShipping = link;
       if (link) {
         state.billingDetails = { ...state.shippingDetails };
         state.billingDetails.cardholderName = `${state.shippingDetails.firstName} ${state.shippingDetails.lastName}`;
+      } else {
+        // Optionally reset billing details if the link is removed
+        state.billingDetails = {
+          cardholderName: "",
+          address: "",
+          apartment: "",
+          city: "",
+          state: "",
+          zip: "",
+        };
       }
-    },
-    SET_SHOW_MODAL(state, value) {
-      state.showModal = value;
     },
   },
   actions: {
     updateDetail({ commit }, payload) {
-      console.log("updateDetail action:", payload);
       commit("UPDATE_DETAIL", payload);
     },
     linkBillingToShipping({ commit }, link) {
-      console.log("linkBillingToShipping action:", link);
       commit("LINK_BILLING_TO_SHIPPING", link);
-    },
-    handleAuthSuccess({ commit }) {
-      commit("SET_SHOW_MODAL", false);
     },
   },
   getters: {
     getShippingDetails: (state) => state.shippingDetails,
     getBillingDetails: (state) => state.billingDetails,
     isBillingSameAsShipping: (state) => state.isBillingSameAsShipping,
+    shippingCompleted: (state) => state.shippingCompleted,
+    billingCompleted: (state) => state.billingCompleted,
   },
 };
