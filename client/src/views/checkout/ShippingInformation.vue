@@ -77,7 +77,9 @@
         required
       />
 
-      <b-button type="submit" variant="primary">Continue to Billing</b-button>
+      <b-button type="submit" variant="primary" class="primary-button">
+        Continue to Billing
+      </b-button>
     </b-form>
   </div>
 </template>

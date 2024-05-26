@@ -43,9 +43,9 @@
       />
 
       <div class="checkbox-align">
-        <b-form-checkbox v-model="billingDetails.hasApartment">
-          Includes an Apt or Suite
-        </b-form-checkbox>
+        <b-form-checkbox v-model="billingDetails.hasApartment"
+          >Includes an Apt or Suite</b-form-checkbox
+        >
       </div>
       <div v-if="billingDetails.hasApartment">
         <FormInput
@@ -85,10 +85,15 @@
       />
 
       <div class="button-group">
-        <b-button @click="goBackToShipping" variant="secondary"
+        <b-button
+          @click="goBackToShipping"
+          variant="secondary"
+          class="secondary-button"
           >Back to Shipping</b-button
         >
-        <b-button type="submit" variant="primary">Continue to Payment</b-button>
+        <b-button type="submit" variant="primary" class="primary-button"
+          >Continue to Payment</b-button
+        >
       </div>
     </b-form>
   </div>

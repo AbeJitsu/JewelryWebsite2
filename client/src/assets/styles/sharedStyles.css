@@ -1,8 +1,8 @@
-/* /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/assets/styles/sharedStyles.css*/
+/* /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/assets/styles/sharedStyles.css */
 
 .section-title {
   margin-bottom: 20px;
-  margin-left: 29%;
+  text-align: center;
   font-size: 24px;
   color: #333;
 }
@@ -19,41 +19,70 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-.submit-order-button,
-.back-button,
-b-button {
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
 .checkbox-align {
   margin-left: 33%;
   margin-bottom: 1rem;
 }
-.submit-order-button {
-  background-color: #4caf50;
-  color: white;
+
+.primary-button,
+.secondary-button {
   padding: 0.5rem 1rem;
-  border: none;
   border-radius: 0.25rem;
   cursor: pointer;
   transition: background-color 0.3s;
-  margin-bottom: 50rem;
 }
 
-.submit-order-button:hover {
+.primary-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.primary-button:hover {
   background-color: #43a047;
   opacity: 0.9;
 }
 
-.back-button {
+.secondary-button {
   background-color: #f76c6c;
   color: white;
 }
 
-.back-button:hover {
+.secondary-button:hover {
   background-color: #e76565;
   opacity: 0.9;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.loading-indicator {
+  margin-top: 1rem;
+}
+
+.error-message {
+  color: red;
+  margin-top: 1rem;
+}
+
+.address-confirmation-container {
+  margin: 2rem auto;
+  padding: 3rem;
+  background-color: rgba(255, 182, 193, 0.15); /* Light Pink */
+  border-radius: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.address {
+  margin-bottom: 2rem;
+}
+
+.address h4 {
+  margin-bottom: 1rem;
+}
+
+.address p {
+  white-space: pre-line;
 }

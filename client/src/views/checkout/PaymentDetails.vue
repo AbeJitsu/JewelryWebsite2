@@ -3,61 +3,65 @@
 <template>
   <div>
     <h2 class="section-title">Payment Details</h2>
-    <div class="info-container">
-      <b-form @submit.prevent="onSubmitPayment">
-        <!-- Square Secure Input Fields will be inserted here -->
-        <div id="card-number"></div>
-        <div id="expiration-date"></div>
-        <div id="cvv"></div>
-
-        <!-- Loading indicator and error messages -->
-        <div v-if="isLoading" class="loading-indicator">Processing...</div>
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-
-        <!-- Submit Button -->
-        <b-button
-          :disabled="!isSdkLoaded || isLoading"
-          type="submit"
-          variant="primary"
-        >
-          Submit Payment Details
-        </b-button>
-      </b-form>
+    <div>
+      <AddressConfirmation @confirm="confirmAddresses" />
+    </div>
+    <div class="payment-form-container">
+      <div class="info-container">
+        <b-form @submit.prevent="onSubmitPayment">
+          <div id="card-number"></div>
+          <div id="expiration-date"></div>
+          <div id="cvv"></div>
+          <div v-if="isLoading" class="loading-indicator">Processing...</div>
+          <div v-if="errorMessage" class="error-message">
+            {{ errorMessage }}
+          </div>
+          <b-button
+            :disabled="!addressConfirmed || !isSdkLoaded || isLoading"
+            type="submit"
+            variant="primary"
+            class="primary-button"
+          >
+            Submit Payment Details
+          </b-button>
+        </b-form>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import AddressConfirmation from "./AddressConfirmation.vue";
 import axios from "axios";
 import { mapGetters } from "vuex";
 
 export default {
+  components: {
+    AddressConfirmation,
+  },
   data() {
     return {
       cardInstance: null,
       isSdkLoaded: false,
       isLoading: false,
       errorMessage: "",
+      addressConfirmed: false,
     };
   },
-
   computed: {
     ...mapGetters({
       orderTotal: "cart/orderTotal",
     }),
   },
-
   mounted() {
     this.loadSquareSDK();
   },
-
   methods: {
     loadSquareSDK() {
-      if (
-        !document.querySelector(
-          'script[src="https://sandbox.web.squarecdn.com/v2/square.js"]'
-        )
-      ) {
+      const scriptExists = document.querySelector(
+        'script[src="https://sandbox.web.squarecdn.com/v1/square.js"]'
+      );
+      if (!scriptExists) {
         const script = document.createElement("script");
         script.src = "https://sandbox.web.squarecdn.com/v1/square.js";
         script.onload = this.waitForSDKThenInitialize;
@@ -67,11 +71,9 @@ export default {
         };
         document.head.appendChild(script);
       } else {
-        this.isSdkLoaded = true;
         this.waitForSDKThenInitialize();
       }
     },
-
     waitForSDKThenInitialize() {
       if (window.Square) {
         this.initializePaymentForm();
@@ -79,7 +81,6 @@ export default {
         setTimeout(this.waitForSDKThenInitialize, 500);
       }
     },
-
     async initializePaymentForm() {
       const payments = window.Square.payments(
         "sandbox-sq0idb-FRXLrzfLW3ZjvpivifCFSA",
@@ -93,22 +94,18 @@ export default {
       );
       this.isSdkLoaded = true;
     },
-
+    confirmAddresses() {
+      this.addressConfirmed = true;
+    },
     async onSubmitPayment() {
       this.isLoading = true;
       this.errorMessage = "";
-
-      console.log(
-        "Submitting payment with total:",
-        this.orderTotal.total.total
-      );
-
       try {
         const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {
           await axios.post("/api/payment", {
             token: result.token,
-            amount: this.orderTotal.total.total, // Using total from orderTotal getter
+            amount: this.orderTotal.total.total,
             currency: "USD",
           });
           this.$router.push({ name: "OrderConfirmation" });
@@ -130,4 +127,8 @@ export default {
 
 <style scoped>
 @import "@/assets/styles/sharedStyles.css";
+
+.payment-form-container {
+  margin-top: 2rem;
+}
 </style>
