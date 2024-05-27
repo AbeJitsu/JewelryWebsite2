@@ -1,12 +1,11 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/cartController.js
+// server/src/api/controllers/cartController.js
 
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 
-// Retrieve cart based on user ID or session ID
 exports.getCart = async (req, res) => {
   const sessionId = req.sessionID;
-  const userId = req.userId;
+  const userId = req.user ? req.user.id : null;
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -21,20 +20,17 @@ exports.getCart = async (req, res) => {
   }
 };
 
-// Add or update an item in the cart
 exports.addItemToCart = async (req, res) => {
   const { productId, quantity } = req.body;
 
   if (!productId || !quantity) {
     return res
       .status(400)
-      .send({
-        message: "Invalid request: 'productId' and 'quantity' are required.",
-      });
+      .send({ message: "'productId' and 'quantity' are required." });
   }
 
   const sessionId = req.sessionID;
-  const userId = req.userId;
+  const userId = req.user ? req.user.id : null;
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -56,8 +52,8 @@ exports.addItemToCart = async (req, res) => {
       }
     } else {
       cart = new Cart({
-        user: userId || null,
-        sessionToken: sessionId || null,
+        user: userId,
+        sessionToken: sessionId,
         items: [{ product: productId, quantity }],
       });
       console.log("New guest cart created:", cart);
@@ -68,21 +64,18 @@ exports.addItemToCart = async (req, res) => {
     res.status(200).send(updatedCart);
   } catch (error) {
     console.error("Error adding/updating item in cart:", error);
-    res
-      .status(500)
-      .send({
-        message: "Failed to add/update item in cart",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Failed to add/update item in cart",
+      error: error.message,
+    });
   }
 };
 
-// Update the quantity of an item in the cart
 exports.updateItemQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
 
   const sessionId = req.sessionID;
-  const userId = req.userId;
+  const userId = req.user ? req.user.id : null;
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -102,21 +95,18 @@ exports.updateItemQuantity = async (req, res) => {
     }
   } catch (error) {
     console.error("Error updating item quantity:", error);
-    res
-      .status(500)
-      .send({
-        message: "Failed to update item quantity",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Failed to update item quantity",
+      error: error.message,
+    });
   }
 };
 
-// Remove an item from the cart
 exports.removeItemFromCart = async (req, res) => {
   const { productId } = req.body;
 
   const sessionId = req.sessionID;
-  const userId = req.userId;
+  const userId = req.user ? req.user.id : null;
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -129,29 +119,26 @@ exports.removeItemFromCart = async (req, res) => {
     res.status(200).send(cart);
   } catch (error) {
     console.error("Error removing item from cart:", error);
-    res
-      .status(500)
-      .send({
-        message: "Failed to remove item from cart",
-        error: error.message,
-      });
+    res.status(500).send({
+      message: "Failed to remove item from cart",
+      error: error.message,
+    });
   }
 };
 
-// Sync the cart with the server
 exports.syncCart = async (req, res) => {
   const { cartItems } = req.body;
 
   const sessionId = req.sessionID;
-  const userId = req.userId;
+  const userId = req.user ? req.user.id : null;
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
     let cart = await Cart.findOne(query);
     if (!cart) {
       cart = new Cart({
-        user: userId || null,
-        sessionToken: sessionId || null,
+        user: userId,
+        sessionToken: sessionId,
         items: cartItems,
       });
     } else {
@@ -163,11 +150,53 @@ exports.syncCart = async (req, res) => {
     res.status(200).send(updatedCart);
   } catch (error) {
     console.error("Error syncing cart with server:", error);
+    res.status(500).send({
+      message: "Failed to sync cart with server",
+      error: error.message,
+    });
+  }
+};
+
+exports.mergeCart = async (req, res) => {
+  // Ensure that req.user is not undefined
+  if (!req.user || !req.user.id) {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+
+  const { localCartItems } = req.body;
+  const userId = req.user.id; // Ensure this is correctly populated
+  const sessionId = req.sessionID;
+
+  try {
+    let userCart = await Cart.findOne({ user: userId });
+
+    if (!userCart) {
+      userCart = new Cart({ user: userId, sessionToken: sessionId, items: [] });
+    }
+
+    for (const localItem of localCartItems) {
+      const itemIndex = userCart.items.findIndex(
+        (item) => item.product.toString() === localItem.product._id
+      );
+      if (itemIndex !== -1) {
+        userCart.items[itemIndex].quantity += localItem.quantity;
+      } else {
+        userCart.items.push({
+          product: localItem.product._id,
+          quantity: localItem.quantity,
+        });
+      }
+    }
+
+    await userCart.save();
+    const updatedCart = await Cart.findOne({ user: userId }).populate(
+      "items.product"
+    );
+    res.status(200).send(updatedCart);
+  } catch (error) {
+    console.error("Error merging cart:", error);
     res
       .status(500)
-      .send({
-        message: "Failed to sync cart with server",
-        error: error.message,
-      });
+      .send({ message: "Failed to merge cart", error: error.message });
   }
 };

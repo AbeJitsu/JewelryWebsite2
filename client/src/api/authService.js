@@ -1,6 +1,7 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/api/authService.js
+// client/src/api/authService.js
 
 import axiosInstance from "./axiosInstance";
+import store from "@/store";
 
 const authService = {
   login: async (email, password) => {
@@ -13,6 +14,9 @@ const authService = {
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${response.data.token}`;
+
+      // Merge local cart with server cart
+      await store.dispatch("cart/mergeCartAfterLogin");
     }
     return response.data;
   },

@@ -1,24 +1,17 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/client/src/api/cartService.js
+// client/src/api/cartService.js
 
 import axiosInstance from "./axiosInstance";
 
 const cartService = {
-  async fetchCart() {
-    try {
-      const response = await axiosInstance.get("/api/cart");
-      return response.data;
-    } catch (error) {
-      console.error("Failed to fetch cart:", error);
-      throw error;
-    }
+  fetchCart: async () => {
+    const response = await axiosInstance.get("/api/cart");
+    return response.data;
   },
-  async syncCart(cartItems) {
-    try {
-      await axiosInstance.post("/api/cart/sync", { items: cartItems });
-    } catch (error) {
-      console.error("Failed to sync cart:", error);
-      throw error;
-    }
+  syncCart: async (cartItems) => {
+    await axiosInstance.post("/api/cart/sync", { cartItems });
+  },
+  mergeCart: async (localCartItems) => {
+    await axiosInstance.post("/api/cart/merge", { localCartItems });
   },
 };
 

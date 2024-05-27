@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
+// client/src/store/modules/cart.js
 
 import _ from "lodash";
 import cartService from "@/api/cartService";
@@ -98,6 +98,22 @@ const actions = {
       commit("SYNC_IN_PROGRESS", false);
     }
   }, 2000),
+  async mergeCartAfterLogin({ dispatch }) {
+    // Remove `state` from here
+    const localCartItems =
+      JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+    if (localCartItems.length) {
+      try {
+        await cartService.mergeCart(localCartItems);
+        localStorage.removeItem(CART_STORAGE_KEY);
+        await dispatch("fetchCart");
+      } catch (error) {
+        console.error("Failed to merge local cart with server cart:", error);
+      }
+    } else {
+      await dispatch("fetchCart");
+    }
+  },
 };
 
 const getters = {
