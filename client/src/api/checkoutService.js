@@ -1,12 +1,13 @@
-// client/src/api/checkoutService.js
-
-
 import axiosInstance from "./axiosInstance";
 
 const checkoutService = {
-  processCheckout: async (cartItems) => {
+  processCheckout: async ({ token, amount, currency }) => {
     try {
-      const response = await axiosInstance.post("/api/checkout", { cartItems });
+      const response = await axiosInstance.post("/api/payment", {
+        token,
+        amount,
+        currency,
+      });
       return response.data;
     } catch (error) {
       console.error("Error during checkout:", error);

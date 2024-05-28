@@ -73,10 +73,10 @@ exports.syncCart = async (query, cartItems) => {
   } else {
     cart.items = cartItems;
   }
-
   await cart.save();
   return await Cart.findOne(query).populate("items.product");
 };
+
 
 exports.mergeCart = async (userId, localCartItems) => {
   let userCart = await Cart.findOne({ user: userId });

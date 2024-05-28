@@ -1,3 +1,5 @@
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/cartController.js
+
 const Cart = require("../models/cartModel");
 const Product = require("@/api/models/productModel");
 const cartService = require("@/services/cartService");
@@ -90,16 +92,12 @@ exports.removeItemFromCart = async (req, res) => {
 exports.syncCart = async (req, res) => {
   const sessionId = req.sessionID;
   const userId = req.user ? req.user.id : null;
-
+  const query = userId ? { user: userId } : { sessionToken: sessionId };
   try {
-    const cart = await cartService.syncCart(
-      sessionId,
-      userId,
-      req.body.cartItems
-    );
+    const cart = await cartService.syncCart(query, req.body.cartItems);
     res.status(200).send(cart);
   } catch (error) {
-    console.error("Failed to sync cart:", error);
+    console.error("Failed to sync cart", error);
     res
       .status(500)
       .send({ message: "Failed to sync cart", error: error.message });

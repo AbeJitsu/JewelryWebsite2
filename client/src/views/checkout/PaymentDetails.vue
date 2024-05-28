@@ -32,8 +32,8 @@
 
 <script>
 import AddressConfirmation from "./AddressConfirmation.vue";
-import axios from "axios";
 import { mapGetters } from "vuex";
+import checkoutService from "@/api/checkoutService";
 
 export default {
   components: {
@@ -103,7 +103,7 @@ export default {
       try {
         const result = await this.cardInstance.tokenize();
         if (result.status === "OK") {
-          await axios.post("/api/payment", {
+          await checkoutService.processCheckout({
             token: result.token,
             amount: this.orderTotal.total.total,
             currency: "USD",

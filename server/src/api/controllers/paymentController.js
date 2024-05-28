@@ -12,16 +12,9 @@ exports.handlePayment = async (req, res) => {
 
   try {
     const result = await processPayment(token, amount, currency);
-    if (result.success) {
-      res.json({ message: "Payment successful", data: result.data });
-    } else {
-      res
-        .status(400)
-        .json({ message: "Payment failed", errors: result.data.errors });
-    }
+    res.status(200).json({ message: "Payment successful", data: result });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    console.error("Payment processing error:", error);
+    res.status(500).json({ message: "Payment failed", error: error.message });
   }
 };
