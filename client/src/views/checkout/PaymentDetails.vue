@@ -32,8 +32,8 @@
 
 <script>
 import AddressConfirmation from "./AddressConfirmation.vue";
-import { mapGetters } from "vuex";
 import checkoutService from "@/api/checkoutService";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -83,8 +83,8 @@ export default {
     },
     async initializePaymentForm() {
       const payments = window.Square.payments(
-        "sandbox-sq0idb-FRXLrzfLW3ZjvpivifCFSA",
-        "L3NGRS9FGWMXR"
+        process.env.VUE_APP_SQUARE_APPLICATION_ID,
+        process.env.VUE_APP_SQUARE_LOCATION_ID
       );
       this.cardInstance = await payments.card();
       await this.cardInstance.attach(

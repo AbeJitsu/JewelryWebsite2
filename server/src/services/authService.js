@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/services/authService.js
+// server/src/services/authService.js
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -20,10 +20,13 @@ module.exports = {
   },
 
   verifyPassword: async (password, hashedPassword) => {
+    console.log("Password being verified:", password);
+    console.log("Hashed password:", hashedPassword);
     return bcrypt.compare(password, hashedPassword);
   },
 
   hashPassword: async (password) => {
+    console.log("Password being hashed:", password);
     return bcrypt.hash(password, 12);
   },
 };

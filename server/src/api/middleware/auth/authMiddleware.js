@@ -1,30 +1,27 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/middleware/auth/authMiddleware.js
+// src/api/middleware/auth/authMiddleware.js
 
 const User = require("../../models/userModel");
 const authService = require("../../../services/authService");
 
 exports.authMiddleware = async function (req, res, next) {
-  console.log(`Session ID in authMiddleware: ${req.sessionID}`);
-
+  console.log("Session ID in authMiddleware:", req.sessionID);
   if (req.session && req.session.userId) {
-    console.log(`Authenticated user: ${req.session.userId}`);
-    req.userId = req.session.userId;
-    next();
+    console.log("Authenticated user via session:", req.session.userId);
+    return next();
   } else if (req.headers.authorization) {
+    const token = req.headers.authorization.split(" ")[1];
     try {
-      const token = req.headers.authorization.split(" ")[1];
-      if (!token) throw new Error("Token not found");
       const decoded = await authService.verifyToken(token);
       req.userId = decoded.id;
       console.log(`Authenticated user via token: ${req.userId}`);
       next();
     } catch (error) {
-      console.log("Unauthorized access attempt via token", error);
-      res.status(401).json({ message: "Unauthorized access" });
+      console.log("Unauthorized access attempt via token");
+      return res.status(401).json({ message: "Unauthorized access" });
     }
   } else {
     console.log("Unauthorized access attempt");
-    res.status(401).json({ message: "Unauthorized access" });
+    return res.status(401).json({ message: "Unauthorized access" });
   }
 };
 

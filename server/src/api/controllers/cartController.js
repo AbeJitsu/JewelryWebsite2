@@ -6,7 +6,7 @@ const cartService = require("@/services/cartService");
 
 exports.getCart = async (req, res) => {
   const sessionId = req.sessionID;
-  const userId = req.user ? req.user.id : null;
+  const userId = req.user ? req.user._id : null; // Updated
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -30,7 +30,7 @@ exports.addItemToCart = async (req, res) => {
   }
 
   const sessionId = req.sessionID;
-  const userId = req.user ? req.user.id : null;
+  const userId = req.user ? req.user._id : null; // Updated
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -52,7 +52,7 @@ exports.addItemToCart = async (req, res) => {
 exports.updateItemQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
   const sessionId = req.sessionID;
-  const userId = req.user ? req.user.id : null;
+  const userId = req.user ? req.user._id : null; // Updated
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -74,7 +74,7 @@ exports.updateItemQuantity = async (req, res) => {
 exports.removeItemFromCart = async (req, res) => {
   const { productId } = req.params;
   const sessionId = req.sessionID;
-  const userId = req.user ? req.user.id : null;
+  const userId = req.user ? req.user._id : null; // Updated
   const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
@@ -91,7 +91,7 @@ exports.removeItemFromCart = async (req, res) => {
 
 exports.syncCart = async (req, res) => {
   const sessionId = req.sessionID;
-  const userId = req.user ? req.user.id : null;
+  const userId = req.user ? req.user._id : null; // Updated
   const query = userId ? { user: userId } : { sessionToken: sessionId };
   try {
     const cart = await cartService.syncCart(query, req.body.cartItems);
@@ -106,7 +106,7 @@ exports.syncCart = async (req, res) => {
 
 exports.mergeCart = async (req, res) => {
   const sessionId = req.sessionID;
-  const userId = req.user.id;
+  const userId = req.user._id; // Updated
 
   try {
     const mergedCart = await cartService.mergeCart(sessionId, userId);

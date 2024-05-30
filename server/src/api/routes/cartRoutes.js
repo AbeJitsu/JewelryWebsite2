@@ -1,19 +1,29 @@
-// server/src/api/routes/cartRoutes.js
-
 const express = require("express");
 const cartController = require("../controllers/cartController");
-const { authMiddleware } = require("../middleware/auth/authMiddleware");
+const authMiddleware = require("../middleware/auth/authMiddleware");
+const cartMiddleware = require("../middleware/cartMiddleware");
 const router = express.Router();
 
-router.get("/", authMiddleware, cartController.getCart);
-router.post("/add", authMiddleware, cartController.addItemToCart);
-router.post("/update", authMiddleware, cartController.updateItemQuantity);
-router.delete(
-  "/remove/:productId",
-  authMiddleware,
+router.get("/", authMiddleware.authMiddleware, cartController.getCart);
+router.post(
+  "/add",
+  authMiddleware.authMiddleware,
+  cartMiddleware.ensureCartExists,
+  cartController.addItemToCart
+);
+router.post(
+  "/update",
+  authMiddleware.authMiddleware,
+  cartMiddleware.ensureCartExists,
+  cartController.updateItemQuantity
+);
+router.post(
+  "/remove",
+  authMiddleware.authMiddleware,
+  cartMiddleware.ensureCartExists,
   cartController.removeItemFromCart
-); // Corrected line
-router.post("/sync", authMiddleware, cartController.syncCart);
-router.post("/merge", authMiddleware, cartController.mergeCart);
+);
+router.post("/sync", authMiddleware.authMiddleware, cartController.syncCart);
+router.post("/merge", authMiddleware.authMiddleware, cartController.mergeCart);
 
 module.exports = router;

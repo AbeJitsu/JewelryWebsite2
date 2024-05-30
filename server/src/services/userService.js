@@ -22,6 +22,9 @@ module.exports = {
   },
 
   getUserByEmail: async (email) => {
-    return await User.findOne({ email });
+    console.log("Fetching user by email:", email);
+    const user = await User.findOne({ email });
+    console.log("User fetched:", user);
+    return user;
   },
 };

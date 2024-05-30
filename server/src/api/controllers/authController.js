@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/authController.js
+// server/src/api/controllers/authController.js
 
 const authService = require("../../services/authService");
 const userService = require("../../services/userService");
@@ -25,7 +25,10 @@ exports.register = async (req, res) => {
       return res.status(400).json({ error: "User already exists" });
     }
 
+    console.log("Plain password before hashing:", password);
     const hashedPassword = await authService.hashPassword(password);
+    console.log("Hashed password during registration:", hashedPassword);
+
     const newUser = await userService.createUser({
       email,
       password: hashedPassword,
@@ -44,27 +47,26 @@ exports.register = async (req, res) => {
 // User login
 exports.login = async (req, res) => {
   try {
+    console.log("Login request body:", req.body);
     const { email, password } = req.body;
     const user = await userService.getUserByEmail(email);
-
+    console.log("Invalid credentials for email:", email);
     if (!user || !(await authService.verifyPassword(password, user.password))) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    // Preserving the session ID across the login
-    req.session.userId = user._id; // Link the user ID to the existing session
-
-    // Convert guest cart to user cart if possible
+    req.session.userId = user._id;
     const guestCartConversion = await Cart.convertGuestCartToUserCart(
       req.sessionID,
       user._id
     );
-
     const token = authService.generateToken(user);
+    console.log("Login successful for user ID:", user._id);
     res.json({
       message: "Login successful",
       userId: user._id,
       preferredFirstName: user.preferredFirstName,
+      role: user.role,
       token,
       guestCartConverted: !!guestCartConversion,
     });

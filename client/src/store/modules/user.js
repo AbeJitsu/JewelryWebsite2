@@ -1,6 +1,6 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/user.js
 
-import authService from "@/api/authService";
+import clientAuthService from "@/api/clientAuthService";
 import router from "@/router";
 
 export default {
@@ -36,7 +36,7 @@ export default {
     async register({ commit }, userData) {
       commit("auth_request");
       try {
-        const response = await authService.register(userData);
+        const response = await clientAuthService.register(userData);
         commit("auth_success", response);
       } catch (err) {
         commit("auth_error");
@@ -47,16 +47,19 @@ export default {
     async login({ commit }, userCredentials) {
       commit("auth_request");
       try {
-        const response = await authService.login(
+        console.log("Sending login request with:", userCredentials);
+        const response = await clientAuthService.login(
           userCredentials.email,
           userCredentials.password
         );
+        console.log("Received login response:", response);
         if (response.message === "Login successful") {
           commit("auth_success", response);
         } else {
           commit("auth_error");
         }
       } catch (err) {
+        console.error("Login action error:", err);
         commit("auth_error");
         throw err;
       }
@@ -64,7 +67,7 @@ export default {
 
     async logout({ commit }) {
       try {
-        await authService.logout();
+        await clientAuthService.logout();
         commit("logout");
         if (router.currentRoute.meta.requiresAuth) {
           router.push({ name: "jewelry-showcase" });
@@ -76,7 +79,7 @@ export default {
 
     async fetchUserProfile({ commit }) {
       try {
-        const response = await authService.tryAutoLogin();
+        const response = await clientAuthService.tryAutoLogin();
         commit("setUser", response);
       } catch (error) {
         console.error("Error fetching user profile:", error);
@@ -85,7 +88,7 @@ export default {
 
     async tryAutoLogin({ commit }) {
       try {
-        const response = await authService.tryAutoLogin();
+        const response = await clientAuthService.tryAutoLogin();
         if (response) {
           commit("setUser", response);
         } else {

@@ -27,10 +27,11 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ["user", "admin", "vip"], default: "user" },
 });
 
+// Pre-save hook to hash the password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   try {
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12); // Use 12 rounds
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
@@ -38,6 +39,7 @@ userSchema.pre("save", async function (next) {
   }
 });
 
+// Method to compare candidate password with hashed password
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };

@@ -127,7 +127,9 @@ export default {
 
     async loginUser() {
       try {
-        await this.login(this.loginForm);
+        console.log("Attempting to login with:", this.loginForm);
+        const response = await this.login(this.loginForm);
+        console.log("Login response:", response);
         this.$bvModal.hide("auth-modal");
         this.errorMessage = ""; // Clear any previous error message
 
@@ -144,7 +146,6 @@ export default {
           error.response?.data?.error || "Login failed. Please try again.";
       }
     },
-
     async registerUser() {
       if (
         this.registerForm.password !== this.registerForm.passwordConfirmation

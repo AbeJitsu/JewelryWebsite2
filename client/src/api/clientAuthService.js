@@ -1,21 +1,21 @@
-// client/src/api/authService.js
+// client/src/api/clientAuthService.js
 
 import axiosInstance from "./axiosInstance";
 import store from "@/store";
 
-const authService = {
+const clientAuthService = {
   login: async (email, password) => {
+    console.log("Making login request to /api/auth/login with email:", email);
     const response = await axiosInstance.post("/api/auth/login", {
       email,
       password,
     });
+    console.log("Login request response:", response);
     if (response.data.token) {
       localStorage.setItem("token", response.data.token);
       axiosInstance.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${response.data.token}`;
-
-      // Merge local cart with server cart
       await store.dispatch("cart/mergeCartAfterLogin");
     }
     return response.data;
@@ -42,4 +42,4 @@ const authService = {
   },
 };
 
-export default authService;
+export default clientAuthService;

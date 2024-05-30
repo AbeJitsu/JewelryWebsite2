@@ -91,15 +91,15 @@ const router = new Router({
 
 router.beforeEach((to, from, next) => {
   const isLoggedIn = store.getters["user/isLoggedIn"];
+  const isAdmin = store.getters["user/isAdmin"];
   const hasItemsInCart = store.getters["cart/cartItems"].length > 0;
   const shippingCompleted = store.getters["checkout/shippingCompleted"];
   const billingCompleted = store.getters["checkout/billingCompleted"];
 
-  // Authentication and Cart Checks
   if (to.matched.some((record) => record.meta.requiresAuth && !isLoggedIn)) {
     store.commit("cart/SET_POST_LOGIN_REDIRECT", to.fullPath);
     store.dispatch("triggerAuthModal");
-    next(false); // halt navigation
+    next(false);
   } else if (
     to.matched.some((record) => record.meta.requiresCart && !hasItemsInCart)
   ) {
@@ -116,8 +116,12 @@ router.beforeEach((to, from, next) => {
     )
   ) {
     next({ name: "checkout-billing" });
+  } else if (
+    to.matched.some((record) => record.meta.role === "admin" && !isAdmin)
+  ) {
+    next({ name: "not-found" });
   } else {
-    next(); // proceed
+    next();
   }
 });
 

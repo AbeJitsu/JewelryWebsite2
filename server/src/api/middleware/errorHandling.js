@@ -5,11 +5,12 @@ exports.errorHandler = (err, req, res, next) => {
   const statusCode = err.status || 500;
   const errorMessage = err.customMessage || "An unexpected error occurred";
   res.status(statusCode).json({
-    error: errorMessage,
-    message: err.message || "An unexpected error has occurred.",
+    message: errorMessage,
+    error: err.message || "An unexpected error has occurred.",
   });
 };
 
 // Utility function to handle async operations in routes
-exports.asyncHandler = (fn) => (req, res, next) =>
+exports.asyncHandler = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
+};
