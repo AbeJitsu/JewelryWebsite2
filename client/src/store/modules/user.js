@@ -5,14 +5,10 @@ import router from "@/router";
 
 export default {
   namespaced: true,
-
   state: {
     showModal: false,
     isLogin: true,
-    loginForm: {
-      email: "",
-      password: "",
-    },
+    loginForm: { email: "", password: "" },
     registerForm: {
       preferredFirstName: "",
       email: "",
@@ -23,7 +19,6 @@ export default {
     user: null,
     token: null,
   },
-
   getters: {
     isLoggedIn: (state) => !!state.user,
     authStatus: (state) => state.status,
@@ -31,7 +26,6 @@ export default {
     isAdmin: (state) => state.user && state.user.role === "admin",
     preferredFirstName: (state) => state.registerForm.preferredFirstName,
   },
-
   actions: {
     async register({ commit }, userData) {
       commit("auth_request");
@@ -43,7 +37,6 @@ export default {
         throw err;
       }
     },
-
     async login({ commit }, userCredentials) {
       commit("auth_request");
       try {
@@ -64,7 +57,6 @@ export default {
         throw err;
       }
     },
-
     async logout({ commit }) {
       try {
         await clientAuthService.logout();
@@ -76,7 +68,6 @@ export default {
         console.error("Logout error:", err);
       }
     },
-
     async fetchUserProfile({ commit }) {
       try {
         const response = await clientAuthService.tryAutoLogin();
@@ -85,7 +76,6 @@ export default {
         console.error("Error fetching user profile:", error);
       }
     },
-
     async tryAutoLogin({ commit }) {
       try {
         const response = await clientAuthService.tryAutoLogin();
@@ -98,12 +88,10 @@ export default {
         commit("auth_error");
       }
     },
-
     async checkLoginAndFetchUser({ dispatch }) {
       const response = await dispatch("tryAutoLogin");
       return response;
     },
-
     toggleModal({ commit }) {
       commit("TOGGLE_MODAL");
     },
@@ -117,7 +105,6 @@ export default {
       commit("UPDATE_REGISTER_FORM", payload);
     },
   },
-
   mutations: {
     auth_request(state) {
       state.status = "loading";

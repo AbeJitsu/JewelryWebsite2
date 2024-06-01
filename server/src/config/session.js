@@ -24,3 +24,4 @@ const createSessionConfig = () => {
 };
 
 module.exports = createSessionConfig;
+

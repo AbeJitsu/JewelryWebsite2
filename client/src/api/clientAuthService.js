@@ -1,5 +1,7 @@
 // client/src/api/clientAuthService.js
 
+// Client-side authentication service using axios to communicate with the server.
+
 import axiosInstance from "./axiosInstance";
 import store from "@/store";
 

@@ -12,10 +12,10 @@ import store from "@/store";
 Vue.use(Router);
 
 const routes = [
-  {
-    path: "/",
-    redirect: "/jewelry-showcase",
-  },
+  { path: "", redirect: "/jewelry-showcase" },
+
+  { path: "/", redirect: "/jewelry-showcase" },
+
   {
     path: "/jewelry-showcase",
     name: "jewelry-showcase",

@@ -2,7 +2,7 @@
 
 const authRoutes = require("@/api/routes/authRoutes");
 const cartRoutes = require("@/api/routes/cartRoutes");
-const productRoutes = require("@/api/routes/productRoutes"); // Added product routes
+const productRoutes = require("@/api/routes/productRoutes");
 
 module.exports = (app) => {
   // Setup routes prefixed with /api
