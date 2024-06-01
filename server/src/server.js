@@ -1,18 +1,13 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/server.js
 
 require("module-alias/register");
+require("../../aliases.config");
 require("dotenv").config();
+
 const express = require("express");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const bodyParser = require("body-parser");
-const session = require("express-session");
-const connectDB = require("./config/db");
-const createSessionConfig = require("./config/session");
-const errorHandler = require("./api/middleware/errorHandling").errorHandler;
-const routes = require("./api/routes/index");
-const logger = require("./api/middleware/logger");
+const connectDB = require("@/config/db");
+const configureMiddleware = require("@/config/configureMiddleware");
+const configureRoutes = require("@/config/configureRoutes");
 
 // Connect to the database
 connectDB();
@@ -20,22 +15,11 @@ connectDB();
 const app = express();
 app.set("trust proxy", 1);
 
-// Middleware configuration
-app.use(logger);
-const corsOptions = {
-  origin: ["http://localhost:8080", "http://localhost:3000"],
-  credentials: true,
-};
-app.use(cors(corsOptions));
-app.use(helmet());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(morgan("dev"));
-app.use(session(createSessionConfig())); // Use the session configuration
-app.use(errorHandler); // Error handling middleware
+// Configure middleware
+configureMiddleware(app);
 
-// Setup routes prefixed with /api
-app.use("/api", routes);
+// Setup routes
+configureRoutes(app);
 
 const port = process.env.SERVER_PORT || 3000;
 app.listen(port, () => {

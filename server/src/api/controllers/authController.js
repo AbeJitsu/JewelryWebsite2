@@ -1,35 +1,33 @@
 // server/src/api/controllers/authController.js
-
 const authService = require("../../services/authService");
 const userService = require("../../services/userService");
-const Cart = require("../models/cartModel");
+const Cart = require("../../services/cartService");
 const validator = require("validator");
 
-// User registration
 exports.register = async (req, res) => {
+  const { email, password, preferredFirstName } = req.body;
+
+  if (!validator.isEmail(email)) {
+    return res.status(400).json({ error: "Invalid email format" });
+  }
+
+  if (password.length < 8) {
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 8 characters long" });
+  }
+
   try {
-    const { email, password, preferredFirstName } = req.body;
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ error: "Invalid email format" });
-    }
-
-    if (password.length < 8) {
-      return res
-        .status(400)
-        .json({ error: "Password must be at least 8 characters long" });
-    }
-
     const existingUser = await userService.getUserByEmail(email);
     if (existingUser) {
-      return res.status(400).json({ error: "User already exists" });
+      return res.status(409).json({ error: "User already exists" });
     }
 
     console.log("Plain password before hashing:", password);
     const hashedPassword = await authService.hashPassword(password);
     console.log("Hashed password during registration:", hashedPassword);
 
-    const newUser = await userService.createUser({
+    const user = await userService.createUser({
       email,
       password: hashedPassword,
       preferredFirstName,
@@ -44,31 +42,42 @@ exports.register = async (req, res) => {
   }
 };
 
-// User login
 exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    console.log("Login request body:", req.body);
-    const { email, password } = req.body;
     const user = await userService.getUserByEmail(email);
-    console.log("Invalid credentials for email:", email);
-    if (!user || !(await authService.verifyPassword(password, user.password))) {
+    if (!user) {
+      console.log("User not found for email:", email);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    req.session.userId = user._id;
+    const isPasswordValid = await authService.verifyPassword(
+      password,
+      user.password
+    );
+    console.log("Password validation result:", isPasswordValid);
+
+    if (!isPasswordValid) {
+      console.log("Invalid credentials for email:", email);
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = authService.generateToken(user);
+    req.session.user_id = user._id;
+
     const guestCartConversion = await Cart.convertGuestCartToUserCart(
       req.sessionID,
       user._id
     );
-    const token = authService.generateToken(user);
-    console.log("Login successful for user ID:", user._id);
-    res.json({
+
+    res.status(200).json({
       message: "Login successful",
-      userId: user._id,
+      user_id: user._id,
+      token,
       preferredFirstName: user.preferredFirstName,
       role: user.role,
-      token,
-      guestCartConverted: !!guestCartConversion,
+      guestCartConversion,
     });
   } catch (error) {
     console.error("Error during login:", error);
@@ -76,7 +85,6 @@ exports.login = async (req, res) => {
   }
 };
 
-// User logout
 exports.logout = async (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -90,18 +98,14 @@ exports.logout = async (req, res) => {
   });
 };
 
-// Get user profile
-exports.getUser = async (req, res) => {
-  try {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+exports.getUserProfile = async (req, res) => {
+  const { user_id } = req.session;
 
-    const user = await userService.getUserById(req.session.userId);
+  try {
+    const user = await userService.getUserById(user_id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
     res.status(200).json({
       email: user.email,
       preferredFirstName: user.preferredFirstName,
@@ -118,5 +122,5 @@ module.exports = {
   register: exports.register,
   login: exports.login,
   logout: exports.logout,
-  getUser: exports.getUser,
+  getUserProfile: exports.getUserProfile,
 };

@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/cartController.js
+// server/src/api/controllers/cartController.js
 
 const Cart = require("../models/cartModel");
 const Product = require("@/api/models/productModel");
