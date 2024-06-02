@@ -19,21 +19,15 @@ module.exports = {
     });
   },
 
-  verifyPassword: async (password, hashedPassword) => {
-    console.log("Password being verified:", password);
+  verifyPassword: async (plaintextPassword, hashedPassword) => {
+    console.log("Plaintext password:", plaintextPassword);
     console.log("Hashed password:", hashedPassword);
-    return bcrypt.compare(password, hashedPassword);
+    return bcrypt.compare(plaintextPassword, hashedPassword);
   },
 
   hashPassword: async (password) => {
     console.log("Password being hashed:", password);
     const salt = await bcrypt.genSalt(12);
     return bcrypt.hash(password, salt);
-  },
-
-  verifyPassword: async (plaintextPassword, hashedPassword) => {
-    console.log("Plaintext password:", plaintextPassword);
-    console.log("Hashed password:", hashedPassword);
-    return bcrypt.compare(plaintextPassword, hashedPassword);
   },
 };

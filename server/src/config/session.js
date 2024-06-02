@@ -23,5 +23,12 @@ const createSessionConfig = () => {
   };
 };
 
-module.exports = createSessionConfig;
+const applySessionMiddleware = (app) => {
+  console.log("Applying session middleware...");
+  const sessionConfig = createSessionConfig();
+  app.use(session(sessionConfig));
+  console.log("Session middleware applied.");
+  console.log("Session Configuration:", sessionConfig);
+};
 
+module.exports = { createSessionConfig, applySessionMiddleware };

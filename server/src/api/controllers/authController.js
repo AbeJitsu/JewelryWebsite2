@@ -4,6 +4,12 @@ const userService = require("../../services/userService");
 const Cart = require("../../services/cartService");
 const validator = require("validator");
 
+// Utility function to handle errors
+const handleError = (res, error, message, statusCode = 500) => {
+  console.error(message, error);
+  res.status(statusCode).json({ error: message });
+};
+
 exports.register = async (req, res) => {
   const { email, password, preferredFirstName } = req.body;
 
@@ -37,8 +43,7 @@ exports.register = async (req, res) => {
       .status(201)
       .json({ message: "User registered successfully. Please log in." });
   } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).json({ error: "An error occurred during registration" });
+    handleError(res, error, "An error occurred during registration");
   }
 };
 
@@ -65,6 +70,7 @@ exports.login = async (req, res) => {
 
     const token = authService.generateToken(user);
     req.session.user_id = user._id;
+    req.user_id = user._id; // Ensure consistency
 
     const guestCartConversion = await Cart.convertGuestCartToUserCart(
       req.sessionID,
@@ -80,18 +86,14 @@ exports.login = async (req, res) => {
       guestCartConversion,
     });
   } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ error: "An internal error occurred during login" });
+    handleError(res, error, "An internal error occurred during login");
   }
 };
 
 exports.logout = async (req, res) => {
   req.session.destroy((err) => {
     if (err) {
-      console.error("Logout error:", err);
-      return res
-        .status(500)
-        .json({ error: "Failed to log out, please try again" });
+      return handleError(res, err, "Failed to log out, please try again", 500);
     }
     res.clearCookie("connect.sid");
     res.status(200).json({ message: "Logged out successfully" });
@@ -113,8 +115,32 @@ exports.getUserProfile = async (req, res) => {
       token: req.token,
     });
   } catch (error) {
-    console.error("Error fetching user profile:", error);
-    res.status(500).json({ error: "An internal error occurred" });
+    handleError(
+      res,
+      error,
+      "An internal error occurred during fetching user profile"
+    );
+  }
+};
+
+exports.changeUserRole = async (req, res) => {
+  const { userId, role } = req.body;
+
+  if (!["user", "admin", "vip"].includes(role)) {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  try {
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.role = role;
+    await user.save();
+    res.status(200).json({ message: "User role updated successfully" });
+  } catch (error) {
+    handleError(res, error, "Error updating user role");
   }
 };
 
@@ -123,4 +149,5 @@ module.exports = {
   login: exports.login,
   logout: exports.logout,
   getUserProfile: exports.getUserProfile,
+  changeUserRole: exports.changeUserRole,
 };

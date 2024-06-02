@@ -13,6 +13,14 @@ router.post("/login", authController.login);
 router.post("/logout", authController.logout);
 router.get("/user", authMiddleware, authController.getUserProfile);
 
+// Route to change user role
+router.post(
+  "/change-role",
+  authMiddleware,
+  roleMiddleware(["admin"]),
+  authController.changeUserRole
+);
+
 // Example route with role-based access control
 router.get("/admin", authMiddleware, roleMiddleware(["admin"]), (req, res) => {
   res.status(200).json({ message: "Admin access granted" });

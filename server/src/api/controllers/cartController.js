@@ -1,15 +1,18 @@
 // server/src/api/controllers/cartController.js
-
 const Cart = require("../models/cartModel");
 const Product = require("@/api/models/productModel");
 const cartService = require("@/services/cartService");
 
-exports.getCart = async (req, res) => {
-  const sessionId = req.sessionID;
-  const userId = req.user ? req.user._id : null; // Updated
-  const query = userId ? { user: userId } : { sessionToken: sessionId };
+// Utility function to construct the query object
+const getCartQuery = (req) => {
+  const sessionId = req.user_id;
+  const userId = req.user ? req.user._id : null;
+  return userId ? { user: userId } : { sessionToken: sessionId };
+};
 
+exports.getCart = async (req, res) => {
   try {
+    const query = getCartQuery(req);
     const cart = await cartService.getCart(query);
     if (!cart) return res.status(404).send({ message: "Cart not found" });
     res.status(200).send(cart);
@@ -29,17 +32,9 @@ exports.addItemToCart = async (req, res) => {
       .send({ message: "'productId' and 'quantity' are required." });
   }
 
-  const sessionId = req.sessionID;
-  const userId = req.user ? req.user._id : null; // Updated
-  const query = userId ? { user: userId } : { sessionToken: sessionId };
-
   try {
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).send({ message: "Product not found" });
-    }
-
-    const cart = await cartService.addOrUpdateCart(query, productId, quantity);
+    const query = getCartQuery(req);
+    const cart = await cartService.addItemToCart(query, productId, quantity);
     res.status(200).send(cart);
   } catch (error) {
     console.error("Failed to add item to cart:", error);
@@ -51,11 +46,9 @@ exports.addItemToCart = async (req, res) => {
 
 exports.updateItemQuantity = async (req, res) => {
   const { productId, quantity } = req.body;
-  const sessionId = req.sessionID;
-  const userId = req.user ? req.user._id : null; // Updated
-  const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
+    const query = getCartQuery(req);
     const cart = await cartService.updateItemQuantity(
       query,
       productId,
@@ -73,11 +66,9 @@ exports.updateItemQuantity = async (req, res) => {
 
 exports.removeItemFromCart = async (req, res) => {
   const { productId } = req.params;
-  const sessionId = req.sessionID;
-  const userId = req.user ? req.user._id : null; // Updated
-  const query = userId ? { user: userId } : { sessionToken: sessionId };
 
   try {
+    const query = getCartQuery(req);
     const cart = await cartService.removeItemFromCart(query, productId);
     res.status(200).send(cart);
   } catch (error) {
@@ -90,10 +81,8 @@ exports.removeItemFromCart = async (req, res) => {
 };
 
 exports.syncCart = async (req, res) => {
-  const sessionId = req.sessionID;
-  const userId = req.user ? req.user._id : null; // Updated
-  const query = userId ? { user: userId } : { sessionToken: sessionId };
   try {
+    const query = getCartQuery(req);
     const cart = await cartService.syncCart(query, req.body.cartItems);
     res.status(200).send(cart);
   } catch (error) {
@@ -105,11 +94,12 @@ exports.syncCart = async (req, res) => {
 };
 
 exports.mergeCart = async (req, res) => {
-  const sessionId = req.sessionID;
-  const userId = req.user._id; // Updated
-
   try {
-    const mergedCart = await cartService.mergeCart(sessionId, userId);
+    const query = getCartQuery(req);
+    const mergedCart = await cartService.mergeCart(
+      query,
+      req.body.localCartItems
+    );
     res.status(200).send(mergedCart);
   } catch (error) {
     console.error("Failed to merge cart:", error);

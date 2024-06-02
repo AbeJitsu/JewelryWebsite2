@@ -10,16 +10,16 @@ const ensureCartExists = async (req, res, next) => {
 
   try {
     let cart;
-    if (req.session.userId) {
-      cart = await Cart.findOne({ user: req.session.userId });
+    if (req.user_id) {
+      cart = await Cart.findOne({ user: req.user_id });
     } else {
       cart = await Cart.findOne({ sessionToken: req.sessionID });
     }
 
     if (!cart) {
       cart = new Cart({
-        user: req.session.userId || null,
-        sessionToken: req.session.userId || req.sessionID,
+        user: req.user_id || null,
+        sessionToken: req.user_id || req.sessionID,
       });
       await cart.save();
     }

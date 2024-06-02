@@ -1,13 +1,11 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/userController.js
 
-
 const User = require("@/api/models/userModel");
-
 
 // Method to update user's address information
 exports.updateAddress = async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming you have user id from session or JWT token
+    const userId = req.user._id; // Assuming you have user id from session or JWT token
     const { billingAddress, shippingAddress } = req.body;
 
     const user = await User.findByIdAndUpdate(
@@ -32,7 +30,7 @@ exports.updateAddress = async (req, res) => {
 // Method to retrieve user's address information
 exports.getAddress = async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming you have user id from session or JWT token
+    const userId = req.user._id; // Assuming you have user id from session or JWT token
 
     const user = await User.findById(userId, "billingAddress shippingAddress");
 

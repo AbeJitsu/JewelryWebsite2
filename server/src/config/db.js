@@ -1,16 +1,12 @@
-// /Users/abiezerreyes/Documents/JewelryWebsite2/server/src/config/db.js
-
+// server/src/config/db.js
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  const mongoURI =
-    process.env.SERVER_MONGODB_URI ||
-    "mongodb://localhost:27017/jewelryStoreDB";
   try {
-    const conn = await mongoose.connect(mongoURI);
-    console.log(`MongoDB connected: ${conn.connection.host}`);
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
+    await mongoose.connect(process.env.SERVER_MONGODB_URI);
+    console.log("MongoDB connected:", process.env.SERVER_MONGODB_URI);
+  } catch (err) {
+    console.error("Error connecting to MongoDB:", err);
     process.exit(1);
   }
 };

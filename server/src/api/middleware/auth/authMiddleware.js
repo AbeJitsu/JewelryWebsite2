@@ -1,18 +1,21 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/middleware/auth/authMiddleware.js
-const User = require("../../models/userModel");
-const authService = require("../../../services/authService");
+
+const User = require("@/models/userModel");
+const authService = require("@/services/authService");
 
 exports.authMiddleware = async function (req, res, next) {
   console.log("Session ID in authMiddleware:", req.sessionID);
   if (req.session.user_id) {
-    console.log("Authenticated user via session:", req.session.user_id);
+    req.user_id = req.session.user_id; // Standardize to req.user_id
+    console.log("Authenticated user via session:", req.user_id);
     return next();
   } else if (req.headers.authorization) {
     const token = req.headers.authorization.split(" ")[1];
     try {
       const decoded = await authService.verifyToken(token);
       console.log("Authenticated user via token:", decoded.id);
-      req.session.user_id = decoded.id;
+      req.user_id = decoded.id;
+      req.session.user_id = decoded.id; // Ensure session is set for consistency
       return next();
     } catch (error) {
       console.log("Unauthorized access attempt via token:", error);
