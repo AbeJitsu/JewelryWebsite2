@@ -72,6 +72,10 @@ exports.login = async (req, res) => {
     req.session.user_id = user._id;
     req.user_id = user._id; // Ensure consistency
 
+    // Debugging session information
+    console.log("Session ID after login:", req.sessionID);
+    console.log("Session Data after login:", req.session);
+
     const guestCartConversion = await Cart.convertGuestCartToUserCart(
       req.sessionID,
       user._id

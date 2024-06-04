@@ -4,7 +4,6 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-const { applySessionMiddleware } = require("@/config/session");
 const errorHandler = require("@/api/middleware/errorHandling").errorHandler;
 const logger = require("@/api/middleware/logger");
 
@@ -20,9 +19,6 @@ module.exports = (app) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(morgan("dev"));
-
-  // Apply session middleware here
-  applySessionMiddleware(app);
 
   app.use(errorHandler);
 };

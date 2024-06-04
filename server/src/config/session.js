@@ -1,4 +1,4 @@
-// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/config/session.js
+// server/src/config/session.js
 
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
@@ -24,11 +24,15 @@ const createSessionConfig = () => {
 };
 
 const applySessionMiddleware = (app) => {
-  console.log("Applying session middleware...");
+  console.log("Applying session middleware in session.js ...");
   const sessionConfig = createSessionConfig();
   app.use(session(sessionConfig));
-  console.log("Session middleware applied.");
-  console.log("Session Configuration:", sessionConfig);
+  app.use((req, res, next) => {
+    console.log(`session.js Session ID: ${req.sessionID}`);
+    console.log(`session.js Session Data: ${JSON.stringify(req.session)}`);
+    next();
+  });
+  console.log("Session middleware in session.js applied.");
 };
 
 module.exports = { createSessionConfig, applySessionMiddleware };
