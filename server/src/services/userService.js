@@ -22,9 +22,16 @@ module.exports = {
   },
 
   getUserByEmail: async (email) => {
-    console.log("Fetching user by email:", email);
-    const user = await User.findOne({ email });
-    console.log("User fetched:", user);
-    return user;
+    try {
+      console.log("Fetching user by email (original):", email);
+      const sanitizedEmail = email.trim().toLowerCase();
+      console.log("Fetching user by email (sanitized):", sanitizedEmail);
+      const user = await User.findOne({ email: sanitizedEmail });
+      console.log("User fetched:", user);
+      return user;
+    } catch (error) {
+      console.error("Error fetching user by email:", error);
+      throw new Error("Error fetching user");
+    }
   },
 };

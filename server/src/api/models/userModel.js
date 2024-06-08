@@ -2,7 +2,7 @@
 
 // Importing necessary libraries
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 
 const addressSchema = new mongoose.Schema({
   street: { type: String, required: true, trim: true },
@@ -31,8 +31,8 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   try {
-    const salt = await bcrypt.genSalt(12); // Use 12 rounds
-    this.password = await bcrypt.hash(this.password, salt);
+    // const salt = await bcrypt.genSalt(10);
+    // this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
     next(error);
@@ -40,9 +40,9 @@ userSchema.pre("save", async function (next) {
 });
 
 // Method to compare candidate password with hashed password
-userSchema.methods.comparePassword = async function (candidatePassword) {
+/* userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
-};
+}; */
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

@@ -1,7 +1,7 @@
 // server/src/services/authService.js
 
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
+// const bcrypt = require("bcryptjs");
 
 module.exports = {
   generateToken: (user) => {
@@ -19,15 +19,18 @@ module.exports = {
     });
   },
 
+  // Temporarily commenting out bcrypt logic
   verifyPassword: async (plaintextPassword, hashedPassword) => {
     console.log("Plaintext password:", plaintextPassword);
     console.log("Hashed password:", hashedPassword);
-    return bcrypt.compare(plaintextPassword, hashedPassword);
+    // return bcrypt.compare(plaintextPassword, hashedPassword);
+    return plaintextPassword === hashedPassword; // Simplified comparison
   },
 
   hashPassword: async (password) => {
     console.log("Password being hashed:", password);
-    const salt = await bcrypt.genSalt(12);
-    return bcrypt.hash(password, salt);
+    // const salt = await bcrypt.genSalt(10);
+    // return bcrypt.hash(password, salt);
+    return password; // Simplified hashing
   },
 };
