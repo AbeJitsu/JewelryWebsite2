@@ -7,10 +7,9 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
-
 const MongoStore = require("connect-mongo");
-const connectDB = require("@/config/db");
 
+const connectDB = require("@/config/db");
 const configureRoutes = require("@/config/configureRoutes");
 const configureMiddleware = require("@/config/configureMiddleware");
 
@@ -23,10 +22,8 @@ const startServer = async () => {
   try {
     // Connect to MongoDB
     const mongoURI = process.env.SERVER_MONGODB_URI;
-    mongoose
-      .connect(mongoURI)
-      .then(() => console.log(`MongoDB connected: ${mongoURI}`))
-      .catch((err) => console.error(`MongoDB connection error: ${err}`));
+    await mongoose.connect(mongoURI);
+    console.log(`MongoDB connected: ${mongoURI}`);
 
     // Apply session middleware
     app.use(
@@ -34,7 +31,19 @@ const startServer = async () => {
         secret: process.env.SERVER_SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
-        store: MongoStore.create({ mongoUrl: mongoURI }),
+        store: MongoStore.create({
+          mongoUrl: mongoURI,
+          collectionName: "sessions",
+          ttl: 60 * 60 * 24, // 1 day
+          stringify: false,
+          autoRemove: "native",
+        }),
+        cookie: {
+          maxAge: 60 * 60 * 24 * 1000, // 1 day
+          secure: process.env.SERVER_NODE_ENV === "production",
+          httpOnly: true,
+          sameSite: "lax",
+        },
       })
     );
 

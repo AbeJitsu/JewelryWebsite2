@@ -4,11 +4,11 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
-// const errorHandler = require("@/api/middleware/errorHandling").errorHandler;
-// const logger = require("@/api/middleware/logger");
+const errorHandler = require("@/api/middleware/errorHandling").errorHandler;
+const logger = require("@/api/middleware/logger");
 
 module.exports = (app) => {
-  // app.use(logger);
+  app.use(logger);
   app.use(
     cors({
       origin: ["http://localhost:8080", "http://localhost:3000"],
@@ -20,5 +20,5 @@ module.exports = (app) => {
   app.use(helmet());
   app.use(morgan("dev"));
 
-  // app.use(errorHandler);
+  app.use(errorHandler);
 };
