@@ -5,6 +5,7 @@ const authService = require("@/services/authService");
 
 exports.authMiddleware = async function (req, res, next) {
   console.log("Session ID in authMiddleware:", req.sessionID);
+
   if (req.session.user_id) {
     req.user_id = req.session.user_id; // Standardize to req.user_id
     console.log("Authenticated user via session:", req.user_id);

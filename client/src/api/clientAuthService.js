@@ -52,6 +52,7 @@ const clientAuthService = {
       throw error;
     }
   },
+
   register: async (userData) => {
     try {
       console.log("Attempting to register with:", userData);

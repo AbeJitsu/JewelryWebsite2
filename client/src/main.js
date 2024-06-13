@@ -76,6 +76,7 @@ new Vue({
   router,
   store,
   created() {
+    console.log("Main.js: Dispatching tryAutoLogin");
     this.$store.dispatch("user/tryAutoLogin");
   },
   render: (h) => h(App),

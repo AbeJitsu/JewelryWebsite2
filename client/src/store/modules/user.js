@@ -3,6 +3,8 @@
 import clientAuthService from "@/api/clientAuthService";
 import router from "@/router";
 
+let lastTryAutoLoginCall = 0;
+
 export default {
   namespaced: true,
   state: {
@@ -26,12 +28,13 @@ export default {
     isAdmin: (state) => state.user && state.user.role === "admin",
     preferredFirstName: (state) => state.registerForm.preferredFirstName,
   },
+
   actions: {
     async register({ commit }, userData) {
       commit("auth_request");
       try {
-        const response = await clientAuthService.register(userData);
-        commit("auth_success", response);
+        await clientAuthService.register(userData);
+        commit("register_success");
       } catch (err) {
         commit("auth_error");
         throw err;
@@ -40,19 +43,16 @@ export default {
     async login({ commit }, userCredentials) {
       commit("auth_request");
       try {
-        console.log("Sending login request with:", userCredentials);
         const response = await clientAuthService.login(
           userCredentials.email,
           userCredentials.password
         );
-        console.log("Received login response:", response);
         if (response.message === "Login successful") {
           commit("auth_success", response);
         } else {
           commit("auth_error");
         }
       } catch (err) {
-        console.error("Login action error:", err);
         commit("auth_error");
         throw err;
       }
@@ -77,6 +77,15 @@ export default {
       }
     },
     async tryAutoLogin({ commit }) {
+      const now = Date.now();
+      if (now - lastTryAutoLoginCall < 3000) {
+        // 3 seconds threshold
+        console.log("Vuex: Skipping tryAutoLogin call due to throttling");
+        return;
+      }
+      lastTryAutoLoginCall = now;
+
+      console.log("Vuex: Dispatching tryAutoLogin");
       try {
         const response = await clientAuthService.tryAutoLogin();
         if (response) {
@@ -89,6 +98,7 @@ export default {
       }
     },
     async checkLoginAndFetchUser({ dispatch }) {
+      console.log("Vuex: Dispatching checkLoginAndFetchUser");
       const response = await dispatch("tryAutoLogin");
       return response;
     },
@@ -112,12 +122,15 @@ export default {
     auth_success(state, userData) {
       state.status = "success";
       state.user = userData;
-      state.token = userData.token;
+      state.token = userData ? userData.token : null;
     },
     auth_error(state) {
       state.status = "error";
       state.user = null;
       state.token = null;
+    },
+    register_success(state) {
+      state.status = "registered";
     },
     logout(state) {
       state.status = "";

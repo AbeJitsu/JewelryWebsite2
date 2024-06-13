@@ -1,6 +1,8 @@
-// server/src/api/controllers/authController.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/server/src/api/controllers/authController.js
+
 const authService = require("../../services/authService");
 const userService = require("../../services/userService");
+const cartService = require("../../services/cartService");
 const validator = require("validator");
 
 // Utility function to handle errors
@@ -9,16 +11,16 @@ const handleError = (res, error, message, statusCode = 500) => {
   res.status(statusCode).json({ error: message });
 };
 
-// Testing Version
-
 // Register function
 exports.register = async (req, res) => {
   const { email, password, preferredFirstName } = req.body;
 
+  // Validate email format
   if (!validator.isEmail(email)) {
     return res.status(400).json({ error: "Invalid email format" });
   }
 
+  // Check password length
   if (password.length < 8) {
     return res
       .status(400)
@@ -26,23 +28,28 @@ exports.register = async (req, res) => {
   }
 
   try {
+    // Check if user already exists
     const existingUser = await userService.getUserByEmail(email);
     if (existingUser) {
       return res.status(409).json({ error: "User already exists" });
     }
 
+    // Hash the password
     const hashedPassword = await authService.hashPassword(password);
 
+    // Create the user
     const user = await userService.createUser({
       email,
       password: hashedPassword,
       preferredFirstName,
     });
 
-    res
-      .status(201)
-      .json({ message: "User registered successfully. Please log in." });
+    // Respond with success message without logging in
+    res.status(201).json({
+      message: "User registered successfully. Please log in.",
+    });
   } catch (error) {
+    // Handle errors
     handleError(res, error, "An error occurred during registration");
   }
 };
@@ -55,13 +62,11 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: "Invalid email and/or password" });
     }
 
-    console.log(`Plaintext password: ${password}`);
-    console.log(`Stored hashed password: ${user.password}`);
-    const isMatch = password === user.password;
-    await authService.verifyPassword(password, user.password);
-    console.log(`Password validation result: ${isMatch}`);
-
-    if (!isMatch) {
+    const isPasswordValid = await authService.verifyPassword(
+      password,
+      user.password
+    );
+    if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
@@ -69,9 +74,11 @@ exports.login = async (req, res) => {
     req.session.user_id = user._id;
     req.user_id = user._id; // Ensure consistency
 
-    // Debugging session information
-    console.log("Session ID after login:", req.sessionID);
-    console.log("Session Data after login:", req.session);
+    // Convert guest cart to user cart
+    const guestCartConversion = await cartService.convertGuestCartToUserCart(
+      req.sessionID,
+      user._id
+    );
 
     res.status(200).json({
       message: "Login successful",
@@ -79,33 +86,12 @@ exports.login = async (req, res) => {
       token,
       preferredFirstName: user.preferredFirstName,
       role: user.role,
+      guestCartConversion,
     });
   } catch (error) {
     handleError(res, error, "An internal error occurred during login");
   }
 };
-
-/* 
-   
-
-    const isPasswordValid = await authService.verifyPassword(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    const token = authService.generateToken(user);
-    res.status(200).json({
-      message: "Login successful",
-      user_id: user._id ? user._id.toString() : null,
-      preferredFirstName: user.preferredFirstName,
-      role: user.role,
-      token,
-    });
-  } catch (error) {
-    console.error("An internal error occurred during login", error);
-    handleError(res, error, "An internal error occurred during login");
-  }
-}; */
 
 exports.logout = async (req, res) => {
   try {
@@ -133,6 +119,7 @@ exports.logout = async (req, res) => {
 
 exports.getUserProfile = async (req, res) => {
   try {
+    console.log("Fetching user profile for user_id:", req.user_id);
     const user = await userService.getUserById(req.user_id);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -178,7 +165,6 @@ module.exports = {
   getUserProfile: exports.getUserProfile,
   changeUserRole: exports.changeUserRole,
 };
-
 // // server/src/api/controllers/authController.js
 // const authService = require("../../services/authService");
 // const userService = require("../../services/userService");

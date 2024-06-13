@@ -77,7 +77,6 @@ exports.syncCart = async (query, cartItems) => {
   return await Cart.findOne(query).populate("items.product");
 };
 
-
 exports.mergeCart = async (userId, localCartItems) => {
   let userCart = await Cart.findOne({ user: userId });
 
@@ -101,4 +100,26 @@ exports.mergeCart = async (userId, localCartItems) => {
 
   await userCart.save();
   return await Cart.findOne({ user: userId }).populate("items.product");
+};
+
+exports.convertGuestCartToUserCart = async (sessionToken, userId) => {
+  console.log(
+    `Converting guest cart to user cart for sessionToken: ${sessionToken}, userId: ${userId}`
+  );
+  const guestCart = await Cart.findOne({ sessionToken });
+  if (!guestCart) {
+    console.log("Guest cart not found for sessionToken:", sessionToken);
+    return null;
+  }
+
+  const userCart = await Cart.findOneAndUpdate(
+    { user: userId },
+    { $addToSet: { items: { $each: guestCart.items } } },
+    { new: true, upsert: true }
+  ).populate("items.product");
+
+  console.log("User cart found or created:", userCart);
+
+  await guestCart.deleteOne();
+  return userCart;
 };

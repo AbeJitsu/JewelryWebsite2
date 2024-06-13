@@ -13,9 +13,7 @@ Vue.use(Router);
 
 const routes = [
   { path: "", redirect: "/jewelry-showcase" },
-
   { path: "/", redirect: "/jewelry-showcase" },
-
   {
     path: "/jewelry-showcase",
     name: "jewelry-showcase",
@@ -89,12 +87,17 @@ const router = new Router({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const isLoggedIn = store.getters["user/isLoggedIn"];
   const isAdmin = store.getters["user/isAdmin"];
   const hasItemsInCart = store.getters["cart/cartItems"].length > 0;
   const shippingCompleted = store.getters["checkout/shippingCompleted"];
   const billingCompleted = store.getters["checkout/billingCompleted"];
+
+  if (!isLoggedIn) {
+    console.log("Router: Dispatching tryAutoLogin");
+    await store.dispatch("user/tryAutoLogin");
+  }
 
   if (to.matched.some((record) => record.meta.requiresAuth && !isLoggedIn)) {
     store.commit("cart/SET_POST_LOGIN_REDIRECT", to.fullPath);
