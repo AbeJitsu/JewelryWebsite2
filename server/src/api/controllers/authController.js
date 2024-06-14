@@ -165,6 +165,7 @@ module.exports = {
   getUserProfile: exports.getUserProfile,
   changeUserRole: exports.changeUserRole,
 };
+
 // // server/src/api/controllers/authController.js
 // const authService = require("../../services/authService");
 // const userService = require("../../services/userService");
