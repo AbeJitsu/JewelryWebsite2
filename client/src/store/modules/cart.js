@@ -1,4 +1,4 @@
-// client/src/store/modules/cart.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
 
 import _ from "lodash";
 import cartService from "@/api/cartService";
@@ -99,7 +99,6 @@ const actions = {
     }
   }, 2000),
   async mergeCartAfterLogin({ dispatch }) {
-    // Remove `state` from here
     const localCartItems =
       JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
     if (localCartItems.length) {

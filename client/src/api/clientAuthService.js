@@ -1,6 +1,7 @@
 // client/src/api/clientAuthService.js
 
 import axiosInstance from "./axiosInstance";
+import store from "@/store";
 
 const clientAuthService = {
   login: async (email, password) => {
@@ -16,25 +17,35 @@ const clientAuthService = {
         axiosInstance.defaults.headers.common[
           "Authorization"
         ] = `Bearer ${response.data.token}`;
-        // await store.dispatch("cart/mergeCartAfterLogin");
+        await store.dispatch("cart/mergeCartAfterLogin");
       }
       return response.data;
     } catch (error) {
       console.error("Error during login:", error.response || error);
+      console.error(
+        "Error during login:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
+
   logout: async () => {
     try {
       const response = await axiosInstance.post("/api/auth/logout");
       console.log("Logout response:", response);
       localStorage.removeItem("token");
       delete axiosInstance.defaults.headers.common["Authorization"];
+      return response.data;
     } catch (error) {
-      console.error("Error during logout:", error.response || error);
+      console.error(
+        "Error during logout:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
+
   tryAutoLogin: async () => {
     try {
       const token = localStorage.getItem("token");
@@ -48,7 +59,10 @@ const clientAuthService = {
       }
       return null;
     } catch (error) {
-      console.error("Error during auto login:", error.response || error);
+      console.error(
+        "Error during auto login:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
@@ -60,7 +74,10 @@ const clientAuthService = {
       console.log("Register response:", response);
       return response.data;
     } catch (error) {
-      console.error("Error during registration:", error.response || error);
+      console.error(
+        "Error during registration:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },

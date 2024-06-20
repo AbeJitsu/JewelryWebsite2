@@ -28,13 +28,17 @@ export default {
     isAdmin: (state) => state.user && state.user.role === "admin",
     preferredFirstName: (state) => state.registerForm.preferredFirstName,
   },
-
   actions: {
     async register({ commit }, userData) {
       commit("auth_request");
       try {
-        await clientAuthService.register(userData);
-        commit("register_success");
+        const response = await clientAuthService.register(userData);
+        if (response.message === "Registration successful") {
+          commit("register_success");
+          router.push({ name: "login" }); // Redirect to login page after successful registration
+        } else {
+          commit("auth_error");
+        }
       } catch (err) {
         commit("auth_error");
         throw err;
@@ -61,9 +65,7 @@ export default {
       try {
         await clientAuthService.logout();
         commit("logout");
-        if (router.currentRoute.meta.requiresAuth) {
-          router.push({ name: "jewelry-showcase" });
-        }
+        router.push({ name: "jewelry-showcase" });
       } catch (err) {
         console.error("Logout error:", err);
       }
@@ -79,7 +81,6 @@ export default {
     async tryAutoLogin({ commit }) {
       const now = Date.now();
       if (now - lastTryAutoLoginCall < 3000) {
-        // 3 seconds threshold
         console.log("Vuex: Skipping tryAutoLogin call due to throttling");
         return;
       }
@@ -99,8 +100,7 @@ export default {
     },
     async checkLoginAndFetchUser({ dispatch }) {
       console.log("Vuex: Dispatching checkLoginAndFetchUser");
-      const response = await dispatch("tryAutoLogin");
-      return response;
+      return await dispatch("tryAutoLogin");
     },
     toggleModal({ commit }) {
       commit("TOGGLE_MODAL");
@@ -123,6 +123,7 @@ export default {
       state.status = "success";
       state.user = userData;
       state.token = userData ? userData.token : null;
+      console.log("User data after login:", state.user);
     },
     auth_error(state) {
       state.status = "error";

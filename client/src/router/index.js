@@ -102,30 +102,36 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth && !isLoggedIn)) {
     store.commit("cart/SET_POST_LOGIN_REDIRECT", to.fullPath);
     store.dispatch("triggerAuthModal");
-    next(false);
-  } else if (
+    return next(false);
+  }
+
+  if (
     to.matched.some((record) => record.meta.requiresCart && !hasItemsInCart)
   ) {
-    next({ name: "jewelry-showcase" });
-  } else if (
+    return next({ name: "jewelry-showcase" });
+  }
+
+  if (
     to.matched.some(
       (record) => record.meta.requiresShipping && !shippingCompleted
     )
   ) {
-    next({ name: "checkout-shipping" });
-  } else if (
+    return next({ name: "checkout-shipping" });
+  }
+
+  if (
     to.matched.some(
       (record) => record.meta.requiresBilling && !billingCompleted
     )
   ) {
-    next({ name: "checkout-billing" });
-  } else if (
-    to.matched.some((record) => record.meta.role === "admin" && !isAdmin)
-  ) {
-    next({ name: "not-found" });
-  } else {
-    next();
+    return next({ name: "checkout-billing" });
   }
+
+  if (to.matched.some((record) => record.meta.role === "admin" && !isAdmin)) {
+    return next({ name: "not-found" });
+  }
+
+  next();
 });
 
 export default router;

@@ -28,3 +28,5 @@ router.get("/admin", authMiddleware, roleMiddleware(["admin"]), (req, res) => {
 });
 
 module.exports = router;
+
+// In this example, the authRoutes.js file defines several routes for user authentication and authorization. The routes are protected using middleware functions that check for user authentication and role-based access control. The authMiddleware function checks if the user is authenticated, while the roleMiddleware function checks if the user has the required role to access certain routes.

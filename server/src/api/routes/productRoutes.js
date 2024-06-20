@@ -11,7 +11,15 @@ router.post("/", upload.none(), productController.addProduct);
 router.get("/:id", productController.getProductById);
 router.put("/:id", productController.updateProduct);
 router.delete("/:id", productController.deleteProduct);
-router.post("/upload-csv", upload.single("file"), productController.uploadCSV);
+
+// Update to handle multiple file uploads
+router.post(
+  "/upload-csv",
+  upload.fields([
+    { name: "regular", maxCount: 1 },
+    { name: "premiere", maxCount: 1 },
+  ]),
+  productController.uploadCSV
+);
 
 module.exports = router;
-

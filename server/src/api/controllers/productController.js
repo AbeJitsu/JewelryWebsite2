@@ -87,7 +87,21 @@ async function getProductById(req, res) {
 
 // Upload CSV and process it
 async function uploadCSV(req, res) {
-  return handleCSVUpload(req, res);
+  if (!req.files || !req.files.regular || !req.files.premiere) {
+    return res.status(400).send({ message: "Both CSV files are required." });
+  }
+
+  const regularCSV = req.files.regular[0];
+  const premiereCSV = req.files.premiere[0];
+
+  try {
+    await handleCSVUpload(regularCSV, premiereCSV);
+    res.json({ message: "CSV files processed successfully." });
+  } catch (error) {
+    res
+      .status(500)
+      .send({ message: "Error processing CSV files", error: error.message });
+  }
 }
 
 module.exports = {

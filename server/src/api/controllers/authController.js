@@ -85,13 +85,14 @@ exports.login = async (req, res) => {
       user_id: user._id,
       token,
       preferredFirstName: user.preferredFirstName,
-      role: user.role,
+      role: user.role, // Ensure role is sent back
       guestCartConversion,
     });
   } catch (error) {
     handleError(res, error, "An internal error occurred during login");
   }
 };
+
 
 exports.logout = async (req, res) => {
   try {

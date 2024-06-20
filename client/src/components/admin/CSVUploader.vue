@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h5>{{ label }}</h5>
     <b-form-file
       v-model="selectedFile"
       :state="Boolean(selectedFile)"
@@ -12,6 +13,12 @@
 
 <script>
 export default {
+  props: {
+    label: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
       selectedFile: null,
@@ -25,7 +32,6 @@ export default {
         const orderNumber = orderNumberMatch ? orderNumberMatch[1] : null;
         this.$emit("file-selected", { file, orderNumber });
       } else {
-        // Optionally handle the case where no file is selected
         console.log("No file selected");
       }
     },

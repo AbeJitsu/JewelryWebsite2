@@ -8,6 +8,7 @@ export default {
   },
   mutations: {
     TOGGLE_MODAL(state, isVisible) {
+      console.log("TOGGLE_MODAL called with", isVisible);
       state.isModalOpen = isVisible;
     },
     SET_SELECTED_PRODUCT_ID(state, productId) {
@@ -32,4 +33,3 @@ export default {
     },
   },
 };
-// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/modal.js

@@ -112,6 +112,13 @@ exports.convertGuestCartToUserCart = async (sessionToken, userId) => {
     return null;
   }
 
+  // Ensure user field is updated
+  guestCart.user = userId;
+  guestCart.sessionToken = null; // Clear sessionToken as it's no longer needed
+
+  await guestCart.save();
+  console.log("Guest cart linked to user. Guest cart:", guestCart);
+
   const userCart = await Cart.findOneAndUpdate(
     { user: userId },
     { $addToSet: { items: { $each: guestCart.items } } },
