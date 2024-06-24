@@ -163,7 +163,7 @@ export default {
 </script>
 
 <style scoped>
-@import "@/assets/styles/sharedStyles.css";
+@import "@/assets/styles/sharedStyles.scss";
 
 .button-group {
   display: flex;

@@ -27,14 +27,13 @@ import "vue-slick-carousel/dist/vue-slick-carousel-theme.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./assets/styles/custom.scss"; // Custom overrides - currently not used
+
+import "./assets/styles/sharedStyles.scss"; // Shared styles SCSS
 
 // Local imports
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
-import TheHeader from "@/components/common/TheHeader.vue";
-import TheFooter from "@/components/common/TheFooter.vue";
 
 console.log("API URL:", process.env.VUE_APP_API_URL);
 
@@ -59,8 +58,6 @@ library.add(
 
 // Global component registration
 Vue.component("font-awesome-icon", FontAwesomeIcon);
-Vue.component("TheHeader", TheHeader);
-Vue.component("TheFooter", TheFooter);
 Vue.component("VueSlickCarousel", VueSlickCarousel);
 
 // Vue plugin usage

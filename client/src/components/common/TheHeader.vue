@@ -1,79 +1,72 @@
-<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/common/TheHeader.vue -->
-
 <template>
   <div class="header-container">
-    <b-navbar
-      toggleable="lg"
-      type="darker"
-      variant="darker"
-      class="custom-navbar"
-    >
+    <b-navbar type="darker" variant="darker" class="custom-navbar">
       <b-navbar-brand to="/jewelry-showcase" class="custom-brand-container">
-        <!-- <img
-          :src="require('@/assets/logo.png')"
+        <span class="logo-text hover-effect d-none d-lg-inline"
+          >Escape, Relax & Be Jeweled</span
+        >
+        <img
+          :src="require('@/assets/images/logo.png')"
           alt="Logo"
           class="logo-image"
-        /> -->
-        <span class="logo-text">Escape, Relax & Be Jeweled</span>
+        />
       </b-navbar-brand>
-      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-      <b-collapse id="nav-collapse" is-nav>
-        <!-- <b-navbar-nav>
-          <b-nav-item :to="{ name: 'jewelry-showcase' }">Shop</b-nav-item>
-        </b-navbar-nav> -->
-
-        <div
-          class="header-right d-flex align-items-center justify-content-end flex-grow-1"
-        >
-          <div
-            class="search-container d-flex flex-grow-1 mx-2 position-relative"
-          >
-            <b-form-input
-              size="md"
-              class="search-input"
-              placeholder="Find an amazing ..."
-            />
-            <b-button size="md" class="search-button" type="submit">
-              <b-icon icon="search" class="search-icon"></b-icon>
-            </b-button>
-          </div>
-          <div class="user-actions-container d-flex align-items-center">
-            <b-nav-item v-if="!isLoggedIn" @click="showAuthModal">
-              <b-icon icon="key-fill"></b-icon> Shine In
-            </b-nav-item>
-            <b-nav-item v-else @click="performLogout">
-              <b-icon icon="box-arrow-right"></b-icon> Welcome,
-              {{ userPreferredName }}!
-            </b-nav-item>
-            <b-nav-item @click="goToAccount">
-              <b-icon icon="person-circle"></b-icon> Account & Orders
-            </b-nav-item>
-            <b-nav-item class="cart-icon-container" @click="goToCart">
-              <div>
-                <div class="cart-icon-wrapper">
-                  <b-icon icon="cart-fill" class="cart-icon"></b-icon>
-                  <b-badge variant="danger" class="cart-item-count">{{
-                    itemCount
-                  }}</b-badge>
-                </div>
-                <span class="cart-text">Cart</span>
-              </div>
-            </b-nav-item>
-          </div>
+      <div class="header-right">
+        <div class="search-container">
+          <b-form-input
+            size="md"
+            class="search-input"
+            placeholder="Find an amazing ..."
+          />
+          <b-button size="md" class="search-button" type="submit">
+            <b-icon icon="search" class="search-icon"></b-icon>
+          </b-button>
         </div>
-      </b-collapse>
+        <div class="user-actions-container">
+          <b-nav-item v-if="isLoggedIn"
+            >Welcome, {{ userPreferredName }}!</b-nav-item
+          >
+          <hover-dropdown
+            class="account-orders-dropdown"
+            @show-login-modal="showLoginModal"
+            @show-register-modal="showRegisterModal"
+            @show-account-modal="showAccountModal"
+            @show-orders-modal="showOrdersModal"
+            @show-wishlist-modal="showWishlistModal"
+            @show-settings-modal="showSettingsModal"
+            @show-help-center-modal="showHelpCenterModal"
+            @show-profile-modal="showProfileModal"
+          ></hover-dropdown>
+          <b-nav-item class="cart-icon-container" @click="goToCart">
+            <div>
+              <div class="cart-icon-wrapper">
+                <b-icon icon="cart-fill" class="cart-icon"></b-icon>
+                <b-badge variant="danger" class="cart-item-count">{{
+                  itemCount
+                }}</b-badge>
+              </div>
+              <span class="cart-text d-none d-lg-inline">Cart</span>
+            </div>
+          </b-nav-item>
+        </div>
+      </div>
     </b-navbar>
-    <auth-modal></auth-modal>
+    <login-modal ref="loginModal"></login-modal>
+    <register-modal ref="registerModal"></register-modal>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import AuthModal from "@/components/auth/AuthModal.vue";
+import LoginModal from "@/components/auth/LoginModal.vue";
+import RegisterModal from "@/components/auth/RegisterModal.vue";
+import HoverDropdown from "@/components/common/HoverDropdown.vue";
 
 export default {
   components: {
-    AuthModal,
+    LoginModal,
+    RegisterModal,
+    HoverDropdown,
   },
   computed: {
     ...mapGetters("user", ["isLoggedIn", "user"]),
@@ -91,8 +84,11 @@ export default {
       "checkLoginAndFetchUser",
     ]),
     ...mapActions("cart", ["fetchCart"]),
-    showAuthModal() {
-      this.$bvModal.show("auth-modal");
+    showLoginModal() {
+      this.$refs.loginModal.showModal = true;
+    },
+    showRegisterModal() {
+      this.$refs.registerModal.showModal = true;
     },
     async performLogout() {
       try {
@@ -103,6 +99,24 @@ export default {
     },
     goToCart() {
       this.$router.push({ name: "cart" });
+    },
+    showAccountModal() {
+      // Logic to show Account Modal
+    },
+    showOrdersModal() {
+      // Logic to show Orders Modal
+    },
+    showWishlistModal() {
+      // Logic to show Wishlist Modal
+    },
+    showSettingsModal() {
+      // Logic to show Settings Modal
+    },
+    showHelpCenterModal() {
+      // Logic to show Help Center Modal
+    },
+    showProfileModal() {
+      // Logic to show Profile Modal
     },
     goToAccount() {
       this.$router.push({ name: "account" });
@@ -130,7 +144,31 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@/assets/styles/sharedStyles.scss";
+
+.custom-navbar {
+  background-color: #121212;
+  color: #fff;
+  font-size: 1rem;
+
+  .navbar-nav .nav-link,
+  .navbar-toggler-icon,
+  .navbar-brand {
+    color: $primary;
+  }
+
+  .account-orders-dropdown .dropdown-toggle,
+  .account-orders-dropdown .btn-link {
+    color: #fff !important;
+    background-color: $primary !important;
+
+    &:hover {
+      background-color: $hover-color !important;
+    }
+  }
+}
+
 .header-container {
   position: sticky;
   top: 0;
@@ -144,61 +182,22 @@ export default {
 }
 
 .logo-image {
-  height: 2em;
-  border-radius: 25%;
+  height: 2.5rem; /* Ensure this height matches the search input and button */
+  border-radius: 0.25rem;
 }
 
 .logo-text {
-  color: #fff;
   font-family: "Tangerine", cursive;
   font-size: 2.1rem;
   font-weight: 900;
-  color: #ff6b81;
+  color: $primary;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.359);
-}
+  display: none; /* Hidden by default */
+  @extend .hover-effect;
 
-.logo-text:hover {
-  color: #ff8c99;
-  text-decoration: none;
-  transform: scale(1.01);
-  transition: transform 0.3s ease;
-}
-
-.custom-navbar {
-  background-color: #121212;
-  color: #fff;
-  font-size: 1rem;
-}
-
-/* Adjusting the navbar links and icons */
-.custom-navbar .navbar-nav .nav-link,
-.custom-navbar .navbar-toggler-icon,
-.custom-navbar .navbar-brand,
-.user-actions-container .nav-link {
-  color: #ff6b81;
-}
-
-/* Hover effects */
-.custom-navbar .navbar-nav .nav-link:hover,
-.custom-navbar .navbar-nav .nav-link:focus,
-.custom-navbar .navbar-toggler-icon:focus,
-.custom-navbar .navbar-toggler-icon:hover,
-.custom-navbar .navbar-brand:hover,
-.custom-navbar .navbar-brand:focus,
-.user-actions-container .nav-link:hover,
-.user-actions-container .nav-link:focus {
-  color: #ff8c99;
-  text-decoration: none;
-  transform: scale(1.01);
-  transition: transform 0.1s ease;
-}
-
-/* Ensuring no list-style for navbar items */
-.custom-navbar b-navbar-nav ul,
-.custom-navbar b-navbar-nav li,
-.custom-navbar li {
-  list-style-type: none !important;
-  display: inline-block !important;
+  @media (min-width: 992px) {
+    display: inline; /* Displayed on large screens */
+  }
 }
 
 .header-right {
@@ -210,41 +209,50 @@ export default {
 
 .search-container {
   display: flex;
-  position: relative;
   align-items: center;
+  position: relative;
   flex-grow: 1;
-  border: 1px solid #ced4da; /* Border color */
-  border-radius: 0.25rem; /* Apply border radius to the container */
+  max-width: 500px;
+  min-width: 300px;
+  // border: 1px solid #e4e4e4;
+  border-radius: 0.25rem;
+  background-color: #fff; /* Ensure background matches the search button */
+  height: 2.5rem; /* Set consistent height */
 }
 
 .search-input {
   flex-grow: 1;
-  border: none;
-  border-top-left-radius: 0.25rem; /* Round top-left corner */
-  border-bottom-left-radius: 0.25rem; /* Round bottom-left corner */
+  border: none !important;
+  border-radius: 0.25rem !important;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+
+  padding: 0.375rem 0.75rem;
+  height: 100%; /* Match the container height */
 }
 
 .search-button {
-  position: absolute;
-  right: 1px;
-  top: 5;
-  border: none;
   background-color: white;
+  border: none !important;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
   padding: 0.375rem 0.75rem;
-  border-top-right-radius: 0.25rem; /* Round top-right corner */
-  border-bottom-right-radius: 0.25rem; /* Round bottom-right corner */
+  height: 100%; /* Match the container height */
+  display: flex;
+  background-color: white;
+
+  align-items: center;
+  justify-content: center;
 }
 
 .search-icon {
-  color: #ff6b81;
+  color: $primary;
 }
 
 .user-actions-container {
   display: flex;
   align-items: center;
   gap: 1rem;
-  white-space: nowrap;
-  text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.123);
 }
 
 .cart-icon-container {
@@ -257,7 +265,7 @@ export default {
   display: inline-block;
   gap: 5px;
   cursor: pointer;
-  transition: transform 0.3s ease; /* Apply transition here */
+  transition: transform 0.3s ease;
 }
 
 .cart-icon {
@@ -286,6 +294,9 @@ export default {
 }
 
 .cart-text {
-  margin-left: 10px; /* Space from the cart icon */
+  margin-left: 10px;
+  height: 100%; /* Match the other elements' height */
+  display: flex;
+  align-items: center;
 }
 </style>

@@ -1,43 +1,12 @@
-<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/auth/AuthModal.vue -->
+<!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/auth/RegisterModal.vue -->
 
 <template>
-  <!-- Authentication Modal -->
-  <b-modal v-model="showModal" @hide="resetForm" id="auth-modal">
-    <template #modal-title>{{ isLogin ? "Login" : "Register" }}</template>
+  <!-- Registration Modal -->
+  <b-modal v-model="showModal" @hide="resetForm" id="register-modal">
+    <template #modal-title>Register</template>
 
     <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
-    <!-- Login Form -->
-    <b-form v-if="isLogin" @submit.prevent="loginUser">
-      <!-- Email Input -->
-      <b-form-group label="Email" label-for="login-email">
-        <b-form-input
-          id="login-email"
-          v-model="loginForm.email"
-          type="email"
-          required
-          placeholder="Enter email"
-        ></b-form-input>
-      </b-form-group>
-      <!-- Password Input -->
-      <b-form-group label="Password" label-for="login-password">
-        <b-form-input
-          id="login-password"
-          v-model="loginForm.password"
-          type="password"
-          required
-          placeholder="Password"
-          autocomplete="current-password"
-        ></b-form-input>
-      </b-form-group>
-      <b-button type="submit" variant="primary">Login</b-button>
-
-      <!-- Toggle to Registration Form -->
-      <b-button variant="link" @click="toggleForm"
-        >Don't have an account? Register</b-button
-      >
-    </b-form>
-    <!-- Registration Form -->
-    <b-form v-if="!isLogin" @submit.prevent="registerUser">
+    <b-form @submit.prevent="registerUser">
       <b-form-group
         label="Preferred First Name"
         label-for="register-first-name"
@@ -80,9 +49,6 @@
         ></b-form-input>
       </b-form-group>
       <b-button type="submit" variant="primary">Register</b-button>
-      <b-button variant="link" @click="toggleForm"
-        >Already have an account? Login</b-button
-      >
     </b-form>
   </b-modal>
 </template>
@@ -94,11 +60,6 @@ export default {
   data() {
     return {
       showModal: false,
-      isLogin: true,
-      loginForm: {
-        email: "",
-        password: "",
-      },
       registerForm: {
         preferredFirstName: "",
         email: "",
@@ -109,32 +70,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions("user", ["login", "register"]),
-    toggleForm() {
-      this.isLogin = !this.isLogin;
-      this.resetForm();
-    },
-    async loginUser() {
-      try {
-        console.log("Attempting to login with:", this.loginForm);
-        const response = await this.login(this.loginForm);
-        console.log("Login response:", response);
-        this.$bvModal.hide("auth-modal");
-        this.errorMessage = ""; // Clear any previous error message
-
-        const redirectPath = this.$store.state.cart.postLoginRedirect;
-        if (redirectPath) {
-          this.$router.push(redirectPath);
-          this.$store.commit("cart/SET_POST_LOGIN_REDIRECT", null);
-        } else {
-          this.$router.push("/jewelry-showcase");
-        }
-      } catch (error) {
-        console.error("Login error:", error);
-        this.errorMessage =
-          error.response?.data?.error || "Login failed. Please try again.";
-      }
-    },
+    ...mapActions("user", ["register"]),
     async registerUser() {
       if (
         this.registerForm.password !== this.registerForm.passwordConfirmation
@@ -145,7 +81,7 @@ export default {
 
       try {
         await this.register(this.registerForm);
-        this.$bvModal.hide("auth-modal");
+        this.$bvModal.hide("register-modal");
         this.errorMessage = "";
         this.resetForm();
         if (this.$router.currentRoute.path !== "/jewelry-showcase") {
@@ -169,6 +105,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 @import "@/assets/styles/sharedStyles.scss";
 
@@ -195,7 +132,7 @@ export default {
 
 .b-modal .b-button {
   border-radius: 0.25rem;
-  background-color: #ff6b81 !important; /* Using !important to override Bootstrap styles */
+  background-color: #ff6b81 !important;
   border: none;
   color: #fff;
 }
@@ -217,26 +154,5 @@ export default {
 .b-modal .b-form-textarea:focus {
   border-color: #ff8c99;
   box-shadow: 0 0 0 0.2rem rgba(255, 107, 129, 0.25);
-}
-
-@media (max-width: 768px) {
-  .b-modal .modal-header,
-  .b-modal .modal-footer,
-  .b-modal .modal-body {
-    padding: 20px;
-  }
-
-  .b-modal .b-button {
-    margin-top: 10px;
-    width: 100%;
-  }
-}
-
-.b-modal .b-button-primary,
-.b-modal .b-button-primary:hover,
-.b-modal .b-button-primary:focus {
-  background-color: #ff6b81 !important;
-  border-color: #ff6b81 !important;
-  color: #fff !important;
 }
 </style>

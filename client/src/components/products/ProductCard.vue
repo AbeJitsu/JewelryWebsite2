@@ -55,7 +55,7 @@ export default {
 <style scoped>
 .product-card {
   border: 1px solid #eee;
-  border-radius: 8px;
+  border-radius: 0.25rem;
   padding: 20px;
   margin: 1em auto;
   display: flex;

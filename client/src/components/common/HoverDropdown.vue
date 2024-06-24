@@ -1,66 +1,97 @@
 <!-- /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/components/common/HoverDropdown.vue -->
 
 <template>
-  <div
-    class="hover-dropdown"
-    v-show="isDropdownVisible"
-    @mouseleave="hideDropdown"
-  >
-    <div class="dropdown-content">
-      <b-button @click="showSignInModal">Sign In</b-button>
-      <b-button @click="showRegisterModal">Register</b-button>
-      <b-link @click="navigateTo('/account')">Account</b-link>
-      <b-link @click="navigateTo('/orders')">Orders</b-link>
-      <b-link @click="navigateTo('/history')">Browsing History</b-link>
-      <!-- Add more links as needed -->
-    </div>
+  <div>
+    <!-- Dropdown Menu -->
+    <b-icon icon="key-fill"></b-icon>
+    <b-dropdown
+      class="account-orders-dropdown"
+      size="md"
+      text="Account & Orders"
+      right
+      toggle-class="custom-dropdown-toggle"
+    >
+      <b-dropdown-item @click="showLoginModal">Login</b-dropdown-item>
+      <b-dropdown-item @click="showRegisterModal">Register</b-dropdown-item>
+      <b-dropdown-item @click="showAccountModal">Account</b-dropdown-item>
+      <b-dropdown-item @click="showOrdersModal">Orders</b-dropdown-item>
+      <b-dropdown-item @click="showWishlistModal">Wishlist</b-dropdown-item>
+      <b-dropdown-item @click="showSettingsModal">Settings</b-dropdown-item>
+      <b-dropdown-item @click="signOut">Sign Out</b-dropdown-item>
+      <b-dropdown-item @click="showHelpCenterModal"
+        >Help Center</b-dropdown-item
+      >
+      <b-dropdown-item @click="showProfileModal">Profile</b-dropdown-item>
+    </b-dropdown>
+    <login-modal ref="loginModal"></login-modal>
+    <register-modal ref="registerModal"></register-modal>
   </div>
 </template>
 
 <script>
+import LoginModal from "@/components/auth/LoginModal.vue";
+import RegisterModal from "@/components/auth/RegisterModal.vue";
+import { mapActions } from "vuex";
+
 export default {
-  data() {
-    return {
-      isDropdownVisible: false,
-    };
+  components: {
+    LoginModal,
+    RegisterModal,
   },
   methods: {
-    showSignInModal() {
-      this.$emit("show-sign-in-modal");
+    ...mapActions("user", ["logout"]),
+    showLoginModal() {
+      this.$refs.loginModal.showModal = true; // Set showModal to true
     },
     showRegisterModal() {
-      this.$emit("show-register-modal");
+      this.$refs.registerModal.showModal = true; // Set showModal to true
     },
-    navigateTo(path) {
-      this.$router.push(path);
+    showAccountModal() {
+      this.$emit("show-account-modal");
     },
-    hideDropdown() {
-      this.isDropdownVisible = false;
+    showOrdersModal() {
+      this.$emit("show-orders-modal");
     },
-    showDropdown() {
-      this.isDropdownVisible = true;
+    showWishlistModal() {
+      this.$emit("show-wishlist-modal");
+    },
+    showSettingsModal() {
+      this.$emit("show-settings-modal");
+    },
+    async signOut() {
+      try {
+        await this.logout();
+        this.$router.push("/jewelry-showcase");
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    },
+    showHelpCenterModal() {
+      this.$emit("show-help-center-modal");
+    },
+    showProfileModal() {
+      this.$emit("show-profile-modal");
     },
   },
 };
 </script>
 
 <style scoped>
-.hover-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 250px;
-  z-index: 1000;
-  display: none;
+.account-orders-dropdown >>> .custom-dropdown-toggle {
+  color: black !important;
+  background: #ff6b81 !important; /* Pink background */
+  border: none !important;
 }
-.hover-dropdown .dropdown-content {
-  padding: 15px;
+
+.account-orders-dropdown >>> .custom-dropdown-toggle:hover {
+  background: #ff8c99 !important; /* Slightly darker pink on hover */
 }
-.hover-dropdown .dropdown-content b-button,
-.hover-dropdown .dropdown-content b-link {
-  display: block;
-  margin-bottom: 10px;
+
+.account-orders-dropdown >>> .dropdown-item {
+  color: #67232e !important;
+}
+
+.account-orders-dropdown >>> .dropdown-item:hover {
+  color: #37020d !important;
 }
 </style>
