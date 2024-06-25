@@ -2,15 +2,17 @@
 
 <template>
   <div>
-    <!-- Dropdown Menu -->
-    <b-icon icon="key-fill"></b-icon>
+    <!-- Dropdown Menu with integrated key icon -->
     <b-dropdown
       class="account-orders-dropdown"
       size="md"
-      text="Account & Orders"
-      right
-      toggle-class="custom-dropdown-toggle"
+      toggle-class="custom-dropdown-toggle hover-effect"
+      left
     >
+      <template #button-content>
+        <b-icon icon="key-fill" class="dropdown-icon"></b-icon>
+        Account & Orders
+      </template>
       <b-dropdown-item @click="showLoginModal">Login</b-dropdown-item>
       <b-dropdown-item @click="showRegisterModal">Register</b-dropdown-item>
       <b-dropdown-item @click="showAccountModal">Account</b-dropdown-item>
@@ -41,10 +43,10 @@ export default {
   methods: {
     ...mapActions("user", ["logout"]),
     showLoginModal() {
-      this.$refs.loginModal.showModal = true; // Set showModal to true
+      this.$refs.loginModal.showModal = true;
     },
     showRegisterModal() {
-      this.$refs.registerModal.showModal = true; // Set showModal to true
+      this.$refs.registerModal.showModal = true;
     },
     showAccountModal() {
       this.$emit("show-account-modal");
@@ -77,14 +79,31 @@ export default {
 </script>
 
 <style scoped>
+@import "@/assets/styles/sharedStyles.scss";
+
 .account-orders-dropdown >>> .custom-dropdown-toggle {
   color: black !important;
   background: #ff6b81 !important; /* Pink background */
   border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Ensure consistent height */
+  transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out,
+    transform 0.3s ease-in-out; /* Add transition effects */
+
+  &:hover {
+    color: lighten(
+      $primary,
+      50%
+    ) !important; /* Lighten the primary color by 10% */
+    text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.2) !important; /* Increase the text shadow */
+    transform: scale(1.02) !important; /* Slightly increase the size */
+  }
 }
 
-.account-orders-dropdown >>> .custom-dropdown-toggle:hover {
-  background: #ff8c99 !important; /* Slightly darker pink on hover */
+.account-orders-dropdown >>> .dropdown-icon {
+  margin-right: 0.5rem; /* Space between icon and text */
 }
 
 .account-orders-dropdown >>> .dropdown-item {
