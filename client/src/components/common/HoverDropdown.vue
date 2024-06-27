@@ -11,7 +11,7 @@
     >
       <template #button-content>
         <b-icon icon="key-fill" class="dropdown-icon"></b-icon>
-        Account & Orders
+        <span class="dropdown-text">{{ dropdownText }}</span>
       </template>
       <b-dropdown-item @click="showLoginModal">Login</b-dropdown-item>
       <b-dropdown-item @click="showRegisterModal">Register</b-dropdown-item>
@@ -39,6 +39,12 @@ export default {
   components: {
     LoginModal,
     RegisterModal,
+  },
+  props: {
+    dropdownText: {
+      type: String,
+      default: "Account & Orders",
+    },
   },
   methods: {
     ...mapActions("user", ["logout"]),
@@ -91,6 +97,8 @@ export default {
   height: 100%; /* Ensure consistent height */
   transition: color 0.3s ease-in-out, text-shadow 0.3s ease-in-out,
     transform 0.3s ease-in-out; /* Add transition effects */
+  margin-left: 1rem;
+  margin-right: 0rem;
 
   &:hover {
     color: lighten(
@@ -106,11 +114,21 @@ export default {
   margin-right: 0.5rem; /* Space between icon and text */
 }
 
+.account-orders-dropdown >>> .dropdown-text {
+  display: inline;
+}
+
 .account-orders-dropdown >>> .dropdown-item {
   color: #67232e !important;
 }
 
 .account-orders-dropdown >>> .dropdown-item:hover {
   color: #37020d !important;
+}
+
+@media (max-width: 768px) {
+  .account-orders-dropdown >>> .dropdown-text {
+    display: none; /* Hide text on smaller screens */
+  }
 }
 </style>

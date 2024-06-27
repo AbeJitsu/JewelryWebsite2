@@ -96,19 +96,38 @@ export default {
   margin: 1% 5% 1% 5%;
 }
 
+@media (max-width: 1024px) {
+  .jewelry-showcase,
+  .products-container {
+    grid-template-columns: repeat(auto-fit, minmax(40%, 2fr));
+  }
+}
+
 @media (max-width: 768px) {
   .jewelry-showcase,
   .products-container {
     grid-template-columns: repeat(auto-fit, minmax(45%, 2fr));
+    gap: 1rem;
+    padding: 10px 5%;
   }
 }
 
 @media (max-width: 480px) {
   .jewelry-showcase,
   .products-container {
-    grid-template-columns: repeat(auto-fit, minmax(50%, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
     gap: 15px;
     padding: 15px;
+  }
+}
+
+/* Further adjustments for very small screens */
+@media (max-width: 360px) {
+  .jewelry-showcase,
+  .products-container {
+    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    gap: 10px;
+    padding: 10px;
   }
 }
 </style>

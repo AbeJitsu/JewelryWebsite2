@@ -17,9 +17,7 @@
           </div>
         </b-navbar-brand>
       </div>
-      <div
-        class="header-right flex-grow-1 d-flex justify-content-between align-items-center"
-      >
+      <div class="header-right">
         <div class="search-container">
           <b-form-input
             size="md"
@@ -30,29 +28,34 @@
             <b-icon icon="search" class="search-icon"></b-icon>
           </b-button>
         </div>
-        <b-nav-item v-if="isLoggedIn" class="mx-3 welcome-text">
-          Welcome, {{ userPreferredName }}!
-        </b-nav-item>
-        <hover-dropdown
-          class="account-orders-dropdown"
-          @show-login-modal="showLoginModal"
-          @show-register-modal="showRegisterModal"
-          @show-account-modal="showAccountModal"
-          @show-orders-modal="showOrdersModal"
-          @show-wishlist-modal="showWishlistModal"
-          @show-settings-modal="showSettingsModal"
-          @show-help-center-modal="showHelpCenterModal"
-          @show-profile-modal="showProfileModal"
-        ></hover-dropdown>
-        <b-nav-item class="cart-icon-container" @click="goToCart">
-          <div class="cart-icon-wrapper">
-            <b-icon icon="cart-fill" class="cart-icon"></b-icon>
-            <b-badge variant="danger" class="cart-item-count">
-              {{ itemCount }}
-            </b-badge>
-          </div>
-          <span class="cart-text d-none d-lg-inline">Cart</span>
-        </b-nav-item>
+        <div class="welcome-account-container">
+          <b-nav-item v-if="isLoggedIn" class="mx-3">
+            Welcome, {{ userPreferredName }}!
+          </b-nav-item>
+          <hover-dropdown
+            class="account-orders-dropdown"
+            :dropdownText="dropdownText"
+            @show-login-modal="showLoginModal"
+            @show-register-modal="showRegisterModal"
+            @show-account-modal="showAccountModal"
+            @show-orders-modal="showOrdersModal"
+            @show-wishlist-modal="showWishlistModal"
+            @show-settings-modal="showSettingsModal"
+            @show-help-center-modal="showHelpCenterModal"
+            @show-profile-modal="showProfileModal"
+          ></hover-dropdown>
+        </div>
+        <div class="cart-container">
+          <b-nav-item class="cart-icon-container" @click="goToCart">
+            <div class="cart-icon-wrapper">
+              <b-icon icon="cart-fill" class="cart-icon"></b-icon>
+              <b-badge variant="danger" class="cart-item-count">
+                {{ itemCount }}
+              </b-badge>
+            </div>
+            <span class="cart-text d-none d-lg-inline">Cart</span>
+          </b-nav-item>
+        </div>
       </div>
     </b-navbar>
     <login-modal ref="loginModal"></login-modal>
@@ -71,6 +74,11 @@ export default {
     LoginModal,
     RegisterModal,
     HoverDropdown,
+  },
+  data() {
+    return {
+      dropdownText: "Account & Orders",
+    };
   },
   computed: {
     ...mapGetters("user", ["isLoggedIn", "user"]),
@@ -122,8 +130,9 @@ export default {
     showProfileModal() {
       // Logic to show Profile Modal
     },
-    goToAccount() {
-      this.$router.push({ name: "account" });
+    updateDropdownText() {
+      this.dropdownText =
+        window.innerWidth <= 768 ? "Account" : "Account & Orders";
     },
   },
   created() {
@@ -136,6 +145,13 @@ export default {
       .catch((error) => {
         console.error("Error during auto login and fetch user:", error);
       });
+  },
+  mounted() {
+    this.updateDropdownText();
+    window.addEventListener("resize", this.updateDropdownText);
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.updateDropdownText);
   },
   watch: {
     isLoggedIn(newValue) {
@@ -177,24 +193,32 @@ export default {
   position: sticky;
   top: 0;
   z-index: 10;
+  // display: flex;
+  justify-content: space-between;
+  align-items: center;
+  // padding: 0 1rem;
+  // width: 100%;
+  // box-sizing: border-box;
 }
 
 .brand-container {
   display: flex;
   align-items: center;
-  gap: 1em;
+  margin-left: 0;
+  margin-right: 1rem;
 }
 
 .logo-content {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center the logo-content */
 }
 
 .logo-image {
   height: 2.5rem;
   width: auto;
-  max-width: 100%;
   border-radius: 0.25rem;
+  margin-left: 1.9rem;
 }
 
 .logo-text {
@@ -203,6 +227,7 @@ export default {
   font-weight: 900;
   color: $primary;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.359);
+  margin-left: 0.1em;
   display: none;
   @extend .hover-effect;
 
@@ -214,8 +239,10 @@ export default {
 .header-right {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .search-container {
@@ -223,11 +250,12 @@ export default {
   align-items: center;
   position: relative;
   flex-grow: 1;
-  max-width: 500px;
-  min-width: 300px;
   border-radius: 0.25rem;
   background-color: #fff;
   height: 2.5rem;
+  max-width: 45rem;
+  min-width: 25rem;
+  margin-left: 0.1rem;
 }
 
 .search-input {
@@ -238,6 +266,7 @@ export default {
   border-bottom-left-radius: 0.25rem;
   padding: 0.375rem 0.75rem;
   height: 100%;
+  min-width: 10rem;
 }
 
 .search-button {
@@ -256,13 +285,37 @@ export default {
   color: $primary;
 }
 
-.user-actions-container {
+.welcome-account-container {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  white-space: nowrap; /* Prevent wrapping */
+
+  b-nav-item {
+    list-style: none !important;
+    display: flex;
+    align-items: center;
+  }
+
+  li {
+    list-style: none !important;
+
+    // Ensure marker is not displayed
+    &::marker {
+      content: "";
+    }
+  }
+}
+
+.cart-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 .cart-icon-container {
+  list-style: none !important;
   display: flex;
   align-items: center;
 }
@@ -301,13 +354,62 @@ export default {
 }
 
 .cart-text {
-  margin-left: 10px;
+  margin-left: 1rem;
   height: 100%;
   display: flex;
   align-items: center;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 b-nav-item {
   list-style: none !important;
+}
+
+@media (max-width: 992px) {
+  .logo-text {
+    display: none;
+  }
+
+  .search-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex-grow: 1;
+    max-width: 600px;
+    min-width: 200px;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    height: 2.5rem;
+    margin-left: 5rem;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    flex-wrap: nowrap;
+  }
+
+  .account-orders-dropdown {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-right {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .search-container {
+    flex-grow: 1;
+  }
+
+  .account-orders-dropdown {
+    max-width: 100px;
+  }
 }
 </style>
