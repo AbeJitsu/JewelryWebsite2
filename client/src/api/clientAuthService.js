@@ -1,5 +1,4 @@
 // client/src/api/clientAuthService.js
-
 import axiosInstance from "./axiosInstance";
 import store from "@/store";
 

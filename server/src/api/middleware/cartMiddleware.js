@@ -10,16 +10,19 @@ const ensureCartExists = async (req, res, next) => {
 
   try {
     let cart;
-    if (req.user_id) {
-      cart = await Cart.findOne({ user: req.user_id });
+    const userId = req.session.user_id || req.user_id; // Consistent usage of user ID
+    const sessionToken = req.sessionID;
+
+    if (userId) {
+      cart = await Cart.findOne({ user: userId });
     } else {
-      cart = await Cart.findOne({ sessionToken: req.sessionID });
+      cart = await Cart.findOne({ sessionToken: sessionToken });
     }
 
     if (!cart) {
       cart = new Cart({
-        user: req.user_id || null,
-        sessionToken: req.user_id || req.sessionID,
+        user: userId || null,
+        sessionToken: userId ? null : sessionToken, // Only set sessionToken if userId is null
       });
       await cart.save();
     }

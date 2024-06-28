@@ -1,4 +1,4 @@
-// client/src/api/cartService.js
+// /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/api/clientCartService.js
 
 import axiosInstance from "./axiosInstance";
 

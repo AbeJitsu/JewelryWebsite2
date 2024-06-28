@@ -14,7 +14,7 @@ const cartSchema = new Schema({
   items: [cartItemSchema],
 });
 
-cartSchema.index({ user: 1, sessionToken: 1 });
+cartSchema.index({ user: 1, sessionToken: 1 }, { unique: true });
 
 cartSchema.pre("save", function (next) {
   if (!this.user && !this.sessionToken) {

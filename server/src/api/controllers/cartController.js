@@ -1,12 +1,13 @@
 // server/src/api/controllers/cartController.js
+
 const Cart = require("../models/cartModel");
 const Product = require("@/api/models/productModel");
 const cartService = require("@/services/cartService");
 
 // Utility function to construct the query object
 const getCartQuery = (req) => {
-  const sessionId = req.user_id;
-  const userId = req.user ? req.user._id : null;
+  const sessionId = req.sessionID; // Ensure sessionID is correctly assigned
+  const userId = req.session.user_id || req.user_id; // Consistent user identification
   return userId ? { user: userId } : { sessionToken: sessionId };
 };
 
@@ -97,7 +98,7 @@ exports.mergeCart = async (req, res) => {
   try {
     const query = getCartQuery(req);
     const mergedCart = await cartService.mergeCart(
-      query,
+      query.user, // Pass only user ID for mergeCart
       req.body.localCartItems
     );
     res.status(200).send(mergedCart);

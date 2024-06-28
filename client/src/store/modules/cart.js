@@ -1,7 +1,7 @@
 // /Users/abiezerreyes/Projects/JewelryWebsite2/client/src/store/modules/cart.js
 
 import _ from "lodash";
-import cartService from "@/api/cartService";
+import cartService from "@/api/clientCartService";
 
 const CART_STORAGE_KEY = "cartItems";
 

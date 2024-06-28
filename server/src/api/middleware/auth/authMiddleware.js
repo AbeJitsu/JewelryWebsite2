@@ -15,6 +15,7 @@ exports.authMiddleware = async (req, res, next) => {
     }
 
     req.user = user;
+    req.user_id = user._id; // Ensure consistency
     next();
   } catch (error) {
     console.error("Authentication error:", error);
